@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 500002}
   - component: {fileID: 500003}
   - component: {fileID: 500004}
+  - component: {fileID: 500005}
+  - component: {fileID: 500006}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -35,6 +37,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &500003
 SpriteRenderer:
+  serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -52,6 +55,9 @@ SpriteRenderer:
   m_RayTraceProcedural: 0
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -73,9 +79,11 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 10
+  m_MaskInteraction: 0
   m_Sprite: {fileID: 410371416, guid: c360d451076c4ed391b74e58d595fbfe, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -84,8 +92,9 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_MaskInteraction: 0
+  m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 1
+  m_BlendShapeWeights: []
 --- !u!114 &500004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -98,7 +107,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33cc44dd55ee66ff7788990122aa33bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 6
+  moveSpeed: 10
+  sprintSpeedBonus: 0.8
   playArea: {fileID: 0}
   walkFramesPerSecond: 8
   downFrames:
@@ -145,3 +155,37 @@ MonoBehaviour:
   - {fileID: 1804389450, guid: c360d451076c4ed391b74e58d595fbfe, type: 3}
   - {fileID: -1430739547, guid: c360d451076c4ed391b74e58d595fbfe, type: 3}
   - {fileID: 2036679412, guid: c360d451076c4ed391b74e58d595fbfe, type: 3}
+--- !u!114 &500005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 500001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c4e9a1b2d8f4e6a9c0b5d3e1f7a8b24, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  maxMana: 100
+  maxStamina: 100
+  staminaDrainPerSecond: 40
+  staminaRegenPerSecond: 25
+  emptyRegenDelay: 1
+  emptyRegenStart: 15
+  emptyRegenStep: 5
+  emptyRegenStepInterval: 0.5
+  emptyRegenMax: 30
+--- !u!114 &500006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 500001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d5f0b2c3e9a4f7b0d1c6e4f2a8b9c35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

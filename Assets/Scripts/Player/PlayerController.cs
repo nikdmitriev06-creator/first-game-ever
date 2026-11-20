@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
@@ -16,7 +16,10 @@ public class PlayerController : MonoBehaviour
         Right
     }
 
-    [SerializeField] float moveSpeed = 6f;
+    [SerializeField] float moveSpeed = 16f;
+    // Added to move speed while sprinting. 0.25 is +25%. Buffs and debuffs
+    // change this at runtime through SprintSpeedBonus; it is not a fixed multiplier.
+    [SerializeField] float sprintSpeedBonus = 4f;
     [SerializeField] PlayArea playArea = null;
     [SerializeField] float walkFramesPerSecond = 8f;
     [SerializeField] Sprite[] downFrames = System.Array.Empty<Sprite>();
@@ -26,19 +29,51 @@ public class PlayerController : MonoBehaviour
 
     Vector2 _isometricPosition;
     InputAction _moveAction;
+    InputAction _sprintAction;
     SpriteRenderer _spriteRenderer;
+    PlayerVitals _vitals;
     Facing _facing = Facing.Down;
     float _walkTime;
+    bool _sprintBlocked;
 
     public Vector2 IsometricPosition => _isometricPosition;
+
+    public float SprintSpeedBonus
+    {
+        get => sprintSpeedBonus;
+        set => sprintSpeedBonus = Mathf.Max(0f, value);
+    }
+
+    public void SetPlayArea(PlayArea area)
+    {
+        playArea = area;
+    }
+
+    public float BodyInset()
+    {
+        return GetBodyInset();
+    }
+
+    public void Place(Vector2 worldPosition)
+    {
+        if (playArea != null)
+            worldPosition = playArea.Clamp(worldPosition, GetBodyInset());
+
+        _isometricPosition = IsometricCoordinates.WorldToIsometric(worldPosition);
+        transform.position = new Vector3(worldPosition.x, worldPosition.y, transform.position.z);
+    }
 
     void Awake()
     {
         _isometricPosition = IsometricCoordinates.WorldToIsometric(transform.position);
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        _vitals = GetComponent<PlayerVitals>();
 
         if (InputSystem.actions != null)
+        {
             _moveAction = InputSystem.actions.FindAction("Player/Move", throwIfNotFound: false);
+            _sprintAction = InputSystem.actions.FindAction("Player/Sprint", throwIfNotFound: false);
+        }
 
         ShowFrame(FramesFor(_facing), 0);
     }
@@ -46,23 +81,60 @@ public class PlayerController : MonoBehaviour
     void OnEnable()
     {
         _moveAction?.Enable();
+        _sprintAction?.Enable();
     }
 
     void Update()
     {
+        float deltaTime = Time.deltaTime;
         Vector2 screenInput = ReadScreenInput();
-        ApplyScreenMovement(screenInput, Time.deltaTime);
-        UpdateSprite(screenInput, Time.deltaTime);
+        bool moving = screenInput.sqrMagnitude > 0.0001f;
+        bool sprinting = TickSprint(moving, deltaTime);
+        float speedScale = sprinting ? 1f + SprintSpeedBonus : 1f;
+
+        ApplyScreenMovement(screenInput, deltaTime, moveSpeed * speedScale);
+        UpdateSprite(screenInput, deltaTime, speedScale);
     }
 
-    void ApplyScreenMovement(Vector2 screenInput, float deltaTime)
+    bool TickSprint(bool moving, float deltaTime)
+    {
+        bool shiftHeld = SprintHeld();
+        if (!shiftHeld)
+            _sprintBlocked = false;
+
+        bool sprinting = moving && shiftHeld && !_sprintBlocked && (_vitals == null || _vitals.Stamina > 0f);
+        if (_vitals == null)
+            return sprinting;
+
+        if (sprinting)
+        {
+            _vitals.TrySpendStamina(deltaTime);
+            if (_vitals.Stamina <= 0f)
+                _sprintBlocked = true;
+            return true;
+        }
+
+        _vitals.RecoverStamina(deltaTime);
+        return false;
+    }
+
+    bool SprintHeld()
+    {
+        Keyboard keyboard = Keyboard.current;
+        if (keyboard != null && (keyboard.leftShiftKey.isPressed || keyboard.rightShiftKey.isPressed))
+            return true;
+
+        return _sprintAction != null && _sprintAction.IsPressed();
+    }
+
+    void ApplyScreenMovement(Vector2 screenInput, float deltaTime, float speed)
     {
         if (screenInput.sqrMagnitude > 1f)
             screenInput.Normalize();
 
         if (screenInput.sqrMagnitude > 0f && deltaTime > 0f)
         {
-            Vector2 screenDelta = screenInput * (moveSpeed * deltaTime);
+            Vector2 screenDelta = screenInput * (speed * deltaTime);
             _isometricPosition += IsometricCoordinates.WorldToIsometric(screenDelta);
         }
 
@@ -106,7 +178,7 @@ public class PlayerController : MonoBehaviour
         return new Vector2(x, y);
     }
 
-    void UpdateSprite(Vector2 screenInput, float deltaTime)
+    void UpdateSprite(Vector2 screenInput, float deltaTime, float animationScale)
     {
         bool moving = screenInput.sqrMagnitude > 0.0001f;
         if (moving)
@@ -118,7 +190,7 @@ public class PlayerController : MonoBehaviour
                 _walkTime = 0f;
             }
 
-            _walkTime += deltaTime;
+            _walkTime += deltaTime * Mathf.Max(0.01f, animationScale);
         }
         else
         {
