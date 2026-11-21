@@ -2,8 +2,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
-/// Shared attack input. The left mouse button calls Attack on the weapon in the hand.
-/// Each weapon decides what that attack does.
+/// Shared attack input. Holding the left mouse button keeps calling Attack on the weapon in the hand.
+/// Each weapon decides what that attack does and when it can swing again.
 /// </summary>
 public class PlayerCombat : MonoBehaviour
 {
@@ -42,7 +42,9 @@ public class PlayerCombat : MonoBehaviour
     {
         if (_inventory != null && _inventory.IsOpen)
             return;
-        if (!AttackPressed())
+        if (SlimeSpawnButton.PointerIsOver())
+            return;
+        if (!AttackHeld())
             return;
 
         IWeapon weapon = HeldWeapon();
@@ -67,12 +69,12 @@ public class PlayerCombat : MonoBehaviour
         return null;
     }
 
-    bool AttackPressed()
+    bool AttackHeld()
     {
         if (_attackAction != null)
-            return _attackAction.WasPressedThisFrame();
+            return _attackAction.IsPressed();
 
         Mouse mouse = Mouse.current;
-        return mouse != null && mouse.leftButton.wasPressedThisFrame;
+        return mouse != null && mouse.leftButton.isPressed;
     }
 }

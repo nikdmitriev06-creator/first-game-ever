@@ -9,6 +9,7 @@ public class PlayerVitals : MonoBehaviour
     [SerializeField] float maxHealth = 100f;
     [SerializeField] float maxMana = 100f;
     [SerializeField] float maxStamina = 100f;
+    [SerializeField] float healthRegenPerSecond = 2f;
     [SerializeField] float staminaDrainPerSecond = 20f;
     [SerializeField] float staminaRegenPerSecond = 25f;
     [SerializeField] float emptyRegenDelay = 1f;
@@ -36,6 +37,22 @@ public class PlayerVitals : MonoBehaviour
         Health = maxHealth;
         Mana = maxMana;
         Stamina = maxStamina;
+    }
+
+    void Update()
+    {
+        if (healthRegenPerSecond <= 0f || Health <= 0f || Health >= maxHealth)
+            return;
+
+        SetHealth(Health + healthRegenPerSecond * Time.deltaTime);
+    }
+
+    public void TakeDamage(float amount)
+    {
+        if (amount <= 0f || Health <= 0f)
+            return;
+
+        SetHealth(Health - amount);
     }
 
     public void SetHealth(float value)
@@ -73,6 +90,23 @@ public class PlayerVitals : MonoBehaviour
             BeginEmptyRecovery();
         else
             CancelEmptyRecovery();
+
+        return true;
+    }
+
+    /// <summary>
+    /// Spends a fixed amount, such as one weapon attack. Fails when the bar cannot cover it.
+    /// </summary>
+    public bool TrySpendStaminaAmount(float amount)
+    {
+        if (amount <= 0f)
+            return true;
+        if (Stamina + 0.0001f < amount)
+            return false;
+
+        SetStamina(Stamina - amount);
+        if (Stamina <= 0f)
+            BeginEmptyRecovery();
 
         return true;
     }

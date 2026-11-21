@@ -6,14 +6,10 @@ using UnityEngine.InputSystem;
 /// Scaled to the body the same way as the sword; the source art is left as it is.
 /// </summary>
 [RequireComponent(typeof(SpriteRenderer))]
-public class HeldBow : MonoBehaviour, IWeapon
+public class HeldBow : Weapon
 {
     const float AimFollow = 16f;
 
-    [SerializeField] float damage = 9f;
-    [SerializeField] float shotInterval = 0.38f;
-    [SerializeField] float arrowSpeed = 34f;
-    [SerializeField] float arrowRange = 52f;
     // Arrow length compared with the character's height.
     [SerializeField] float arrowLength = 0.58f;
     [SerializeField] float sizeMatch = 1.35f;
@@ -28,7 +24,6 @@ public class HeldBow : MonoBehaviour, IWeapon
     SpriteRenderer _renderer;
     SpriteRenderer _playerRenderer;
     PlayerController _player;
-    PlayerCombat _combat;
     float _bodyWidth = 1.6f;
     float _bodyHeight = 3f;
     float _aim;
@@ -36,11 +31,11 @@ public class HeldBow : MonoBehaviour, IWeapon
     bool _held;
     float _nextShot;
 
-    public string ItemId => ItemIds.Bow;
+    public override string ItemId => ItemIds.Bow;
 
-    public bool IsHeld => _held;
+    public override bool IsHeld => _held;
 
-    public Sprite IconSprite
+    public override Sprite IconSprite
     {
         get
         {
@@ -49,7 +44,7 @@ public class HeldBow : MonoBehaviour, IWeapon
         }
     }
 
-    public void SetHeld(bool held)
+    public override void SetHeld(bool held)
     {
         if (_held == held)
         {
@@ -71,35 +66,36 @@ public class HeldBow : MonoBehaviour, IWeapon
         Hide();
     }
 
-    public void Attack()
+    public override void Attack()
     {
         if (!_held || Time.time < _nextShot)
             return;
 
         _aim = CursorAngle();
         _hasAim = true;
+        if (arrowSprite == null || Stats.ProjectileSpeed <= 0f)
+            return;
+        if (!TrySpendStamina())
+            return;
         if (!Shoot())
             return;
 
-        float interval = Mathf.Max(0.05f, shotInterval) / AttackScale();
-        _nextShot = Time.time + interval;
+        _nextShot = Time.time + AttackInterval();
     }
 
     void Awake()
     {
+        BindOwner();
         _renderer = GetComponent<SpriteRenderer>();
         Transform parent = transform.parent;
         if (parent != null)
         {
             _playerRenderer = parent.GetComponent<SpriteRenderer>();
             _player = parent.GetComponent<PlayerController>();
-            _combat = parent.GetComponent<PlayerCombat>();
         }
 
         if (_player == null)
             _player = FindAnyObjectByType<PlayerController>();
-        if (_combat == null && _player != null)
-            _combat = _player.GetComponent<PlayerCombat>();
         if (_playerRenderer == null && _player != null)
             _playerRenderer = _player.GetComponent<SpriteRenderer>();
 
@@ -174,7 +170,7 @@ public class HeldBow : MonoBehaviour, IWeapon
         }
 
         var shot = go.AddComponent<ArrowShot>();
-        shot.Launch(direction, arrowSpeed, arrowRange, damage);
+        shot.Launch(direction, Stats.ProjectileSpeed, Stats.Range, RollDamage());
         return true;
     }
 
@@ -219,14 +215,6 @@ public class HeldBow : MonoBehaviour, IWeapon
             return _aim;
 
         return Mathf.Atan2(delta.y, delta.x) * Mathf.Rad2Deg;
-    }
-
-    float AttackScale()
-    {
-        if (_combat == null)
-            return 1f;
-
-        return Mathf.Max(0.05f, _combat.AttackSpeedMultiplier);
     }
 
     void MeasureBody()

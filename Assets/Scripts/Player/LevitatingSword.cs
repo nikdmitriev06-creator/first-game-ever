@@ -8,7 +8,7 @@ using UnityEngine.InputSystem;
 /// Hidden unless the sword item is in the selected hotbar slot.
 /// </summary>
 [RequireComponent(typeof(SpriteRenderer))]
-public class LevitatingSword : MonoBehaviour, IWeapon
+public class LevitatingSword : Weapon
 {
     const float AimFollow = 16f;
 
@@ -33,10 +33,10 @@ public class LevitatingSword : MonoBehaviour, IWeapon
     const float ArcWidth = 0.36f;
     // How much the sprite grows at the moment it crosses the cursor.
     const float HitScale = 0.24f;
+    // Opaque blade of Sword.png, measured along the painted tip. The guard is wider; the hit follows the blade.
+    const float BladeHalfLengthPixels = 102f;
+    const float BladeHalfWidthPixels = 22f;
 
-    // Seconds for one slash. The character's attack speed multiplier shortens this.
-    [SerializeField] float swingDuration = 0.52f;
-    [SerializeField] float damage = 12f;
     // Blade length compared with the character. Above 1 is a larger, heavier sword.
     [SerializeField] float sizeMatch = 1.55f;
     // How far beside the body the sword rests, as a fraction of body height, past the body's edge.
@@ -56,7 +56,6 @@ public class LevitatingSword : MonoBehaviour, IWeapon
     SpriteRenderer _playerRenderer;
     SpriteRenderer _wind;
     PlayerController _player;
-    PlayerCombat _combat;
     Vector3[] _history;
     bool _historyReady;
     float _bodyWidth = 1.6f;
@@ -69,19 +68,59 @@ public class LevitatingSword : MonoBehaviour, IWeapon
     float _swingTime;
     bool _swinging;
     bool _edgeFlip;
-    bool _queued;
+    bool _holdAttack;
     float _bobWeight = 1f;
     float _spin;
     bool _hasSpin;
     bool _held = true;
+    float _strikeDamage;
 
     public bool IsSwinging => _swinging;
 
-    public string ItemId => ItemIds.Sword;
+    // Goes up by one each time a swing actually starts. Enemies use it so one swing hits only once.
+    public int SwingSerial { get; private set; }
 
-    public bool IsHeld => _held;
+    /// <summary>
+    /// True while the blade is sweeping and the target body touches the sword sprite.
+    /// The box follows the drawn blade, including its length and the arc of the swing.
+    /// </summary>
+    public bool StrikeReaches(Vector2 worldPoint, float targetRadius)
+    {
+        if (!_held || !_swinging || _swingTime < WindupPortion || _swingTime > StrikeEnd)
+            return false;
+        if (_renderer == null || _renderer.sprite == null)
+            return false;
 
-    public Sprite IconSprite
+        float tip = _edgeFlip ? 180f - spriteTipAngle : spriteTipAngle;
+        float tipRad = tip * Mathf.Deg2Rad;
+        Vector3 localTip = new Vector3(Mathf.Cos(tipRad), Mathf.Sin(tipRad), 0f);
+        Vector2 axis = transform.TransformDirection(localTip);
+        if (axis.sqrMagnitude < 0.0001f)
+            return false;
+        axis.Normalize();
+
+        float ppu = Mathf.Max(1f, _renderer.sprite.pixelsPerUnit);
+        float scale = Mathf.Max(Mathf.Abs(transform.lossyScale.x), Mathf.Abs(transform.lossyScale.y));
+        float halfLength = BladeHalfLengthPixels / ppu * scale;
+        float halfWidth = BladeHalfWidthPixels / ppu * scale;
+
+        Vector2 rel = worldPoint - (Vector2)transform.position;
+        float along = Vector2.Dot(rel, axis);
+        float side = Mathf.Abs(Vector2.Dot(rel, new Vector2(-axis.y, axis.x)));
+        float pastTip = Mathf.Max(Mathf.Abs(along) - halfLength, 0f);
+        float pastEdge = Mathf.Max(side - halfWidth, 0f);
+        float reach = Mathf.Max(0f, targetRadius);
+        return pastTip * pastTip + pastEdge * pastEdge <= reach * reach;
+    }
+
+    public override string ItemId => ItemIds.Sword;
+
+    // Damage rolled for the swing that is playing, after a critical hit.
+    public float StrikeDamage => _strikeDamage;
+
+    public override bool IsHeld => _held;
+
+    public override Sprite IconSprite
     {
         get
         {
@@ -90,7 +129,7 @@ public class LevitatingSword : MonoBehaviour, IWeapon
         }
     }
 
-    public void SetHeld(bool held)
+    public override void SetHeld(bool held)
     {
         if (_held == held)
         {
@@ -110,57 +149,41 @@ public class LevitatingSword : MonoBehaviour, IWeapon
         }
 
         _swinging = false;
-        _queued = false;
+        _holdAttack = false;
         _swingTime = 0f;
         HideVisual();
     }
 
-    public void Attack()
+    public override void Attack()
     {
         if (!_held)
             return;
 
-        RequestSwing();
-    }
-
-    public float Damage
-    {
-        get => damage;
-        set => damage = Mathf.Max(0f, value);
-    }
-
-    public float SwingDuration
-    {
-        get => swingDuration;
-        set => swingDuration = Mathf.Max(0.05f, value);
-    }
-
-    public void RequestSwing()
-    {
+        _holdAttack = true;
         if (_swinging)
-        {
-            _queued = true;
             return;
-        }
 
         BeginSwing();
     }
 
+    public void RequestSwing()
+    {
+        Attack();
+    }
+
     void Awake()
     {
+        BindOwner();
         _renderer = GetComponent<SpriteRenderer>();
         Transform parent = transform.parent;
         if (parent != null)
         {
             _playerRenderer = parent.GetComponent<SpriteRenderer>();
             _player = parent.GetComponent<PlayerController>();
-            _combat = parent.GetComponent<PlayerCombat>();
         }
 
         if (_player == null)
             _player = FindAnyObjectByType<PlayerController>();
-        if (_combat == null && _player != null)
-            _combat = _player.GetComponent<PlayerCombat>();
         if (_playerRenderer == null && _player != null)
             _playerRenderer = _player.GetComponent<SpriteRenderer>();
     }
@@ -219,10 +242,16 @@ public class LevitatingSword : MonoBehaviour, IWeapon
         transform.rotation = Quaternion.Euler(0f, 0f, BladeAngle(facing));
         ApplySorting(offset.y > _bodyHeight * 0.7f);
         UpdateWind(world, travel, windAlong);
+        _holdAttack = false;
     }
 
     void BeginSwing()
     {
+        if (!TrySpendStamina())
+            return;
+
+        _strikeDamage = RollDamage();
+        SwingSerial++;
         Vector3 feet = _player != null ? _player.transform.position : transform.position;
         _swingAim = CursorAngle(feet);
         _restAngle = _swingAim;
@@ -233,7 +262,7 @@ public class LevitatingSword : MonoBehaviour, IWeapon
 
     void AdvanceSwing()
     {
-        float duration = Mathf.Max(0.05f, swingDuration) / AttackScale();
+        float duration = AttackInterval();
         _swingTime += Time.deltaTime / duration;
         if (_swingTime < 1f)
             return;
@@ -242,19 +271,10 @@ public class LevitatingSword : MonoBehaviour, IWeapon
         _edgeFlip = !_edgeFlip;
         _swinging = false;
         _swingTime = 0f;
-        if (!_queued)
+        if (!_holdAttack)
             return;
 
-        _queued = false;
         BeginSwing();
-    }
-
-    float AttackScale()
-    {
-        if (_combat == null)
-            return 1f;
-
-        return Mathf.Max(0.05f, _combat.AttackSpeedMultiplier);
     }
 
     float CursorAngle(Vector3 feet)

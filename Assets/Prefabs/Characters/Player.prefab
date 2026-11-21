@@ -323,8 +323,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5f8b2c14d7a4e63b9c0a1d5f6e70831, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  swingDuration: 0.52
-  damage: 12
+  stats:
+    damage: 12
+    attackSpeed: 1.92
+    range: 2.8
+    staminaCost: 10
+    projectileSpeed: 0
+    critChance: 0.08
+    critMultiplier: 1.4
   sizeMatch: 1.55
   sideGap: 0.28
   arcReach: 0.26
@@ -443,10 +449,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8e1a3c54b7f4e26a9c0d5b17e2f6941, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 9
-  shotInterval: 0.38
-  arrowSpeed: 34
-  arrowRange: 52
+  stats:
+    damage: 9
+    attackSpeed: 2.63
+    range: 52
+    staminaCost: 6
+    projectileSpeed: 34
+    critChance: 0.12
+    critMultiplier: 1.4
   arrowLength: 0.58
   sizeMatch: 1.35
   sideGap: 0.16
