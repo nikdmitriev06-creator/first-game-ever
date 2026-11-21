@@ -10,6 +10,8 @@ public static class ItemArt
 
     static Sprite _axe;
     static Sprite _wood;
+    static Sprite _workbench;
+    static Sprite _chair;
     static Sprite _shadow;
 
     public static Sprite Icon(string id)
@@ -18,8 +20,22 @@ public static class ItemArt
             return Axe();
         if (id == ItemIds.Wood)
             return Wood();
+        if (id == ItemIds.Workbench)
+            return Workbench();
+        if (id == ItemIds.Chair)
+            return Chair();
 
-        return GearIcon(id);
+        return null;
+    }
+
+    public static Sprite WorldSprite(string id)
+    {
+        if (id == ItemIds.Workbench)
+            return Workbench();
+        if (id == ItemIds.Chair)
+            return Chair();
+
+        return null;
     }
 
     public static Sprite Axe()
@@ -77,6 +93,86 @@ public static class ItemArt
         return _wood;
     }
 
+    public static Sprite Workbench()
+    {
+        if (_workbench != null)
+            return _workbench;
+
+        const int width = 52;
+        const int height = 46;
+        var pixels = new Color32[width * height];
+        var outline = new Color32(62, 36, 18, 255);
+        var leg = new Color32(102, 62, 32, 255);
+        var legLit = new Color32(156, 102, 56, 255);
+        var apron = new Color32(118, 72, 36, 255);
+        var top = new Color32(186, 128, 70, 255);
+        var topLit = new Color32(222, 170, 102, 255);
+        var metal = new Color32(176, 184, 190, 255);
+        var metalDark = new Color32(96, 104, 112, 255);
+
+        FillRect(pixels, width, 12, 2, 5, 16, outline);
+        FillRect(pixels, width, 13, 2, 3, 16, leg);
+        FillRect(pixels, width, 13, 2, 1, 16, legLit);
+        FillRect(pixels, width, 35, 2, 5, 16, outline);
+        FillRect(pixels, width, 36, 2, 3, 16, leg);
+        FillRect(pixels, width, 36, 2, 1, 16, legLit);
+        FillRect(pixels, width, 18, 8, 4, 10, leg);
+        FillRect(pixels, width, 31, 8, 4, 10, leg);
+
+        FillRect(pixels, width, 8, 16, 36, 7, outline);
+        FillRect(pixels, width, 10, 17, 32, 5, apron);
+        FillRect(pixels, width, 10, 20, 32, 1, legLit);
+        FillRect(pixels, width, 14, 12, 24, 3, outline);
+
+        FillEllipse(pixels, width, height, 26, 27, 20, 8, outline, 1);
+        FillEllipse(pixels, width, height, 26, 29, 18, 6, top, 2);
+        FillEllipse(pixels, width, height, 24, 31, 12, 3, topLit, 3);
+        FillRect(pixels, width, 30, 29, 9, 3, metal);
+        FillRect(pixels, width, 30, 31, 9, 1, metalDark);
+        FillRect(pixels, width, 33, 26, 2, 6, leg);
+
+        _workbench = Finish(pixels, width, height, new Vector2(0.5f, 0.06f));
+        return _workbench;
+    }
+
+    public static Sprite Chair()
+    {
+        if (_chair != null)
+            return _chair;
+
+        const int width = 36;
+        const int height = 48;
+        var pixels = new Color32[width * height];
+        var outline = new Color32(62, 36, 18, 255);
+        var wood = new Color32(168, 112, 60, 255);
+        var lit = new Color32(214, 158, 92, 255);
+        var seat = new Color32(186, 128, 70, 255);
+        var seatLit = new Color32(214, 164, 102, 255);
+
+        FillRect(pixels, width, 7, 2, 4, 40, outline);
+        FillRect(pixels, width, 8, 2, 2, 40, wood);
+        FillRect(pixels, width, 8, 2, 1, 40, lit);
+        FillRect(pixels, width, 25, 2, 4, 40, outline);
+        FillRect(pixels, width, 26, 2, 2, 40, wood);
+        FillRect(pixels, width, 26, 2, 1, 40, lit);
+
+        FillRect(pixels, width, 7, 36, 22, 5, outline);
+        FillRect(pixels, width, 8, 37, 20, 3, lit);
+        FillRect(pixels, width, 7, 29, 22, 4, outline);
+        FillRect(pixels, width, 8, 30, 20, 2, wood);
+
+        FillEllipse(pixels, width, height, 18, 20, 14, 6, outline, 4);
+        FillEllipse(pixels, width, height, 18, 21, 12, 4, seat, 5);
+        FillEllipse(pixels, width, height, 16, 23, 8, 2, seatLit, 6);
+
+        FillRect(pixels, width, 8, 2, 3, 12, outline);
+        FillRect(pixels, width, 25, 2, 3, 12, outline);
+        FillRect(pixels, width, 11, 8, 14, 2, wood);
+
+        _chair = Finish(pixels, width, height, new Vector2(0.5f, 0.05f));
+        return _chair;
+    }
+
     public static Sprite Shadow()
     {
         if (_shadow != null)
@@ -87,34 +183,6 @@ public static class ItemArt
         FillEllipse(pixels, size, size, 8, 8, 7, 4, new Color32(20, 28, 16, 140), 0);
         _shadow = Finish(pixels, size, size, new Vector2(0.5f, 0.5f));
         return _shadow;
-    }
-
-    static Sprite GearIcon(string id)
-    {
-        if (string.IsNullOrEmpty(id))
-            return null;
-
-        PlayerInventory inventory = Object.FindAnyObjectByType<PlayerInventory>();
-        if (inventory == null)
-            return null;
-
-        IWeapon[] weapons = inventory.GetComponentsInChildren<IWeapon>(true);
-        for (int i = 0; i < weapons.Length; i++)
-        {
-            IWeapon weapon = weapons[i];
-            if (weapon != null && weapon.ItemId == id)
-                return weapon.IconSprite;
-        }
-
-        Tool[] tools = inventory.GetComponentsInChildren<Tool>(true);
-        for (int i = 0; i < tools.Length; i++)
-        {
-            Tool tool = tools[i];
-            if (tool != null && tool.ItemId == id)
-                return tool.IconSprite;
-        }
-
-        return null;
     }
 
     static void FillRect(Color32[] pixels, int width, int x, int y, int w, int h, Color32 color)

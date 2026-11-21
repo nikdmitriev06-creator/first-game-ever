@@ -30,11 +30,40 @@ public class ArrowShot : MonoBehaviour
     {
         Vector2 from = transform.position;
         float step = _speed * Time.deltaTime;
-        transform.position += (Vector3)(_direction * step);
+        Vector2 to = from + _direction * step;
+        transform.position = to;
         _remaining -= step;
 
-        if (Enemy.TryDamageSegment(from, transform.position, Damage))
+        ImpactLibrary.Ensure();
+        var impact = new Impact(ImpactLibrary.Slash, Damage, to, _direction, this);
+        var hits = new System.Collections.Generic.List<IImpactReceiver>();
+        ReceiverRegistry.CollectOnSegment(from, to, hits);
+        while (hits.Count > 0)
         {
+            int nearest = 0;
+            float nearestDistance = float.MaxValue;
+            for (int i = 0; i < hits.Count; i++)
+            {
+                if (hits[i] == null)
+                    continue;
+
+                float distance = Vector2.Distance(from, hits[i].Origin);
+                if (distance >= nearestDistance)
+                    continue;
+
+                nearestDistance = distance;
+                nearest = i;
+            }
+
+            IImpactReceiver target = hits[nearest];
+            hits.RemoveAt(nearest);
+            if (target == null)
+                continue;
+
+            ImpactResult result = target.Receive(impact);
+            if (result.Outcome == ImpactOutcome.Ignored)
+                continue;
+
             Destroy(gameObject);
             return;
         }

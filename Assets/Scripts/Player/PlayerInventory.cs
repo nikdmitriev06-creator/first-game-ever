@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 /// I opens the row so a click can lift an item onto the cursor.
 /// Q throws one of the held stack onto the ground, toward the cursor.
 /// The weapon or tool in the selected slot is the one in the hand.
-/// Wood stacks. A sword, a bow, and an axe each take a whole slot.
+/// The slots themselves live in ItemContainer. This component owns input and the hand.
 /// </summary>
 [DefaultExecutionOrder(-20)]
 public class PlayerInventory : MonoBehaviour
@@ -44,14 +44,15 @@ public class PlayerInventory : MonoBehaviour
 
     public event Action Changed;
 
-    readonly string[] _slots = new string[SlotCount];
-    readonly int[] _counts = new int[SlotCount];
+    readonly ItemContainer _bag = new ItemContainer(SlotCount);
     IWeapon[] _weapons;
     Tool[] _tools;
     int _selected;
     bool _open;
     string _cursor;
     int _cursorCount;
+
+    public ItemContainer Container => _bag;
 
     public int Selected => _selected;
 
@@ -63,21 +64,12 @@ public class PlayerInventory : MonoBehaviour
 
     public string SlotAt(int index)
     {
-        if ((uint)index >= SlotCount)
-            return null;
-
-        return _counts[index] > 0 ? _slots[index] : null;
+        return _bag.IdAt(index);
     }
 
     public int CountAt(int index)
     {
-        if ((uint)index >= SlotCount)
-            return 0;
-
-        if (string.IsNullOrEmpty(_slots[index]))
-            return 0;
-
-        return _counts[index];
+        return _bag.CountAt(index);
     }
 
     /// <summary>
@@ -88,7 +80,7 @@ public class PlayerInventory : MonoBehaviour
         if (string.IsNullOrEmpty(id) || count <= 0)
             return 0;
 
-        int left = Pour(id, count);
+        int left = _bag.Add(id, count);
         int accepted = count - left;
         if (accepted > 0)
             Notify();
@@ -96,18 +88,42 @@ public class PlayerInventory : MonoBehaviour
         return accepted;
     }
 
-    void Awake()
+    public int CountOf(string id)
     {
-        EnsureAxe();
-        Give(_slots, _counts, 0, ItemIds.Sword);
-        Give(_slots, _counts, 1, ItemIds.Bow);
-        Give(_slots, _counts, 2, ItemIds.Axe);
-        _weapons = GetComponentsInChildren<IWeapon>(true);
-        _tools = GetComponentsInChildren<Tool>(true);
-        if (GetComponent<InventoryHud>() == null)
-            gameObject.AddComponent<InventoryHud>();
+        return _bag.CountOf(id, _cursor, _cursorCount);
+    }
+
+    public bool TryConsume(string id, int count)
+    {
+        if (count <= 0)
+            return true;
+
+        if (!_bag.Remove(id, count, ref _cursor, ref _cursorCount))
+            return false;
 
         Notify();
+        return true;
+    }
+
+    public bool CanFitAfterSpend(string resultId, int resultCount, Ingredient[] spend)
+    {
+        return _bag.CanFitAfterSpend(resultId, resultCount, spend, _cursor, _cursorCount);
+    }
+
+    void Awake()
+    {
+        _bag.Set(0, ItemIds.Sword, 1);
+        _bag.Set(1, ItemIds.Bow, 1);
+        _bag.Set(2, ItemIds.Axe, 1);
+        _weapons = GetComponentsInChildren<IWeapon>(true);
+        _tools = GetComponentsInChildren<Tool>(true);
+        Notify();
+    }
+
+    void OnDestroy()
+    {
+        if (_open)
+            GameplayGate.EnsureState().Pop("inventory");
     }
 
     void Update()
@@ -116,11 +132,14 @@ public class PlayerInventory : MonoBehaviour
         if (keyboard == null)
             return;
 
-        if (Pressed(keyboard, Key.I))
+        if (Pressed(keyboard, Key.I) && GameplayGate.EnsureState().Allows(PlayerAction.OpenInventory))
             SetOpen(!_open);
 
-        if (Pressed(keyboard, Key.Q))
+        if (Pressed(keyboard, Key.Q) && GameplayGate.EnsureState().Allows(PlayerAction.DropItem))
             ThrowHeld();
+
+        if (!GameplayGate.EnsureState().Allows(PlayerAction.SelectSlot))
+            return;
 
         for (int i = 0; i < SlotCount; i++)
         {
@@ -148,12 +167,11 @@ public class PlayerInventory : MonoBehaviour
 
             _cursor = sitting;
             _cursorCount = sittingCount;
-            ClearSlot(index);
+            _bag.Clear(index);
         }
         else if (sittingCount <= 0)
         {
-            _slots[index] = _cursor;
-            _counts[index] = _cursorCount;
+            _bag.Set(index, _cursor, _cursorCount);
             ClearCursor();
         }
         else if (sitting == _cursor && ItemIds.Stacks(sitting))
@@ -161,15 +179,14 @@ public class PlayerInventory : MonoBehaviour
             int room = ItemIds.MaxCount(sitting) - sittingCount;
             if (room <= 0)
             {
-                _slots[index] = _cursor;
-                _counts[index] = _cursorCount;
+                _bag.Set(index, _cursor, _cursorCount);
                 _cursor = sitting;
                 _cursorCount = sittingCount;
             }
             else
             {
                 int move = Mathf.Min(room, _cursorCount);
-                _counts[index] = sittingCount + move;
+                _bag.Set(index, sitting, sittingCount + move);
                 _cursorCount -= move;
                 if (_cursorCount <= 0)
                     ClearCursor();
@@ -177,8 +194,7 @@ public class PlayerInventory : MonoBehaviour
         }
         else
         {
-            _slots[index] = _cursor;
-            _counts[index] = _cursorCount;
+            _bag.Set(index, _cursor, _cursorCount);
             _cursor = sitting;
             _cursorCount = sittingCount;
         }
@@ -206,6 +222,17 @@ public class PlayerInventory : MonoBehaviour
             return;
 
         _open = open;
+        if (_open)
+            GameplayGate.EnsureState().Push("inventory");
+        else
+            GameplayGate.EnsureState().Pop("inventory");
+
+        if (_open)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+
         if (!_open)
             PlaceCursorInFirstEmpty();
 
@@ -240,9 +267,7 @@ public class PlayerInventory : MonoBehaviour
         }
         else
         {
-            _counts[_selected] -= drop;
-            if (_counts[_selected] <= 0)
-                ClearSlot(_selected);
+            _bag.Set(_selected, id, have - drop);
         }
 
         SpawnDrop(id, drop);
@@ -255,17 +280,7 @@ public class PlayerInventory : MonoBehaviour
         Vector2 direction = ThrowDirection(origin);
         Vector2 side = new Vector2(-direction.y, direction.x);
         Vector2 land = origin + direction * 2.05f + side * UnityEngine.Random.Range(-0.35f, 0.35f);
-
-        Transform parent = null;
-        if (LevelWorld.Instance != null && LevelWorld.Instance.Current != null)
-        {
-            LevelWorld.Room room = LevelWorld.Instance.Current;
-            parent = room.Root != null ? room.Root.transform : null;
-            if (room.Area != null)
-                land = room.Area.Clamp(land, 1.2f);
-        }
-
-        WorldItem.Toss(id, count, origin + Vector2.up * 0.55f, land, parent, 0.45f);
+        WorldDropper.Spawn(id, count, origin + Vector2.up * 0.55f, land, 0.45f);
     }
 
     Vector2 ThrowDirection(Vector2 origin)
@@ -307,77 +322,12 @@ public class PlayerInventory : MonoBehaviour
         if (_cursorCount <= 0 || string.IsNullOrEmpty(_cursor))
             return true;
 
-        if (SpaceFor(_cursor) < _cursorCount)
+        if (_bag.SpaceFor(_cursor) < _cursorCount)
             return false;
 
-        Pour(_cursor, _cursorCount);
+        _bag.Add(_cursor, _cursorCount);
         ClearCursor();
         return true;
-    }
-
-    int SpaceFor(string id)
-    {
-        int space = 0;
-        int max = ItemIds.MaxCount(id);
-        if (ItemIds.Stacks(id))
-        {
-            for (int i = 0; i < SlotCount; i++)
-            {
-                if (_slots[i] == id && _counts[i] > 0)
-                    space += Mathf.Max(0, max - _counts[i]);
-            }
-        }
-
-        for (int i = 0; i < SlotCount; i++)
-        {
-            if (string.IsNullOrEmpty(_slots[i]) || _counts[i] <= 0)
-                space += max;
-        }
-
-        return space;
-    }
-
-    int Pour(string id, int count)
-    {
-        int left = count;
-        int max = ItemIds.MaxCount(id);
-        if (ItemIds.Stacks(id))
-        {
-            for (int i = 0; i < SlotCount && left > 0; i++)
-            {
-                if (_slots[i] != id || _counts[i] <= 0 || _counts[i] >= max)
-                    continue;
-
-                int move = Mathf.Min(max - _counts[i], left);
-                _counts[i] += move;
-                left -= move;
-            }
-        }
-
-        while (left > 0)
-        {
-            int slot = FirstEmpty();
-            if (slot < 0)
-                break;
-
-            int move = Mathf.Min(max, left);
-            _slots[slot] = id;
-            _counts[slot] = move;
-            left -= move;
-        }
-
-        return left;
-    }
-
-    int FirstEmpty()
-    {
-        for (int i = 0; i < SlotCount; i++)
-        {
-            if (string.IsNullOrEmpty(_slots[i]) || _counts[i] <= 0)
-                return i;
-        }
-
-        return -1;
     }
 
     void Notify()
@@ -394,13 +344,16 @@ public class PlayerInventory : MonoBehaviour
             _tools = GetComponentsInChildren<Tool>(true);
 
         string held = SlotAt(_selected);
+        ItemDefinition selected = ItemCatalog.Find(held);
+        bool swing = selected != null && selected.HasTool && selected.ResolvedTool.Gesture == ToolGesture.Swing;
+
         for (int i = 0; i < _weapons.Length; i++)
         {
             IWeapon weapon = _weapons[i];
             if (weapon == null)
                 continue;
 
-            weapon.SetHeld(weapon.ItemId == held);
+            weapon.SetHeld(!swing && weapon.ItemId == held);
         }
 
         if (_tools == null)
@@ -412,30 +365,15 @@ public class PlayerInventory : MonoBehaviour
             if (tool == null)
                 continue;
 
+            Axe axe = tool as Axe;
+            if (axe != null)
+            {
+                axe.Bind(swing ? selected : null);
+                continue;
+            }
+
             tool.SetHeld(tool.ItemId == held);
         }
-    }
-
-    void EnsureAxe()
-    {
-        if (GetComponentInChildren<Axe>(true) != null)
-            return;
-
-        var axe = new GameObject("Axe");
-        axe.transform.SetParent(transform, false);
-        axe.AddComponent<Axe>();
-    }
-
-    static void Give(string[] slots, int[] counts, int index, string id)
-    {
-        slots[index] = id;
-        counts[index] = 1;
-    }
-
-    void ClearSlot(int index)
-    {
-        _slots[index] = null;
-        _counts[index] = 0;
     }
 
     void ClearCursor()

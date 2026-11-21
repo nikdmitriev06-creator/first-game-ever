@@ -20,6 +20,18 @@ public class WorldItem : MonoBehaviour
     Transform _shadow;
     PlayerInventory _inventory;
 
+    public void Relocate(Vector2 land, Transform parent)
+    {
+        _from = land;
+        _land = land;
+        _born = Time.time - FallTime - 0.05f;
+        _ready = Time.time;
+        transform.SetParent(parent, true);
+        transform.position = new Vector3(land.x, land.y, 0f);
+        if (_shadow != null)
+            _shadow.position = new Vector3(land.x, land.y, 0f);
+    }
+
     public static void Toss(string id, int count, Vector2 from, Vector2 land, Transform parent, float pickupDelay)
     {
         if (string.IsNullOrEmpty(id) || count <= 0)
@@ -103,8 +115,8 @@ public class WorldItem : MonoBehaviour
 
     void TryPickup()
     {
-        if (_inventory == null)
-            _inventory = FindAnyObjectByType<PlayerInventory>();
+        if (_inventory == null && GameRoot.Active != null)
+            _inventory = GameRoot.Active.Inventory;
         if (_inventory == null || _count <= 0)
             return;
 

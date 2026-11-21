@@ -74,7 +74,7 @@ public class SlimeSpawnButton : MonoBehaviour
         if (_fill != null)
             _fill.color = over ? FillHot : FillColor;
 
-        if (!over || !mouse.leftButton.wasPressedThisFrame)
+        if (!over || !mouse.leftButton.wasPressedThisFrame || GameplayGate.MenuOpen)
             return;
 
         SpawnOne();
@@ -83,7 +83,7 @@ public class SlimeSpawnButton : MonoBehaviour
     void SpawnOne()
     {
         LevelWorld world = LevelWorld.Instance;
-        if (world == null || world.Current == null)
+        if (world == null || world.Current == null || world.Suspended)
             return;
 
         LevelWorld.Room room = world.Current;

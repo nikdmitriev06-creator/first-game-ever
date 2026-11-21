@@ -76,7 +76,10 @@ public class WorldMenu : MonoBehaviour
     void OnDestroy()
     {
         if (_instance == this)
+        {
             _instance = null;
+            GameplayGate.EnsureState().Pop("world-menu");
+        }
 
         if (_canvasObject != null)
             Destroy(_canvasObject);
@@ -113,7 +116,7 @@ public class WorldMenu : MonoBehaviour
         if (_buttonFrame != null)
             _buttonFrame.color = _open ? Gold : FrameColor;
 
-        if (!pressed)
+        if (!pressed || GameplayGate.EnsureState().Has("inventory"))
             return;
 
         if (overHome)
@@ -142,6 +145,10 @@ public class WorldMenu : MonoBehaviour
     void SetOpen(bool open)
     {
         _open = open;
+        if (_open)
+            GameplayGate.EnsureState().Push("world-menu");
+        else
+            GameplayGate.EnsureState().Pop("world-menu");
         if (_panel != null)
             _panel.gameObject.SetActive(open);
     }

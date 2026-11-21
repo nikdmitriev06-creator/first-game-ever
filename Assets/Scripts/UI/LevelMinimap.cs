@@ -150,13 +150,14 @@ public class LevelMinimap : MonoBehaviour
         if (_marker.parent != hereCell.Rect)
             _marker.SetParent(hereCell.Rect, false);
 
+        Vector2 feet = _world.Suspended ? _world.SuspendedFeet : (Vector2)_player.transform.position;
         Bounds bounds = current.Bounds;
         float nx = bounds.size.x <= 0.01f
             ? 0.5f
-            : Mathf.InverseLerp(bounds.min.x, bounds.max.x, _player.transform.position.x);
+            : Mathf.InverseLerp(bounds.min.x, bounds.max.x, feet.x);
         float ny = bounds.size.y <= 0.01f
             ? 0.5f
-            : Mathf.InverseLerp(bounds.min.y, bounds.max.y, _player.transform.position.y);
+            : Mathf.InverseLerp(bounds.min.y, bounds.max.y, feet.y);
 
         const float inset = 6f;
         _marker.anchoredPosition = new Vector2(

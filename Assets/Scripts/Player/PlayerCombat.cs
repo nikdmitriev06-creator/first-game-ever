@@ -12,6 +12,7 @@ public class PlayerCombat : MonoBehaviour
     IWeapon[] _weapons;
     Tool[] _tools;
     PlayerInventory _inventory;
+    PlacementSystem _placement;
     InputAction _attackAction;
 
     public float AttackSpeedMultiplier
@@ -25,6 +26,7 @@ public class PlayerCombat : MonoBehaviour
         _weapons = GetComponentsInChildren<IWeapon>(true);
         _tools = GetComponentsInChildren<Tool>(true);
         _inventory = GetComponent<PlayerInventory>();
+        _placement = GetComponent<PlacementSystem>();
 
         if (InputSystem.actions != null)
             _attackAction = InputSystem.actions.FindAction("Player/Attack", throwIfNotFound: false);
@@ -42,9 +44,13 @@ public class PlayerCombat : MonoBehaviour
 
     void Update()
     {
-        if (_inventory != null && _inventory.IsOpen)
+        if (GameplayGate.MenuOpen || (_inventory != null && _inventory.IsOpen))
             return;
-        if (SlimeSpawnButton.PointerIsOver() || WorldMenu.PointerIsOver())
+        if (GameplayPointer.IsOverUi())
+            return;
+        if (_placement == null)
+            _placement = GetComponent<PlacementSystem>();
+        if ((_placement != null && _placement.HoldsPlaceable) || GameplayGate.UseClaimed)
             return;
         if (!AttackHeld())
             return;

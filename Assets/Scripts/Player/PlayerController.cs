@@ -159,6 +159,8 @@ public class PlayerController : MonoBehaviour
         Vector2 world = IsometricCoordinates.IsometricToWorld(_isometricPosition);
         if (playArea != null)
             world = playArea.Clamp(world, GetBodyInset());
+        if (PlaceableObject.BlocksFeet(world))
+            world = transform.position;
 
         _isometricPosition = IsometricCoordinates.WorldToIsometric(world);
         transform.position = new Vector3(world.x, world.y, transform.position.z);
@@ -175,6 +177,9 @@ public class PlayerController : MonoBehaviour
 
     Vector2 ReadScreenInput()
     {
+        if (GameplayGate.MenuOpen)
+            return Vector2.zero;
+
         if (_moveAction != null)
             return _moveAction.ReadValue<Vector2>();
 

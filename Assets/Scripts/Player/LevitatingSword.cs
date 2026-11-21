@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -74,6 +75,7 @@ public class LevitatingSword : Weapon
     bool _hasSpin;
     bool _held = true;
     float _strikeDamage;
+    readonly List<IImpactReceiver> _swingHits = new List<IImpactReceiver>();
 
     public bool IsSwinging => _swinging;
 
@@ -86,6 +88,8 @@ public class LevitatingSword : Weapon
     /// </summary>
     public bool StrikeReaches(Vector2 worldPoint, float targetRadius)
     {
+        if (GameplayGate.MenuOpen)
+            return false;
         if (!_held || !_swinging || _swingTime < WindupPortion || _swingTime > StrikeEnd)
             return false;
         if (_renderer == null || _renderer.sprite == null)
@@ -182,8 +186,8 @@ public class LevitatingSword : Weapon
             _player = parent.GetComponent<PlayerController>();
         }
 
-        if (_player == null)
-            _player = FindAnyObjectByType<PlayerController>();
+        if (_player == null && GameRoot.Active != null)
+            _player = GameRoot.Active.Player;
         if (_playerRenderer == null && _player != null)
             _playerRenderer = _player.GetComponent<SpriteRenderer>();
     }
@@ -201,6 +205,13 @@ public class LevitatingSword : Weapon
         {
             HideVisual();
             return;
+        }
+
+        if (GameplayGate.MenuOpen)
+        {
+            _holdAttack = false;
+            _swinging = false;
+            _swingTime = 0f;
         }
 
         if (_player == null)
@@ -242,6 +253,7 @@ public class LevitatingSword : Weapon
         transform.rotation = Quaternion.Euler(0f, 0f, BladeAngle(facing));
         ApplySorting(offset.y > _bodyHeight * 0.7f);
         UpdateWind(world, travel, windAlong);
+        DeliverSwing();
         _holdAttack = false;
     }
 
@@ -252,12 +264,38 @@ public class LevitatingSword : Weapon
 
         _strikeDamage = RollDamage();
         SwingSerial++;
+        _swingHits.Clear();
         Vector3 feet = _player != null ? _player.transform.position : transform.position;
         _swingAim = CursorAngle(feet);
         _restAngle = _swingAim;
         _swingSide = _side;
         _swingTime = 0f;
         _swinging = true;
+    }
+
+    void DeliverSwing()
+    {
+        if (!_swinging || _swingTime < WindupPortion || _swingTime > StrikeEnd)
+            return;
+
+        ImpactLibrary.Ensure();
+        Vector2 feet = _player != null ? (Vector2)_player.transform.position : (Vector2)transform.position;
+        var hits = new List<IImpactReceiver>();
+        ReceiverRegistry.CollectNear(feet, Mathf.Max(Stats.Range, 3f), hits);
+        var impact = new Impact(ImpactLibrary.Slash, _strikeDamage, transform.position, Vector2.right, this);
+        for (int i = 0; i < hits.Count; i++)
+        {
+            IImpactReceiver target = hits[i];
+            if (target == null || _swingHits.Contains(target))
+                continue;
+
+            Vector2 center = target.Origin + Vector2.up * (target.Height * 0.5f);
+            if (!StrikeReaches(center, target.Slop))
+                continue;
+
+            _swingHits.Add(target);
+            target.Receive(impact);
+        }
     }
 
     void AdvanceSwing()

@@ -78,6 +78,10 @@ public class LevelWorld : MonoBehaviour
     public static LevelWorld Instance { get; private set; }
 
     public Room Current { get; private set; }
+    public bool Suspended => _suspended;
+    public Vector2 SuspendedFeet => _suspendedFeet;
+    public Transform HomeAnchor => _homeCenter != null && _homeCenter.Root != null ? _homeCenter.Root.transform : transform;
+
     public WorldPlace Place => _place;
     public string PlaceName => _place == WorldPlace.Home ? "Дом" : "Уровень 1";
     public string PlaceNameEnglish => _place == WorldPlace.Home ? "Home" : "Level 1";
@@ -105,6 +109,8 @@ public class LevelWorld : MonoBehaviour
     Camera _camera;
     Color _homeBackground;
     bool _backgroundStored;
+    bool _suspended;
+    Vector2 _suspendedFeet;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Ensure()
@@ -139,7 +145,7 @@ public class LevelWorld : MonoBehaviour
 
     void Update()
     {
-        if (Current == null)
+        if (_suspended || Current == null)
             return;
 
         float wave = 0.72f + 0.28f * Mathf.Sin(Time.time * 2.8f);
@@ -151,7 +157,7 @@ public class LevelWorld : MonoBehaviour
 
     void LateUpdate()
     {
-        if (_player == null || Current == null)
+        if (_suspended || _player == null || Current == null)
             return;
 
         Vector2 feet = _player.transform.position;
@@ -211,7 +217,13 @@ public class LevelWorld : MonoBehaviour
 
     public void TravelHome()
     {
-        if (_place == WorldPlace.Home)
+        if (LocationFlow.IsInside)
+        {
+            LocationFlow.Exit();
+            return;
+        }
+
+        if (LocationFlow.IsBusy || _place == WorldPlace.Home)
             return;
 
         ClearDungeon();
@@ -221,8 +233,42 @@ public class LevelWorld : MonoBehaviour
         LayoutChanged?.Invoke();
     }
 
+    public void SuspendForInterior(Vector2 outdoorFeet)
+    {
+        _suspended = true;
+        _suspendedFeet = outdoorFeet;
+        SetShown(_home, false, null);
+        SetShown(_dungeon, false, null);
+    }
+
+    public void ResumeFromInterior(Vector2 point)
+    {
+        _suspended = false;
+        if (_homeCenter == null || _player == null)
+            return;
+
+        if (_place != WorldPlace.Home)
+        {
+            ClearDungeon();
+            _place = WorldPlace.Home;
+            Measure(_home);
+        }
+
+        Present(_homeCenter, point, true);
+        LayoutChanged?.Invoke();
+    }
+
     public void TravelLevelOne()
     {
+        if (LocationFlow.IsBusy)
+            return;
+
+        if (LocationFlow.IsInside)
+        {
+            LocationFlow.Exit(TravelLevelOne);
+            return;
+        }
+
         ClearDungeon();
         _place = WorldPlace.LevelOne;
         BuildDungeon();
@@ -263,6 +309,7 @@ public class LevelWorld : MonoBehaviour
         Link(_homeCenter, south, GateColor, GateBorder);
         Link(_homeCenter, east, GateColor, GateBorder);
         Link(_homeCenter, west, GateColor, GateBorder);
+        HomeHouse.Place(_homeCenter);
 
         _place = WorldPlace.Home;
         Measure(_home);
@@ -452,6 +499,11 @@ public class LevelWorld : MonoBehaviour
         };
 
         list.Add(room);
+        LocationContext context = root.GetComponent<LocationContext>();
+        if (context == null)
+            context = root.AddComponent<LocationContext>();
+        RegionKind region = list == _home ? RegionKind.Home : RegionKind.Wilderness;
+        context.Configure(region, LocationKind.Outdoor, area);
         return room;
     }
 
@@ -511,6 +563,8 @@ public class LevelWorld : MonoBehaviour
     {
         room.Visited = true;
         Show(room);
+        LocationContext context = room.Root != null ? room.Root.GetComponent<LocationContext>() : null;
+        LocationContext.Use(context);
         _player.SetPlayArea(room.Area);
         if (movePlayer)
             _player.Place(point);

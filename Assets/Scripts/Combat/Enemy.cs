@@ -5,7 +5,7 @@ using UnityEngine;
 /// Shared enemy body: health, reach, and being hit by the player.
 /// A specific mob decides how it moves. Stats stay on <see cref="EnemyStats"/> so a new mob does not fork the numbers.
 /// </summary>
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour, IImpactReceiver
 {
     // Opaque ink of the player sheet. The pivot sits on the feet, so the body stands on the transform.
     const float PlayerWidthPixels = 63f;
@@ -25,9 +25,6 @@ public class Enemy : MonoBehaviour
     float _halfW = 0.4f;
     float _halfH = 0.3f;
     float _attackWait;
-    int _swordSwing;
-
-    LevitatingSword _sword;
     Transform _barRoot;
     Transform _barFill;
 
@@ -38,6 +35,11 @@ public class Enemy : MonoBehaviour
     public EnemyStats Stats => stats;
     public float Health { get; private set; }
     public bool Dead { get; private set; }
+
+    public bool CanReceive => !Dead && isActiveAndEnabled;
+    public Vector2 Origin => transform.position;
+    public float Height => _halfH * 2f;
+    public float Slop => Mathf.Max(_halfW, _halfH);
 
     protected Vector2 BodyCenter => (Vector2)transform.position + Vector2.up * _halfH;
 
@@ -55,23 +57,28 @@ public class Enemy : MonoBehaviour
     protected virtual void Awake()
     {
         Health = stats.MaxHealth;
-        Player = FindAnyObjectByType<PlayerController>();
+        MaterialLibrary.Ensure();
+        if (GameRoot.Active != null)
+            Player = GameRoot.Active.Player;
+        if (Player == null)
+            Player = FindAnyObjectByType<PlayerController>();
         if (Player == null)
             return;
 
         Vitals = Player.GetComponent<PlayerVitals>();
-        _sword = Player.GetComponentInChildren<LevitatingSword>(true);
     }
 
     protected virtual void OnEnable()
     {
         if (!Dead && !Alive.Contains(this))
             Alive.Add(this);
+        ReceiverRegistry.Register(this);
     }
 
     protected virtual void OnDisable()
     {
         Alive.Remove(this);
+        ReceiverRegistry.Unregister(this);
     }
 
     protected void BindArea(PlayArea area)
@@ -97,7 +104,6 @@ public class Enemy : MonoBehaviour
 
         TickMotion();
         TickAttack();
-        TickSword();
         if (Dead)
             HideHealthBar();
         else
@@ -120,6 +126,21 @@ public class Enemy : MonoBehaviour
     {
     }
 
+    public ImpactResult Receive(in Impact impact)
+    {
+        if (!CanReceive)
+            return ImpactResult.Ignore();
+
+        MaterialLibrary.Ensure();
+        if (impact.Type == null || MaterialLibrary.Creature == null
+            || !MaterialLibrary.Creature.TryMultiplier(impact.Type, out float multiplier)
+            || multiplier <= 0f)
+            return ImpactResult.Ignore();
+
+        TakeDamage(impact.Power * multiplier);
+        return Dead ? ImpactResult.Break(impact.Power * multiplier) : ImpactResult.Damage(impact.Power * multiplier);
+    }
+
     public void TakeDamage(float amount)
     {
         if (Dead || amount <= 0f)
@@ -130,25 +151,6 @@ public class Enemy : MonoBehaviour
             Die();
         else
             OnHurt();
-    }
-
-    public static bool TryDamageSegment(Vector2 from, Vector2 to, float damage)
-    {
-        const float arrowPadding = 8f;
-        for (int i = Alive.Count - 1; i >= 0; i--)
-        {
-            Enemy enemy = Alive[i];
-            if (enemy == null || enemy.Dead)
-                continue;
-
-            if (!SegmentHitsRect(from, to, enemy.ExpandedBody(arrowPadding)))
-                continue;
-
-            enemy.TakeDamage(damage);
-            return true;
-        }
-
-        return false;
     }
 
     protected float GapToPlayer()
@@ -187,18 +189,6 @@ public class Enemy : MonoBehaviour
 
         _attackWait = stats.AttackInterval;
         Vitals.TakeDamage(stats.Damage);
-    }
-
-    void TickSword()
-    {
-        if (_sword == null || _sword.SwingSerial == 0 || _sword.SwingSerial == _swordSwing)
-            return;
-
-        if (!_sword.StrikeReaches(BodyCenter, Mathf.Max(_halfW, _halfH)))
-            return;
-
-        _swordSwing = _sword.SwingSerial;
-        TakeDamage(_sword.StrikeDamage);
     }
 
     void Die()

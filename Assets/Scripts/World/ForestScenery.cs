@@ -25,6 +25,7 @@ public static class ForestScenery
         if (room == null || room.Root == null)
             return;
 
+        MaterialLibrary.Ensure();
         EnsureArt();
         var renderer = room.Root.GetComponent<SpriteRenderer>();
         var trees = new List<Vector2>(TreeMax);
@@ -99,6 +100,9 @@ public static class ForestScenery
 
         if (livingTree)
             go.AddComponent<Tree>();
+        else
+            Destructible.Create(go, MaterialLibrary.Stone, 4f, 0.7f, 0.85f);
+            go.AddComponent<VanishOnBreak>();
     }
 
     static int Depth(LevelWorld.Room room, float y)

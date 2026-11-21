@@ -94,8 +94,8 @@ public class HeldBow : Weapon
             _player = parent.GetComponent<PlayerController>();
         }
 
-        if (_player == null)
-            _player = FindAnyObjectByType<PlayerController>();
+        if (_player == null && GameRoot.Active != null)
+            _player = GameRoot.Active.Player;
         if (_playerRenderer == null && _player != null)
             _playerRenderer = _player.GetComponent<SpriteRenderer>();
 
