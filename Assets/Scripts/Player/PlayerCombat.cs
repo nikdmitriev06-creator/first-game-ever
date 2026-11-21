@@ -3,13 +3,14 @@ using UnityEngine.InputSystem;
 
 /// <summary>
 /// Shared attack input. Holding the left mouse button keeps calling Attack on the weapon in the hand.
-/// Each weapon decides what that attack does and when it can swing again.
+/// A tool in the hand is used the same way. Each one decides what that press does and when it can happen again.
 /// </summary>
 public class PlayerCombat : MonoBehaviour
 {
     [SerializeField] float attackSpeedMultiplier = 1f;
 
     IWeapon[] _weapons;
+    Tool[] _tools;
     PlayerInventory _inventory;
     InputAction _attackAction;
 
@@ -22,6 +23,7 @@ public class PlayerCombat : MonoBehaviour
     void Awake()
     {
         _weapons = GetComponentsInChildren<IWeapon>(true);
+        _tools = GetComponentsInChildren<Tool>(true);
         _inventory = GetComponent<PlayerInventory>();
 
         if (InputSystem.actions != null)
@@ -42,16 +44,21 @@ public class PlayerCombat : MonoBehaviour
     {
         if (_inventory != null && _inventory.IsOpen)
             return;
-        if (SlimeSpawnButton.PointerIsOver())
+        if (SlimeSpawnButton.PointerIsOver() || WorldMenu.PointerIsOver())
             return;
         if (!AttackHeld())
             return;
 
         IWeapon weapon = HeldWeapon();
-        if (weapon == null)
+        if (weapon != null)
+        {
+            weapon.Attack();
             return;
+        }
 
-        weapon.Attack();
+        Tool tool = HeldTool();
+        if (tool != null)
+            tool.Use();
     }
 
     IWeapon HeldWeapon()
@@ -64,6 +71,23 @@ public class PlayerCombat : MonoBehaviour
             IWeapon weapon = _weapons[i];
             if (weapon != null && weapon.IsHeld)
                 return weapon;
+        }
+
+        return null;
+    }
+
+    Tool HeldTool()
+    {
+        if (_tools == null || _tools.Length == 0)
+            _tools = GetComponentsInChildren<Tool>(true);
+        if (_tools == null)
+            return null;
+
+        for (int i = 0; i < _tools.Length; i++)
+        {
+            Tool tool = _tools[i];
+            if (tool != null && tool.IsHeld)
+                return tool;
         }
 
         return null;

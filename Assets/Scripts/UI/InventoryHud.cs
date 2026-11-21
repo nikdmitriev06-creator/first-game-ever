@@ -37,6 +37,7 @@ public class InventoryHud : MonoBehaviour
     Image _outer;
     Image _cursorImage;
     RectTransform _cursorRect;
+    Text _cursorCount;
     SlotView[] _slots;
 
     sealed class SlotView
@@ -45,6 +46,7 @@ public class InventoryHud : MonoBehaviour
         public Image Rim;
         public RectTransform Plate;
         public Image Icon;
+        public Text Count;
     }
 
     void Awake()
@@ -141,6 +143,14 @@ public class InventoryHud : MonoBehaviour
             Sprite icon = IconFor(_inventory.SlotAt(i));
             view.Icon.sprite = icon;
             view.Icon.enabled = icon != null;
+
+            int amount = _inventory.CountAt(i);
+            if (view.Count != null)
+            {
+                view.Count.enabled = amount > 1;
+                if (amount > 1)
+                    view.Count.text = amount.ToString();
+            }
         }
 
         if (_outer != null)
@@ -153,21 +163,35 @@ public class InventoryHud : MonoBehaviour
             _cursorImage.sprite = carried;
             _cursorImage.enabled = showCursor;
         }
+
+        if (_cursorCount != null)
+        {
+            int carriedCount = _inventory.CursorCount;
+            _cursorCount.enabled = showCursor && carriedCount > 1;
+            if (carriedCount > 1)
+                _cursorCount.text = carriedCount.ToString();
+        }
     }
 
     Sprite IconFor(string id)
     {
-        if (string.IsNullOrEmpty(id) || _weapons == null)
+        if (string.IsNullOrEmpty(id))
             return null;
 
-        for (int i = 0; i < _weapons.Length; i++)
+        if (id == ItemIds.Axe || id == ItemIds.Wood)
+            return ItemArt.Icon(id);
+
+        if (_weapons != null)
         {
-            IWeapon weapon = _weapons[i];
-            if (weapon != null && weapon.ItemId == id)
-                return weapon.IconSprite;
+            for (int i = 0; i < _weapons.Length; i++)
+            {
+                IWeapon weapon = _weapons[i];
+                if (weapon != null && weapon.ItemId == id)
+                    return weapon.IconSprite;
+            }
         }
 
-        return null;
+        return ItemArt.Icon(id);
     }
 
     void Build()
@@ -230,6 +254,8 @@ public class InventoryHud : MonoBehaviour
         _cursorImage.raycastTarget = false;
         _cursorImage.enabled = false;
 
+        _cursorCount = CreateStackCount(_cursorRect);
+
         Canvas.ForceUpdateCanvases();
     }
 
@@ -284,7 +310,8 @@ public class InventoryHud : MonoBehaviour
             Root = root,
             Rim = rim,
             Plate = plate,
-            Icon = icon
+            Icon = icon,
+            Count = CreateStackCount(root)
         };
     }
 
@@ -318,6 +345,40 @@ public class InventoryHud : MonoBehaviour
         outline.effectColor = NumberRim;
         outline.effectDistance = new Vector2(detail, -detail);
         outline.useGraphicAlpha = true;
+    }
+
+    static Text CreateStackCount(RectTransform parent)
+    {
+        float detail = TextDetail;
+        var rect = CreateRect("Count", parent);
+        rect.anchorMin = new Vector2(1f, 0f);
+        rect.anchorMax = new Vector2(1f, 0f);
+        rect.pivot = new Vector2(1f, 0f);
+        rect.anchoredPosition = new Vector2(-2f, 1f);
+        rect.sizeDelta = new Vector2(36f * detail, 16f * detail);
+        rect.localScale = new Vector3(1f / detail, 1f / detail, 1f);
+
+        var text = rect.gameObject.AddComponent<Text>();
+        text.font = BuiltinFont();
+        text.fontSize = Mathf.Max(1, Mathf.RoundToInt(14f * detail));
+        text.alignment = TextAnchor.LowerRight;
+        text.alignByGeometry = true;
+        text.color = new Color(0.99f, 0.96f, 0.88f, 1f);
+        text.text = "";
+        text.horizontalOverflow = HorizontalWrapMode.Overflow;
+        text.verticalOverflow = VerticalWrapMode.Overflow;
+        text.raycastTarget = false;
+        text.supportRichText = false;
+        text.enabled = false;
+
+        if (text.font != null)
+            text.font.RequestCharactersInTexture("0123456789", text.fontSize, FontStyle.Normal);
+
+        var outline = rect.gameObject.AddComponent<Outline>();
+        outline.effectColor = new Color(0.16f, 0.08f, 0.04f, 0.95f);
+        outline.effectDistance = new Vector2(detail, -detail);
+        outline.useGraphicAlpha = true;
+        return text;
     }
 
     static string KeyLabel(int index)

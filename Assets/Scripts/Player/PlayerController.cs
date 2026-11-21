@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
@@ -37,6 +37,24 @@ public class PlayerController : MonoBehaviour
     bool _sprintBlocked;
 
     public Vector2 IsometricPosition => _isometricPosition;
+
+    public Vector2 FacingDirection
+    {
+        get
+        {
+            switch (_facing)
+            {
+                case Facing.Up:
+                    return Vector2.up;
+                case Facing.Left:
+                    return Vector2.left;
+                case Facing.Right:
+                    return Vector2.right;
+                default:
+                    return Vector2.down;
+            }
+        }
+    }
 
     public float SprintSpeedBonus
     {
