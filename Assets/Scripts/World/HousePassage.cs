@@ -116,11 +116,10 @@ public class HouseDoor : MonoBehaviour
 
     string Caption()
     {
-        Font font = BuiltinFont();
         if (_exit)
-            return Supports(font, "Выйти") ? "E — Выйти" : "E - Exit";
+            return UiGlyphs.Supports("Выйти") ? "E — Выйти" : "E - Exit";
 
-        return Supports(font, "Войти") ? "E — Войти" : "E - Enter";
+        return UiGlyphs.Supports("Войти") ? "E — Войти" : "E - Enter";
     }
 
     void BuildPrompt()
@@ -154,14 +153,13 @@ public class HouseDoor : MonoBehaviour
         var textRect = textObject.AddComponent<RectTransform>();
         Stretch(textRect);
         _label = textObject.AddComponent<Text>();
-        _label.font = BuiltinFont();
+        _label.font = UiGlyphs.Font;
         _label.fontSize = 22;
         _label.alignment = TextAnchor.MiddleCenter;
         _label.color = new Color(0.96f, 0.93f, 0.84f, 1f);
         _label.raycastTarget = false;
         _label.text = Caption();
-        if (_label.font != null)
-            _label.font.RequestCharactersInTexture(_label.text, _label.fontSize, FontStyle.Normal);
+        UiGlyphs.Prepare(_label, _label.text);
 
         Show(false);
     }
@@ -194,26 +192,4 @@ public class HouseDoor : MonoBehaviour
         rect.offsetMax = Vector2.zero;
     }
 
-    static bool Supports(Font font, string sample)
-    {
-        if (font == null || string.IsNullOrEmpty(sample))
-            return false;
-
-        font.RequestCharactersInTexture(sample, 64, FontStyle.Normal);
-        for (int i = 0; i < sample.Length; i++)
-        {
-            if (!font.HasCharacter(sample[i]))
-                return false;
-        }
-
-        return true;
-    }
-
-    static Font BuiltinFont()
-    {
-        Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        if (font == null)
-            font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-        return font;
-    }
 }

@@ -10,7 +10,7 @@ using UnityEngine.InputSystem;
 /// The slots themselves live in ItemContainer. This component owns input and the hand.
 /// </summary>
 [DefaultExecutionOrder(-20)]
-public class PlayerInventory : MonoBehaviour
+public class PlayerInventory : MonoBehaviour, IItemStorage
 {
     public const int SlotCount = 10;
 
@@ -49,18 +49,26 @@ public class PlayerInventory : MonoBehaviour
     Tool[] _tools;
     int _selected;
     bool _open;
-    string _cursor;
-    int _cursorCount;
+    ItemInstance _cursorStack;
 
     public ItemContainer Container => _bag;
+
+    public ItemContainer Contents => _bag;
 
     public int Selected => _selected;
 
     public bool IsOpen => _open;
 
-    public string CursorItem => _cursorCount > 0 ? _cursor : null;
+    public string CursorItem => _cursorStack != null && _cursorStack.Quantity > 0 ? _cursorStack.DefinitionId : null;
 
-    public int CursorCount => _cursorCount > 0 ? _cursorCount : 0;
+    public int CursorCount => _cursorStack != null && _cursorStack.Quantity > 0 ? _cursorStack.Quantity : 0;
+
+    public ItemInstance SelectedInstance => _bag.InstanceAt(_selected);
+
+    public ItemInstance InstanceAt(int index)
+    {
+        return _bag.InstanceAt(index);
+    }
 
     public string SlotAt(int index)
     {
@@ -88,9 +96,22 @@ public class PlayerInventory : MonoBehaviour
         return accepted;
     }
 
+    public int TryAccept(ItemInstance stack)
+    {
+        if (stack == null || stack.Quantity <= 0)
+            return 0;
+
+        int before = stack.Quantity;
+        int left = _bag.Add(stack);
+        if (left < before)
+            Notify();
+
+        return left;
+    }
+
     public int CountOf(string id)
     {
-        return _bag.CountOf(id, _cursor, _cursorCount);
+        return _bag.CountOf(id, CursorItem, CursorCount);
     }
 
     public bool TryConsume(string id, int count)
@@ -98,7 +119,7 @@ public class PlayerInventory : MonoBehaviour
         if (count <= 0)
             return true;
 
-        if (!_bag.Remove(id, count, ref _cursor, ref _cursorCount))
+        if (!_bag.Remove(id, count, ref _cursorStack))
             return false;
 
         Notify();
@@ -107,16 +128,25 @@ public class PlayerInventory : MonoBehaviour
 
     public bool CanFitAfterSpend(string resultId, int resultCount, Ingredient[] spend)
     {
-        return _bag.CanFitAfterSpend(resultId, resultCount, spend, _cursor, _cursorCount);
+        return _bag.CanFitAfterSpend(resultId, resultCount, spend, CursorItem, CursorCount);
     }
 
     void Awake()
     {
+        _weapons = GetComponentsInChildren<IWeapon>(true);
+        _tools = GetComponentsInChildren<Tool>(true);
+        GiveStartingItems();
+    }
+
+    /// <summary>
+    /// The new-game hotbar. Calling it again replaces those slots.
+    /// </summary>
+    public void GiveStartingItems()
+    {
         _bag.Set(0, ItemIds.Sword, 1);
         _bag.Set(1, ItemIds.Bow, 1);
         _bag.Set(2, ItemIds.Axe, 1);
-        _weapons = GetComponentsInChildren<IWeapon>(true);
-        _tools = GetComponentsInChildren<Tool>(true);
+        _bag.Set(3, ItemIds.Pickaxe, 1);
         Notify();
     }
 
@@ -156,47 +186,43 @@ public class PlayerInventory : MonoBehaviour
         if (!_open || (uint)index >= SlotCount)
             return;
 
-        string sitting = SlotAt(index);
-        int sittingCount = CountAt(index);
-        bool cursor = _cursorCount > 0 && !string.IsNullOrEmpty(_cursor);
+        ItemInstance sitting = _bag.InstanceAt(index);
+        bool cursor = _cursorStack != null && _cursorStack.Quantity > 0;
 
         if (!cursor)
         {
-            if (sittingCount <= 0)
+            if (sitting == null || sitting.Quantity <= 0)
                 return;
 
-            _cursor = sitting;
-            _cursorCount = sittingCount;
-            _bag.Clear(index);
+            _cursorStack = _bag.Take(index);
         }
-        else if (sittingCount <= 0)
+        else if (sitting == null || sitting.Quantity <= 0)
         {
-            _bag.Set(index, _cursor, _cursorCount);
+            _bag.SetInstance(index, _cursorStack);
             ClearCursor();
         }
-        else if (sitting == _cursor && ItemIds.Stacks(sitting))
+        else if (ItemInstance.CanMerge(sitting, _cursorStack))
         {
-            int room = ItemIds.MaxCount(sitting) - sittingCount;
+            int room = ItemIds.MaxCount(sitting.DefinitionId) - sitting.Quantity;
             if (room <= 0)
             {
-                _bag.Set(index, _cursor, _cursorCount);
-                _cursor = sitting;
-                _cursorCount = sittingCount;
+                _bag.SetInstance(index, _cursorStack);
+                _cursorStack = sitting;
             }
             else
             {
-                int move = Mathf.Min(room, _cursorCount);
-                _bag.Set(index, sitting, sittingCount + move);
-                _cursorCount -= move;
-                if (_cursorCount <= 0)
+                int move = Mathf.Min(room, _cursorStack.Quantity);
+                sitting.SetQuantity(sitting.Quantity + move);
+                _bag.SetInstance(index, sitting);
+                _cursorStack.SetQuantity(_cursorStack.Quantity - move);
+                if (_cursorStack.Quantity <= 0)
                     ClearCursor();
             }
         }
         else
         {
-            _bag.Set(index, _cursor, _cursorCount);
-            _cursor = sitting;
-            _cursorCount = sittingCount;
+            _bag.SetInstance(index, _cursorStack);
+            _cursorStack = sitting;
         }
 
         Notify();
@@ -204,7 +230,7 @@ public class PlayerInventory : MonoBehaviour
 
     public void ClickOutside()
     {
-        if (!_open || _cursorCount <= 0)
+        if (!_open || CursorCount <= 0)
             return;
 
         if (!PlaceCursorInFirstEmpty())
@@ -241,36 +267,41 @@ public class PlayerInventory : MonoBehaviour
 
     void ThrowHeld()
     {
-        bool fromCursor = _open && _cursorCount > 0 && !string.IsNullOrEmpty(_cursor);
-        string id;
-        int have;
-        if (fromCursor)
-        {
-            id = _cursor;
-            have = _cursorCount;
-        }
-        else
-        {
-            id = SlotAt(_selected);
-            have = CountAt(_selected);
-        }
-
-        if (have <= 0 || string.IsNullOrEmpty(id))
+        bool fromCursor = _open && _cursorStack != null && _cursorStack.Quantity > 0;
+        ItemInstance stack = fromCursor ? _cursorStack : _bag.InstanceAt(_selected);
+        if (stack == null || stack.Quantity <= 0 || string.IsNullOrEmpty(stack.DefinitionId))
             return;
 
-        int drop = ItemIds.Stacks(id) ? 1 : have;
-        if (fromCursor)
+        bool plainStack = ItemIds.Stacks(stack.DefinitionId) && !stack.TracksDurability && !stack.HasModifiers;
+        if (plainStack)
         {
-            _cursorCount -= drop;
-            if (_cursorCount <= 0)
-                ClearCursor();
+            string id = stack.DefinitionId;
+            stack.SetQuantity(stack.Quantity - 1);
+            if (stack.Quantity <= 0)
+            {
+                if (fromCursor)
+                    ClearCursor();
+                else
+                    _bag.Clear(_selected);
+            }
+            else if (!fromCursor)
+            {
+                _bag.SetInstance(_selected, stack);
+            }
+
+            SpawnDrop(id, 1);
+        }
+        else if (fromCursor)
+        {
+            _cursorStack = null;
+            SpawnInstance(stack);
         }
         else
         {
-            _bag.Set(_selected, id, have - drop);
+            _bag.Take(_selected);
+            SpawnInstance(stack);
         }
 
-        SpawnDrop(id, drop);
         Notify();
     }
 
@@ -281,6 +312,20 @@ public class PlayerInventory : MonoBehaviour
         Vector2 side = new Vector2(-direction.y, direction.x);
         Vector2 land = origin + direction * 2.05f + side * UnityEngine.Random.Range(-0.35f, 0.35f);
         WorldDropper.Spawn(id, count, origin + Vector2.up * 0.55f, land, 0.45f);
+    }
+
+    void SpawnInstance(ItemInstance stack)
+    {
+        if (stack == null || stack.Quantity <= 0)
+            return;
+
+        Vector2 origin = transform.position;
+        Vector2 direction = ThrowDirection(origin);
+        Vector2 side = new Vector2(-direction.y, direction.x);
+        Vector2 land = origin + direction * 2.05f + side * UnityEngine.Random.Range(-0.35f, 0.35f);
+        WorldItem drop = WorldDropper.Spawn(stack.DefinitionId, stack.Quantity, origin + Vector2.up * 0.55f, land, 0.45f);
+        if (drop != null)
+            drop.Attach(stack);
     }
 
     Vector2 ThrowDirection(Vector2 origin)
@@ -319,13 +364,16 @@ public class PlayerInventory : MonoBehaviour
 
     bool PlaceCursorInFirstEmpty()
     {
-        if (_cursorCount <= 0 || string.IsNullOrEmpty(_cursor))
+        if (_cursorStack == null || _cursorStack.Quantity <= 0)
             return true;
 
-        if (_bag.SpaceFor(_cursor) < _cursorCount)
+        if (_bag.SpaceFor(_cursorStack.DefinitionId) < _cursorStack.Quantity)
             return false;
 
-        _bag.Add(_cursor, _cursorCount);
+        int left = _bag.Add(_cursorStack);
+        if (left > 0)
+            return false;
+
         ClearCursor();
         return true;
     }
@@ -378,8 +426,7 @@ public class PlayerInventory : MonoBehaviour
 
     void ClearCursor()
     {
-        _cursor = null;
-        _cursorCount = 0;
+        _cursorStack = null;
     }
 
     static bool Pressed(Keyboard keyboard, Key key)

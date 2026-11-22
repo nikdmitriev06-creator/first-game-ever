@@ -23,12 +23,49 @@ public class PlacementSystem : MonoBehaviour
     {
         get
         {
-            if (GameplayGate.MenuOpen || _inventory == null)
+            PlayerInventory bag = Bag();
+            if (GameplayGate.MenuOpen || bag == null)
                 return false;
 
-            ItemDefinition item = ItemCatalog.Find(_inventory.SlotAt(_inventory.Selected));
-            return item != null && item.IsPlaceable && _inventory.CountAt(_inventory.Selected) > 0;
+            ItemDefinition item = ItemCatalog.Find(bag.SlotAt(bag.Selected));
+            return item != null && item.IsPlaceable && bag.CountAt(bag.Selected) > 0;
         }
+    }
+
+    PlayerInventory Bag()
+    {
+        if (_inventory == null)
+            _inventory = GetComponent<PlayerInventory>();
+        return _inventory;
+    }
+
+    /// <summary>
+    /// Places the selected item when the rules allow it. A refusal spends nothing.
+    /// </summary>
+    public bool TryPlaceAt(Vector2 point)
+    {
+        PlayerInventory bag = Bag();
+        if (bag == null)
+            return false;
+
+        ItemDefinition item = ItemCatalog.Find(bag.SlotAt(bag.Selected));
+        if (item == null || !item.IsPlaceable || bag.CountAt(bag.Selected) <= 0)
+            return false;
+
+        if (PlacementRules.Evaluate(item, point, transform.position, Clearance) != PlaceReject.None)
+            return false;
+
+        if (!bag.TryConsume(item.Id, 1))
+            return false;
+
+        Transform parent = LocationContext.Active != null ? LocationContext.Active.transform : null;
+        bool indoor = LocationContext.Active != null && LocationContext.Active.Kind == LocationKind.Indoor;
+        PlaceableObject created = PlaceableObject.Create(item, point, parent, indoor, null, 0);
+        if (created != null)
+            return true;
+
+        bag.TryAdd(item.Id, 1);
+        return false;
     }
 
     void Awake()
@@ -64,7 +101,8 @@ public class PlacementSystem : MonoBehaviour
             return;
         }
 
-        ItemDefinition item = ItemCatalog.Find(_inventory.SlotAt(_inventory.Selected));
+        PlayerInventory bag = Bag();
+        ItemDefinition item = ItemCatalog.Find(bag.SlotAt(bag.Selected));
         Vector2 feet = transform.position;
         Vector2 point = PlacementRules.Snap(CursorWorld(feet));
         PlaceReject reject = PlacementRules.Evaluate(item, point, feet, Clearance);
@@ -82,14 +120,7 @@ public class PlacementSystem : MonoBehaviour
         if (reject != PlaceReject.None)
             return;
 
-        if (!_inventory.TryConsume(item.Id, 1))
-            return;
-
-        Transform parent = LocationContext.Active != null ? LocationContext.Active.transform : null;
-        bool indoor = LocationContext.Active != null && LocationContext.Active.Kind == LocationKind.Indoor;
-        PlaceableObject created = PlaceableObject.Create(item, point, parent, indoor, null, 0);
-        if (created == null)
-            _inventory.TryAdd(item.Id, 1);
+        TryPlaceAt(point);
     }
 
     void Hide()
@@ -236,6 +267,7 @@ public class PlacementSystem : MonoBehaviour
         _hint.raycastTarget = false;
         _hint.horizontalOverflow = HorizontalWrapMode.Overflow;
         _hint.verticalOverflow = VerticalWrapMode.Overflow;
+        UiGlyphs.Prepare(_hint, _hint.text);
         _hintRoot.SetActive(false);
     }
 }

@@ -73,11 +73,28 @@ public class HeldBow : Weapon
 
         _aim = CursorAngle();
         _hasAim = true;
-        if (arrowSprite == null || Stats.ProjectileSpeed <= 0f)
+        WeaponProfile weapon = BoundWeapon();
+        float speed = Stats.ProjectileSpeed;
+        if (weapon != null && weapon.ProjectileSpeed > 0f)
+            speed = weapon.ProjectileSpeed;
+        if (arrowSprite == null || speed <= 0f)
             return;
         if (!TrySpendStamina())
             return;
-        if (!Shoot())
+
+        float range = Stats.Range;
+        float damage = RollDamage();
+        int shots = 1;
+        if (weapon != null)
+        {
+            AttackPlan plan = AttackResolver.Resolve(ItemCatalog.Find(ItemId), HeldStack(), null);
+            damage = plan.RollDamage(Random.value);
+            if (plan.Range > 0f)
+                range = plan.Range;
+            shots = Mathf.Max(1, plan.ProjectileCount);
+        }
+
+        if (!Shoot(speed, range, damage, shots))
             return;
 
         _nextShot = Time.time + AttackInterval();
@@ -144,7 +161,7 @@ public class HeldBow : Weapon
         ApplySorting(offset.y > _bodyHeight * 0.72f);
     }
 
-    bool Shoot()
+    bool Shoot(float speed, float range, float damage, int shots)
     {
         if (arrowSprite == null)
             return false;
@@ -152,25 +169,33 @@ public class HeldBow : Weapon
         if (_bodyHeight < 0.01f)
             MeasureBody();
 
-        float rad = _aim * Mathf.Deg2Rad;
-        Vector2 direction = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
-        Vector3 origin = transform.position + (Vector3)(direction * (_bodyHeight * 0.42f));
-
-        var go = new GameObject("Arrow");
-        go.transform.position = origin;
-        go.transform.localScale = ArrowScale();
-
-        var renderer = go.AddComponent<SpriteRenderer>();
-        renderer.sprite = arrowSprite;
-        renderer.color = Color.white;
-        if (_playerRenderer != null)
+        int count = Mathf.Max(1, shots);
+        float spread = count <= 1 ? 0f : 8f;
+        float start = -spread * (count - 1) * 0.5f;
+        for (int i = 0; i < count; i++)
         {
-            renderer.sortingLayerID = _playerRenderer.sortingLayerID;
-            renderer.sortingOrder = _playerRenderer.sortingOrder + 2;
+            float angle = _aim + start + spread * i;
+            float rad = angle * Mathf.Deg2Rad;
+            Vector2 direction = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
+            Vector3 origin = transform.position + (Vector3)(direction * (_bodyHeight * 0.42f));
+
+            var go = new GameObject("Arrow");
+            go.transform.position = origin;
+            go.transform.localScale = ArrowScale();
+
+            var renderer = go.AddComponent<SpriteRenderer>();
+            renderer.sprite = arrowSprite;
+            renderer.color = Color.white;
+            if (_playerRenderer != null)
+            {
+                renderer.sortingLayerID = _playerRenderer.sortingLayerID;
+                renderer.sortingOrder = _playerRenderer.sortingOrder + 2;
+            }
+
+            var shot = go.AddComponent<ArrowShot>();
+            shot.Launch(direction, speed, range, damage);
         }
 
-        var shot = go.AddComponent<ArrowShot>();
-        shot.Launch(direction, Stats.ProjectileSpeed, Stats.Range, RollDamage());
         return true;
     }
 

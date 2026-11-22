@@ -31,7 +31,12 @@ public abstract class Weapon : MonoBehaviour, IWeapon
     // Seconds between attacks after the character's attack speed multiplier.
     protected float AttackInterval()
     {
-        float perSecond = stats.AttackSpeed * AttackScale();
+        float perSecond = stats.AttackSpeed;
+        ItemDefinition definition = ItemCatalog.Find(ItemId);
+        if (definition != null && definition.Weapon != null)
+            perSecond = definition.Weapon.AttackSpeed;
+
+        perSecond *= AttackScale();
         return 1f / Mathf.Max(0.05f, perSecond);
     }
 
@@ -46,10 +51,15 @@ public abstract class Weapon : MonoBehaviour, IWeapon
 
     protected bool TrySpendStamina()
     {
-        if (stats.StaminaCost <= 0f || _vitals == null)
+        float cost = stats.StaminaCost;
+        ItemDefinition definition = ItemCatalog.Find(ItemId);
+        if (definition != null && definition.Weapon != null)
+            cost = Mathf.Max(0f, definition.Weapon.Stamina);
+
+        if (cost <= 0f || _vitals == null)
             return true;
 
-        return _vitals.TrySpendStaminaAmount(stats.StaminaCost);
+        return _vitals.TrySpendStaminaAmount(cost);
     }
 
     float AttackScale()
@@ -58,5 +68,37 @@ public abstract class Weapon : MonoBehaviour, IWeapon
             return 1f;
 
         return Mathf.Max(0.05f, _combat.AttackSpeedMultiplier);
+    }
+
+    protected ItemInstance HeldStack()
+    {
+        Transform parent = transform.parent;
+        if (parent == null)
+            return null;
+
+        PlayerInventory bag = parent.GetComponent<PlayerInventory>();
+        if (bag == null)
+            return null;
+
+        return bag.SelectedInstance;
+    }
+
+    protected WeaponProfile BoundWeapon()
+    {
+        ItemDefinition definition = ItemCatalog.Find(ItemId);
+        return definition != null ? definition.Weapon : null;
+    }
+
+    protected bool TryResolveAttack(float roll01, out AttackPlan plan, out float damage)
+    {
+        plan = default;
+        damage = 0f;
+        ItemDefinition definition = ItemCatalog.Find(ItemId);
+        if (definition == null || definition.Weapon == null)
+            return false;
+
+        plan = AttackResolver.Resolve(definition, HeldStack(), null);
+        damage = plan.RollDamage(roll01);
+        return true;
     }
 }

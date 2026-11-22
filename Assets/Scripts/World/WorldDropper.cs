@@ -5,10 +5,10 @@ using UnityEngine;
 /// </summary>
 public static class WorldDropper
 {
-    public static void Spawn(string id, int count, Vector2 from, Vector2 land, float pickupDelay)
+    public static WorldItem Spawn(string id, int count, Vector2 from, Vector2 land, float pickupDelay)
     {
         if (string.IsNullOrEmpty(id) || count <= 0)
-            return;
+            return null;
 
         Transform parent = null;
         LocationContext place = LocationContext.Active;
@@ -19,6 +19,6 @@ public static class WorldDropper
                 land = place.Area.Clamp(land, 1.05f);
         }
 
-        WorldItem.Toss(id, count, from, land, parent, pickupDelay);
+        return WorldItem.Toss(id, count, from, land, parent, pickupDelay);
     }
 }

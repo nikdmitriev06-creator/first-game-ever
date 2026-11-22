@@ -60,6 +60,7 @@ public class Destructible : MonoBehaviour, IImpactReceiver
         _broken = false;
         _configured = material != null;
         EnsureId();
+        ReceiverRegistry.Register(this);
     }
 
     public void ApplySavedIntegrity(float current)

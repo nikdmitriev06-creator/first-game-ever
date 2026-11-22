@@ -177,43 +177,25 @@ public class SlimeSpawnButton : MonoBehaviour
 
     static void CreateLabel(RectTransform parent)
     {
-        const float detail = 3f;
-        Font font = BuiltinFont();
-        int size = Mathf.RoundToInt(22f * detail);
-        string caption = "Slime";
-        if (font != null)
-        {
-            font.RequestCharactersInTexture("Слизень", size, FontStyle.Normal);
-            if (font.HasCharacter('С'))
-                caption = "Слизень";
-        }
+        string caption = UiGlyphs.Pick("Слизень", "Slime");
 
         var rect = CreateRect("Label", parent);
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);
         rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.sizeDelta = new Vector2(Width * detail, Height * detail);
-        rect.localScale = new Vector3(1f / detail, 1f / detail, 1f);
+        rect.sizeDelta = new Vector2(Width, Height);
 
         var text = rect.gameObject.AddComponent<Text>();
-        text.font = font;
-        text.fontSize = size;
+        text.font = UiGlyphs.Font;
+        text.fontSize = 22;
         text.alignment = TextAnchor.MiddleCenter;
-        text.alignByGeometry = true;
         text.color = LabelColor;
         text.horizontalOverflow = HorizontalWrapMode.Overflow;
         text.verticalOverflow = VerticalWrapMode.Overflow;
         text.raycastTarget = false;
         text.supportRichText = false;
         text.text = caption;
-    }
-
-    static Font BuiltinFont()
-    {
-        Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        if (font == null)
-            font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-        return font;
+        UiGlyphs.Prepare(text, caption);
     }
 
     static void Stretch(RectTransform rect)

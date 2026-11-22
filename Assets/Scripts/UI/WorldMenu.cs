@@ -14,7 +14,6 @@ public class WorldMenu : MonoBehaviour
     const float EntryHeight = 50f;
     const float EntryGap = 8f;
     const float Pad = 12f;
-    const float TextDetail = 3f;
 
     static readonly Color FrameColor = new Color(0.10f, 0.09f, 0.08f, 1f);
     static readonly Color Gold = new Color(0.93f, 0.78f, 0.32f, 1f);
@@ -171,8 +170,8 @@ public class WorldMenu : MonoBehaviour
         scaler.referenceResolution = new Vector2(1920f, 1080f);
         scaler.matchWidthOrHeight = 0.5f;
 
-        Font font = BuiltinFont();
-        bool cyrillic = Supports(font, "ДомУровеньМиры");
+        Font font = UiGlyphs.Font;
+        bool cyrillic = UiGlyphs.Supports("ДомУровеньМиры");
 
         _button = CreateRect("Worlds", _canvasObject.transform);
         _button.anchorMin = new Vector2(0.5f, 1f);
@@ -232,51 +231,23 @@ public class WorldMenu : MonoBehaviour
 
     static void CreateLabel(RectTransform parent, string caption, Font font, float size)
     {
-        int pixels = Mathf.RoundToInt(size * TextDetail);
         var rect = CreateRect("Label", parent);
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);
         rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.sizeDelta = new Vector2(parent.sizeDelta.x * TextDetail, parent.sizeDelta.y * TextDetail);
-        rect.localScale = new Vector3(1f / TextDetail, 1f / TextDetail, 1f);
+        rect.sizeDelta = parent.sizeDelta;
 
         var text = rect.gameObject.AddComponent<Text>();
-        text.font = font;
-        text.fontSize = pixels;
+        text.font = font != null ? font : UiGlyphs.Font;
+        text.fontSize = Mathf.Max(1, Mathf.RoundToInt(size));
         text.alignment = TextAnchor.MiddleCenter;
-        text.alignByGeometry = true;
         text.color = LabelColor;
         text.horizontalOverflow = HorizontalWrapMode.Overflow;
         text.verticalOverflow = VerticalWrapMode.Overflow;
         text.raycastTarget = false;
         text.supportRichText = false;
         text.text = caption;
-    }
-
-    static bool Supports(Font font, string sample)
-    {
-        if (font == null || string.IsNullOrEmpty(sample))
-            return false;
-
-        font.RequestCharactersInTexture(sample, 64, FontStyle.Normal);
-        for (int i = 0; i < sample.Length; i++)
-        {
-            char c = sample[i];
-            if (c == ' ' || (c >= '0' && c <= '9'))
-                continue;
-            if (!font.HasCharacter(c))
-                return false;
-        }
-
-        return true;
-    }
-
-    static Font BuiltinFont()
-    {
-        Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        if (font == null)
-            font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-        return font;
+        UiGlyphs.Prepare(text, caption);
     }
 
     static bool Contains(RectTransform rect, Vector2 screen)

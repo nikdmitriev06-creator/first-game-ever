@@ -71,6 +71,11 @@ public class Axe : Tool
     public void Bind(ItemDefinition item)
     {
         _bound = item;
+        if (_renderer == null)
+            _renderer = GetComponent<SpriteRenderer>();
+        if (_renderer != null && item != null && item.IconSprite != null)
+            _renderer.sprite = item.IconSprite;
+
         SetHeld(item != null);
     }
 
@@ -282,6 +287,14 @@ public class Axe : Tool
         ToolProfile profile = Profile;
         Vector2 tip = ContactPoint();
         Vector2 dir = Direction(_lockedAim);
+        if (profile.Use == ToolUse.Action)
+        {
+            var action = new ToolAction(profile.ActionId, profile.Power, tip, dir, this);
+            ActionReceiverRegistry.Deliver(action, profile.Range);
+            _target = null;
+            return;
+        }
+
         var impact = new Impact(profile.Impact, profile.Power, tip, dir, this);
         if (profile.Shape == TargetShape.Radius)
         {

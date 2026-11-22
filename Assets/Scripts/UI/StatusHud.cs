@@ -13,9 +13,6 @@ public class StatusHud : MonoBehaviour
     const float Gap = 3f;
     const float Frame = 2f;
     const float NumberSize = 20f;
-    // Glyphs are drawn at this multiple of their on-screen size, then scaled back down.
-    // A 20px bitmap stretched by the canvas is what made the numbers look soft.
-    const float TextDetail = 3f;
 
     static readonly Color HealthColor = new Color(0.74f, 0.15f, 0.10f, 1f);
     static readonly Color HealthShine = new Color(0.90f, 0.34f, 0.16f, 1f);
@@ -30,7 +27,6 @@ public class StatusHud : MonoBehaviour
 
     PlayerVitals _vitals;
     GameObject _canvasObject;
-    float _canvasScale = 1f;
     BarView _health;
     BarView _mana;
     BarView _stamina;
@@ -104,7 +100,6 @@ public class StatusHud : MonoBehaviour
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1920f, 1080f);
         scaler.matchWidthOrHeight = 0.5f;
-        _canvasScale = canvas.scaleFactor > 0.01f ? canvas.scaleFactor : 1f;
 
         float y = MarginY;
         _health = BuildBar("Health", y, 312f, 32f, HealthColor, HealthShine, 2f);
@@ -151,7 +146,7 @@ public class StatusHud : MonoBehaviour
         shineRect.anchoredPosition = Vector2.zero;
         shineRect.sizeDelta = new Vector2(0f, shineHeight);
 
-        var label = CreateValue(root, width, height, _canvasScale);
+        var label = CreateValue(root, width, height);
 
         return new BarView
         {
@@ -161,42 +156,26 @@ public class StatusHud : MonoBehaviour
         };
     }
 
-    static Text CreateValue(RectTransform bar, float width, float height, float canvasScale)
+    static Text CreateValue(RectTransform bar, float width, float height)
     {
-        // Rasterize several times larger than the bar, then scale the element down
-        // so the number stays the same size with clean edges.
-        float detail = Mathf.Max(1f, canvasScale) * TextDetail;
-
         var rect = CreateRect("Value", bar);
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);
         rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.sizeDelta = new Vector2(width * detail, height * detail);
-        rect.localScale = new Vector3(1f / detail, 1f / detail, 1f);
+        rect.sizeDelta = new Vector2(width, height);
 
         var text = rect.gameObject.AddComponent<Text>();
-        text.font = BuiltinFont();
-        text.fontSize = Mathf.Max(1, Mathf.RoundToInt(NumberSize * detail));
+        text.font = UiGlyphs.Font;
+        text.fontSize = Mathf.RoundToInt(NumberSize);
         text.alignment = TextAnchor.MiddleCenter;
-        text.alignByGeometry = true;
         text.color = NumberColor;
         text.horizontalOverflow = HorizontalWrapMode.Overflow;
         text.verticalOverflow = VerticalWrapMode.Overflow;
         text.raycastTarget = false;
         text.supportRichText = false;
-
-        if (text.font != null)
-            text.font.RequestCharactersInTexture("0123456789", text.fontSize, FontStyle.Normal);
+        UiGlyphs.Prepare(text, "0123456789");
 
         return text;
-    }
-
-    static Font BuiltinFont()
-    {
-        var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        if (font == null)
-            font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-        return font;
     }
 
     static void AnchorTopLeft(RectTransform rect, float x, float yFromTop, float width, float height)

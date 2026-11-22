@@ -12,6 +12,7 @@ public class WorldItem : MonoBehaviour
 
     string _id;
     int _count;
+    ItemInstance _payload;
     float _born;
     float _ready;
     Vector2 _from;
@@ -32,10 +33,13 @@ public class WorldItem : MonoBehaviour
             _shadow.position = new Vector3(land.x, land.y, 0f);
     }
 
-    public static void Toss(string id, int count, Vector2 from, Vector2 land, Transform parent, float pickupDelay)
+    public string StackId => _id;
+    public int StackCount => _count;
+
+    public static WorldItem Toss(string id, int count, Vector2 from, Vector2 land, Transform parent, float pickupDelay)
     {
         if (string.IsNullOrEmpty(id) || count <= 0)
-            return;
+            return null;
 
         var go = new GameObject("Dropped " + id);
         if (parent != null)
@@ -44,6 +48,49 @@ public class WorldItem : MonoBehaviour
 
         var item = go.AddComponent<WorldItem>();
         item.Begin(id, count, from, land, parent, pickupDelay);
+        return item;
+    }
+
+    public void Attach(ItemInstance instance)
+    {
+        if (instance == null || instance.Quantity <= 0)
+            return;
+
+        _payload = instance;
+        _id = instance.DefinitionId;
+        _count = instance.Quantity;
+    }
+
+    /// <summary>
+    /// Moves as much of the stack as the bag can hold. A full bag leaves the rest on the ground.
+    /// </summary>
+    public void CollectFrom(PlayerInventory inventory)
+    {
+        if (inventory == null || _count <= 0 || string.IsNullOrEmpty(_id))
+            return;
+
+        if (_payload != null)
+        {
+            int left = inventory.TryAccept(_payload);
+            if (left <= 0)
+            {
+                _payload = null;
+                _count = 0;
+                Despawn();
+                return;
+            }
+
+            _count = _payload.Quantity;
+            return;
+        }
+
+        int took = inventory.TryAdd(_id, _count);
+        if (took <= 0)
+            return;
+
+        _count -= took;
+        if (_count <= 0)
+            Despawn();
     }
 
     void Begin(string id, int count, Vector2 from, Vector2 land, Transform parent, float pickupDelay)
@@ -55,7 +102,8 @@ public class WorldItem : MonoBehaviour
         _born = Time.time;
         _ready = Time.time + Mathf.Max(FallTime, pickupDelay);
 
-        Sprite sprite = ItemArt.Icon(id);
+        ItemDefinition defined = ItemCatalog.Find(id);
+        Sprite sprite = defined != null ? defined.IconSprite : ItemArt.Icon(id);
         _renderer = gameObject.AddComponent<SpriteRenderer>();
         _renderer.sprite = sprite;
         _renderer.sortingOrder = 9;
@@ -124,13 +172,15 @@ public class WorldItem : MonoBehaviour
         if ((feet - _land).sqrMagnitude > PickupRadius * PickupRadius)
             return;
 
-        int took = _inventory.TryAdd(_id, _count);
-        if (took <= 0)
-            return;
+        CollectFrom(_inventory);
+    }
 
-        _count -= took;
-        if (_count <= 0)
+    void Despawn()
+    {
+        if (Application.isPlaying)
             Destroy(gameObject);
+        else
+            DestroyImmediate(gameObject);
     }
 
     void Fit(Sprite sprite)

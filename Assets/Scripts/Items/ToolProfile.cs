@@ -13,6 +13,8 @@ public class ToolProfile
     public float Stamina = 6f;
     public TargetShape Shape = TargetShape.Single;
     public ToolGesture Gesture = ToolGesture.Swing;
+    public ToolUse Use = ToolUse.Impact;
+    public string ActionId;
 
     public static ToolProfile Swing(ImpactType type, float power, float range, float stamina)
     {
@@ -32,4 +34,10 @@ public enum ToolGesture
 {
     None,
     Swing
+}
+
+public enum ToolUse
+{
+    Impact,
+    Action
 }

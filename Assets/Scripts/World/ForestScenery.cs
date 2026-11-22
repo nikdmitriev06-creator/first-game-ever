@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// Trees and rocks for one forest room. Each tree is a Tree, so an axe can fell it.
-/// Trees prefer to arrive in pairs. Rocks stay scenery and keep their distance.
+/// Trees prefer to arrive in pairs. Rocks are harvest nodes and keep their distance.
 /// Counts stay in a band that reads on this large field: a few of each in view, not a thicket.
 /// </summary>
 public static class ForestScenery
@@ -16,6 +16,8 @@ public static class ForestScenery
     const int RockMin = 8;
     const int RockMax = 13;
     const float PixelsPerUnit = 32f;
+    const float RockHeight = 0.7f;
+    const float RockSlop = 0.85f;
 
     static Sprite[] _trees;
     static Sprite[] _rocks;
@@ -26,6 +28,7 @@ public static class ForestScenery
             return;
 
         MaterialLibrary.Ensure();
+        LootLibrary.Ensure();
         EnsureArt();
         var renderer = room.Root.GetComponent<SpriteRenderer>();
         var trees = new List<Vector2>(TreeMax);
@@ -101,8 +104,10 @@ public static class ForestScenery
         if (livingTree)
             go.AddComponent<Tree>();
         else
-            Destructible.Create(go, MaterialLibrary.Stone, 4f, 0.7f, 0.85f);
-            go.AddComponent<VanishOnBreak>();
+        {
+            HarvestNode node = go.AddComponent<HarvestNode>();
+            node.Configure(MaterialLibrary.Stone, HarvestNode.DefaultIntegrity, RockHeight, RockSlop, LootLibrary.Rock);
+        }
     }
 
     static int Depth(LevelWorld.Room room, float y)

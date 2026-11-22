@@ -16,6 +16,8 @@ public class ItemCatalog : ScriptableObject
 
     public static ItemCatalog Active { get; private set; }
 
+    static bool _pinned;
+
     public ItemDefinition[] Items => items;
     public RecipeDefinition[] Recipes => recipes;
 
@@ -31,6 +33,7 @@ public class ItemCatalog : ScriptableObject
     static void ResetStatics()
     {
         Active = null;
+        _pinned = false;
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -41,19 +44,41 @@ public class ItemCatalog : ScriptableObject
 
     public static void Reload()
     {
+        _pinned = false;
         Active = null;
         Ensure();
     }
 
+    /// <summary>
+    /// Points the game at a catalog. Pin stops <see cref="Ensure"/> from replacing an isolated catalog.
+    /// </summary>
+    public static void Use(ItemCatalog catalog, bool pin)
+    {
+        Active = catalog;
+        _pinned = pin && catalog != null;
+    }
+
+    public bool HasMiningContent()
+    {
+        return Get(ItemIds.Pickaxe) != null
+            && Get(ItemIds.Stone) != null
+            && Get(ItemIds.CopperOre) != null
+            && Get(ItemIds.Furnace) != null
+            && FindRecipe("recipe.furnace") != null;
+    }
+
     public static void Ensure()
     {
-        if (Active != null && Active.IsUsable)
+        if (_pinned && Active != null)
+            return;
+
+        if (Active != null && Active.IsUsable && Active.HasMiningContent())
             return;
 
         ItemCatalog loaded = Resources.Load<ItemCatalog>("GameContent/ItemCatalog");
         if (loaded != null && loaded.IsUsable)
         {
-            Active = loaded;
+            Active = DefaultContent.IncludeMissing(loaded);
             return;
         }
 

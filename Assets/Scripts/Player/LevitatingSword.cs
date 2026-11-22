@@ -75,6 +75,8 @@ public class LevitatingSword : Weapon
     bool _hasSpin;
     bool _held = true;
     float _strikeDamage;
+    float _strikeRange;
+    bool _plannedStrike;
     readonly List<IImpactReceiver> _swingHits = new List<IImpactReceiver>();
 
     public bool IsSwinging => _swinging;
@@ -262,7 +264,18 @@ public class LevitatingSword : Weapon
         if (!TrySpendStamina())
             return;
 
-        _strikeDamage = RollDamage();
+        if (TryResolveAttack(Random.value, out AttackPlan plan, out float planned))
+        {
+            _strikeDamage = planned;
+            _strikeRange = plan.Range;
+            _plannedStrike = true;
+        }
+        else
+        {
+            _strikeDamage = RollDamage();
+            _strikeRange = Stats.Range;
+            _plannedStrike = false;
+        }
         SwingSerial++;
         _swingHits.Clear();
         Vector3 feet = _player != null ? _player.transform.position : transform.position;
@@ -281,7 +294,8 @@ public class LevitatingSword : Weapon
         ImpactLibrary.Ensure();
         Vector2 feet = _player != null ? (Vector2)_player.transform.position : (Vector2)transform.position;
         var hits = new List<IImpactReceiver>();
-        ReceiverRegistry.CollectNear(feet, Mathf.Max(Stats.Range, 3f), hits);
+        float reach = _plannedStrike ? Mathf.Max(0.2f, _strikeRange) : Mathf.Max(Stats.Range, 3f);
+        ReceiverRegistry.CollectNear(feet, reach, hits);
         var impact = new Impact(ImpactLibrary.Slash, _strikeDamage, transform.position, Vector2.right, this);
         for (int i = 0; i < hits.Count; i++)
         {

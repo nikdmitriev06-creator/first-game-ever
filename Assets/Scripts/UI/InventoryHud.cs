@@ -17,7 +17,6 @@ public class InventoryHud : MonoBehaviour
     const float IdleRim = 3f;
     const float SelectedRim = 4f;
     const float NumberSize = 13f;
-    const float TextDetail = 3f;
     const float BagSlot = 68f;
     const float BagGap = 8f;
     const float BagPad = 16f;
@@ -465,7 +464,7 @@ public class InventoryHud : MonoBehaviour
             return null;
 
         ItemDefinition defined = ItemCatalog.Find(id);
-        if (defined != null && (defined.Category == ItemCategory.Placeable || defined.Category == ItemCategory.Resource || id == ItemIds.Axe))
+        if (defined != null && (defined.Category == ItemCategory.Placeable || defined.Category == ItemCategory.Resource || defined.Category == ItemCategory.Tool))
             return defined.IconSprite;
 
         if (id == ItemIds.Axe || id == ItemIds.Wood)
@@ -742,52 +741,44 @@ public class InventoryHud : MonoBehaviour
 
     static void CreateNumber(RectTransform slot, string label)
     {
-        float detail = TextDetail;
         var rect = CreateRect("Number", slot);
         rect.anchorMin = new Vector2(0f, 1f);
         rect.anchorMax = new Vector2(0f, 1f);
         rect.pivot = new Vector2(0f, 1f);
         rect.anchoredPosition = new Vector2(3f, -2f);
-        rect.sizeDelta = new Vector2(24f * detail, 16f * detail);
-        rect.localScale = new Vector3(1f / detail, 1f / detail, 1f);
+        rect.sizeDelta = new Vector2(24f, 16f);
 
         var text = rect.gameObject.AddComponent<Text>();
         text.font = UiGlyphs.Font;
-        text.fontSize = Mathf.Max(1, Mathf.RoundToInt(NumberSize * detail));
+        text.fontSize = Mathf.Max(1, Mathf.RoundToInt(NumberSize));
         text.alignment = TextAnchor.UpperLeft;
-        text.alignByGeometry = true;
         text.color = NumberColor;
         text.text = label;
         text.horizontalOverflow = HorizontalWrapMode.Overflow;
         text.verticalOverflow = VerticalWrapMode.Overflow;
         text.raycastTarget = false;
         text.supportRichText = false;
-
-        if (text.font != null)
-            text.font.RequestCharactersInTexture("0123456789", text.fontSize, FontStyle.Normal);
+        UiGlyphs.Prepare(text, "0123456789");
 
         var outline = rect.gameObject.AddComponent<Outline>();
         outline.effectColor = NumberRim;
-        outline.effectDistance = new Vector2(detail, -detail);
+        outline.effectDistance = new Vector2(1f, -1f);
         outline.useGraphicAlpha = true;
     }
 
     static Text CreateStackCount(RectTransform parent)
     {
-        float detail = TextDetail;
         var rect = CreateRect("Count", parent);
         rect.anchorMin = new Vector2(1f, 0f);
         rect.anchorMax = new Vector2(1f, 0f);
         rect.pivot = new Vector2(1f, 0f);
         rect.anchoredPosition = new Vector2(-2f, 1f);
-        rect.sizeDelta = new Vector2(36f * detail, 16f * detail);
-        rect.localScale = new Vector3(1f / detail, 1f / detail, 1f);
+        rect.sizeDelta = new Vector2(36f, 16f);
 
         var text = rect.gameObject.AddComponent<Text>();
         text.font = UiGlyphs.Font;
-        text.fontSize = Mathf.Max(1, Mathf.RoundToInt(14f * detail));
+        text.fontSize = 14;
         text.alignment = TextAnchor.LowerRight;
-        text.alignByGeometry = true;
         text.color = new Color(0.99f, 0.96f, 0.88f, 1f);
         text.text = "";
         text.horizontalOverflow = HorizontalWrapMode.Overflow;
@@ -795,13 +786,11 @@ public class InventoryHud : MonoBehaviour
         text.raycastTarget = false;
         text.supportRichText = false;
         text.enabled = false;
-
-        if (text.font != null)
-            text.font.RequestCharactersInTexture("0123456789", text.fontSize, FontStyle.Normal);
+        UiGlyphs.Prepare(text, "0123456789");
 
         var outline = rect.gameObject.AddComponent<Outline>();
         outline.effectColor = new Color(0.16f, 0.08f, 0.04f, 0.95f);
-        outline.effectDistance = new Vector2(detail, -detail);
+        outline.effectDistance = new Vector2(1f, -1f);
         outline.useGraphicAlpha = true;
         return text;
     }
@@ -819,8 +808,7 @@ public class InventoryHud : MonoBehaviour
         text.supportRichText = false;
         text.horizontalOverflow = HorizontalWrapMode.Overflow;
         text.verticalOverflow = VerticalWrapMode.Overflow;
-        if (text.font != null)
-            text.font.RequestCharactersInTexture(value, size, FontStyle.Normal);
+        UiGlyphs.Prepare(text, value);
         return text;
     }
 

@@ -21,6 +21,7 @@ public class RecipeDefinition : ScriptableObject
     [SerializeField] string resultId;
     [SerializeField] int resultCount = 1;
     [SerializeField] string stationId;
+    [SerializeField] string unlockId;
 
     public string Id => id;
     public string DisplayName => displayName;
@@ -30,6 +31,8 @@ public class RecipeDefinition : ScriptableObject
     public int ResultCount => resultCount;
     public string StationId => stationId;
     public bool NeedsStation => !string.IsNullOrEmpty(stationId);
+    public string UnlockId => unlockId;
+    public bool NeedsUnlock => !string.IsNullOrEmpty(unlockId);
 
     public void Configure(
         string recipeId,
@@ -47,5 +50,10 @@ public class RecipeDefinition : ScriptableObject
         resultCount = Mathf.Max(1, count);
         stationId = station;
         ingredients = cost ?? Array.Empty<Ingredient>();
+    }
+
+    public void AssignUnlock(string gateId)
+    {
+        unlockId = gateId;
     }
 }

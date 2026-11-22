@@ -6,7 +6,8 @@ public enum CraftDeny
     None,
     Station,
     Ingredients,
-    Space
+    Space,
+    Locked
 }
 
 /// <summary>
@@ -16,6 +17,12 @@ public enum CraftDeny
 public class CraftingSystem : MonoBehaviour
 {
     PlayerInventory _inventory;
+    CraftAccess _access;
+
+    public void UseAccess(CraftAccess access)
+    {
+        _access = access;
+    }
 
     void Awake()
     {
@@ -45,6 +52,9 @@ public class CraftingSystem : MonoBehaviour
             if (recipe == null)
                 continue;
 
+            if (!Unlocked(recipe))
+                continue;
+
             if (recipe.NeedsStation && !CraftingStation.AnyInRange(recipe.StationId, feet))
                 continue;
 
@@ -56,6 +66,9 @@ public class CraftingSystem : MonoBehaviour
     {
         if (recipe == null || Bind() == null)
             return CraftDeny.Ingredients;
+
+        if (!Unlocked(recipe))
+            return CraftDeny.Locked;
 
         if (!StationReady(recipe))
             return CraftDeny.Station;
@@ -103,6 +116,14 @@ public class CraftingSystem : MonoBehaviour
             inventory.TryAdd(cost[refund].ItemId, cost[refund].Count);
 
         return false;
+    }
+
+    bool Unlocked(RecipeDefinition recipe)
+    {
+        if (recipe == null || !recipe.NeedsUnlock)
+            return true;
+
+        return _access != null && _access.Allows(recipe);
     }
 
     bool StationReady(RecipeDefinition recipe)

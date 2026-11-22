@@ -5,7 +5,9 @@ public enum ItemCategory
     Resource,
     Tool,
     Weapon,
-    Placeable
+    Placeable,
+    Equipment,
+    Consumable
 }
 
 /// <summary>
@@ -42,6 +44,11 @@ public class ItemDefinition : ScriptableObject
     [SerializeField] PlacementPolicy placementPolicy;
     [SerializeField] MaterialDefinition breakMaterial;
     [SerializeField] bool indestructible;
+    [SerializeField] string description;
+    [SerializeField] int wearCapacity;
+    [SerializeField] WeaponProfile weapon;
+    [SerializeField] EquipmentProfile equipment;
+    [SerializeField] ConsumableProfile consumable;
 
     public string Id => id;
     public string DisplayName => displayName;
@@ -53,7 +60,18 @@ public class ItemDefinition : ScriptableObject
     public GameObject Prefab => prefab;
     public string StationId => stationId;
     public float StationRadius => stationRadius;
+    /// <summary>
+    /// Hits to break a placed copy. Carried wear lives on <see cref="ItemInstance"/>, not here.
+    /// </summary>
     public int Durability => Mathf.Max(1, durability);
+    public string Description => description ?? string.Empty;
+    public int WearCapacity => Mathf.Max(0, wearCapacity);
+    public WeaponProfile Weapon => weapon;
+    public EquipmentProfile Equipment => equipment;
+    public ConsumableProfile Consumable => consumable;
+    public bool HasWeapon => weapon != null;
+    public bool HasEquipment => equipment != null && !string.IsNullOrEmpty(equipment.SlotId);
+    public bool HasConsumable => consumable != null && !string.IsNullOrEmpty(consumable.EffectId);
     public float Footprint => Mathf.Max(0.2f, footprint);
     public bool IsStation => !string.IsNullOrEmpty(stationId);
     public MaterialDefinition BreakMaterial => breakMaterial;
@@ -63,13 +81,26 @@ public class ItemDefinition : ScriptableObject
     {
         get
         {
-            if (tool != null && tool.Gesture != ToolGesture.None && tool.Impact != null)
-                return tool;
+            if (tool != null && tool.Gesture != ToolGesture.None)
+            {
+                if (tool.Use == ToolUse.Action && !string.IsNullOrEmpty(tool.ActionId))
+                    return tool;
+
+                if (tool.Impact != null)
+                    return tool;
+            }
+
+            ImpactLibrary.Ensure();
+            if (id == ItemIds.Pickaxe)
+            {
+                if (_pickTool == null || _pickTool.Impact == null || !_pickTool.Impact.Same(ImpactLibrary.Mine))
+                    _pickTool = ToolProfile.Swing(ImpactLibrary.Mine, 1f, 3.6f, 6f);
+                return _pickTool;
+            }
 
             if (id != ItemIds.Axe)
                 return null;
 
-            ImpactLibrary.Ensure();
             if (_axeTool == null || _axeTool.Impact != ImpactLibrary.Chop)
                 _axeTool = ToolProfile.Swing(ImpactLibrary.Chop, 1f, 3.6f, 6f);
 
@@ -80,6 +111,7 @@ public class ItemDefinition : ScriptableObject
     public bool HasTool => ResolvedTool != null;
 
     static ToolProfile _axeTool;
+    static ToolProfile _pickTool;
 
     public Sprite IconSprite => icon != null ? icon : ItemArt.Icon(id);
 
@@ -148,5 +180,30 @@ public class ItemDefinition : ScriptableObject
     public void AssignPrefab(GameObject placePrefab)
     {
         prefab = placePrefab;
+    }
+
+    public void AssignDescription(string text)
+    {
+        description = text ?? string.Empty;
+    }
+
+    public void AssignWear(int capacity)
+    {
+        wearCapacity = Mathf.Max(0, capacity);
+    }
+
+    public void AssignWeapon(WeaponProfile profile)
+    {
+        weapon = profile;
+    }
+
+    public void AssignEquipment(EquipmentProfile profile)
+    {
+        equipment = profile;
+    }
+
+    public void AssignConsumable(ConsumableProfile profile)
+    {
+        consumable = profile;
     }
 }

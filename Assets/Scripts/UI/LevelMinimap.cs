@@ -14,7 +14,6 @@ public class LevelMinimap : MonoBehaviour
     const float Marker = 8f;
     const float Caption = 28f;
     const float CaptionGap = 6f;
-    const float TextDetail = 3f;
 
     static readonly Color PanelColor = new Color(0.10f, 0.09f, 0.08f, 0.94f);
     static readonly Color RimColor = new Color(0.22f, 0.18f, 0.13f, 0.9f);
@@ -350,53 +349,44 @@ public class LevelMinimap : MonoBehaviour
 
     void CreateCaption(RectTransform parent, string caption)
     {
-        Font font = BuiltinFont();
-        int size = Mathf.RoundToInt(16f * TextDetail);
         var rect = CreateRect("Label", parent);
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);
         rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.sizeDelta = new Vector2(parent.sizeDelta.x * TextDetail, parent.sizeDelta.y * TextDetail);
-        rect.localScale = new Vector3(1f / TextDetail, 1f / TextDetail, 1f);
+        rect.sizeDelta = parent.sizeDelta;
 
         var text = rect.gameObject.AddComponent<Text>();
-        text.font = font;
-        text.fontSize = size;
+        text.font = UiGlyphs.Font;
+        text.fontSize = 16;
         text.alignment = TextAnchor.MiddleCenter;
-        text.alignByGeometry = true;
         text.color = CaptionColor;
         text.horizontalOverflow = HorizontalWrapMode.Overflow;
         text.verticalOverflow = VerticalWrapMode.Overflow;
         text.raycastTarget = false;
         text.supportRichText = false;
         text.text = caption;
+        UiGlyphs.Prepare(text, caption);
     }
 
     string CaptionText()
     {
-        Font font = BuiltinFont();
         string russian = _world.PlaceName;
-        if (font != null)
-        {
-            font.RequestCharactersInTexture(russian, 64, FontStyle.Normal);
-            bool ok = true;
-            for (int i = 0; i < russian.Length; i++)
-            {
-                char c = russian[i];
-                if (c == ' ' || (c >= '0' && c <= '9'))
-                    continue;
-                if (!font.HasCharacter(c))
-                {
-                    ok = false;
-                    break;
-                }
-            }
+        Font font = UiGlyphs.Font;
+        if (font == null || string.IsNullOrEmpty(russian))
+            return _world.PlaceNameEnglish;
 
-            if (ok)
-                return russian;
+        // Space and digits have no bitmap in some dynamic fonts, so they are not a reason to drop Cyrillic.
+        font.RequestCharactersInTexture(russian, 64, FontStyle.Normal);
+        for (int i = 0; i < russian.Length; i++)
+        {
+            char c = russian[i];
+            if (c == ' ' || (c >= '0' && c <= '9'))
+                continue;
+            if (!font.HasCharacter(c))
+                return _world.PlaceNameEnglish;
         }
 
-        return _world.PlaceNameEnglish;
+        return russian;
     }
 
     static void Stretch(RectTransform rect)
@@ -423,14 +413,6 @@ public class LevelMinimap : MonoBehaviour
         image.color = color;
         image.raycastTarget = false;
         return image;
-    }
-
-    static Font BuiltinFont()
-    {
-        Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        if (font == null)
-            font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-        return font;
     }
 
     static Sprite _pixel;

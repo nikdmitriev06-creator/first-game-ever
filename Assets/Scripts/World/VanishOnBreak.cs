@@ -1,12 +1,18 @@
 using UnityEngine;
 
 /// <summary>
-/// Removes a body that has no other break reaction, such as a rock with no drop.
+/// Removes a broken body. In play the destroy waits until the end of the frame, so loot on the same object still spawns.
 /// </summary>
 public class VanishOnBreak : MonoBehaviour, IBreakReaction
 {
     public void OnBroken(in Impact impact)
     {
-        Destroy(gameObject);
+        if (Application.isPlaying)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        gameObject.SetActive(false);
     }
 }

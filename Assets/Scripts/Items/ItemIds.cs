@@ -9,8 +9,13 @@ public static class ItemIds
     public const string Wood = "wood";
     public const string Workbench = "workbench";
     public const string Chair = "chair";
+    public const string Stone = "stone";
+    public const string CopperOre = "copper_ore";
+    public const string Pickaxe = "pickaxe";
+    public const string Furnace = "furnace";
 
     public const int WoodStack = 99;
+    public const int ResourceStack = 99;
 
     public static bool Stacks(string id)
     {

@@ -9,21 +9,33 @@ public static class ItemArt
     const float PixelsPerUnit = 32f;
 
     static Sprite _axe;
+    static Sprite _pickaxe;
     static Sprite _wood;
+    static Sprite _stone;
+    static Sprite _copperOre;
     static Sprite _workbench;
     static Sprite _chair;
+    static Sprite _furnace;
     static Sprite _shadow;
 
     public static Sprite Icon(string id)
     {
         if (id == ItemIds.Axe)
             return Axe();
+        if (id == ItemIds.Pickaxe)
+            return Pickaxe();
         if (id == ItemIds.Wood)
             return Wood();
+        if (id == ItemIds.Stone)
+            return Stone();
+        if (id == ItemIds.CopperOre)
+            return CopperOre();
         if (id == ItemIds.Workbench)
             return Workbench();
         if (id == ItemIds.Chair)
             return Chair();
+        if (id == ItemIds.Furnace)
+            return Furnace();
 
         return null;
     }
@@ -34,6 +46,8 @@ public static class ItemArt
             return Workbench();
         if (id == ItemIds.Chair)
             return Chair();
+        if (id == ItemIds.Furnace)
+            return Furnace();
 
         return null;
     }
@@ -65,6 +79,103 @@ public static class ItemArt
 
         _axe = Finish(pixels, size, size, new Vector2(0.16f, 0.5f));
         return _axe;
+    }
+
+    public static Sprite Pickaxe()
+    {
+        if (_pickaxe != null)
+            return _pickaxe;
+
+        const int size = 40;
+        var pixels = new Color32[size * size];
+        var handle = new Color32(122, 74, 38, 255);
+        var handleLit = new Color32(156, 102, 54, 255);
+        var grip = new Color32(78, 46, 26, 255);
+        var metal = new Color32(150, 168, 176, 255);
+        var metalLit = new Color32(214, 226, 230, 255);
+        var metalDark = new Color32(72, 86, 98, 255);
+
+        FillRect(pixels, size, 5, 18, 24, 4, handle);
+        FillRect(pixels, size, 5, 18, 24, 1, handleLit);
+        FillRect(pixels, size, 4, 17, 3, 6, grip);
+        FillRect(pixels, size, 26, 16, 4, 8, metalDark);
+        FillRect(pixels, size, 29, 10, 3, 20, metal);
+        FillRect(pixels, size, 29, 10, 1, 20, metalLit);
+        FillRect(pixels, size, 30, 6, 2, 5, metalLit);
+        FillRect(pixels, size, 31, 4, 1, 3, metal);
+        FillRect(pixels, size, 30, 29, 2, 5, metalDark);
+        FillRect(pixels, size, 31, 33, 1, 3, metalDark);
+
+        _pickaxe = Finish(pixels, size, size, new Vector2(0.16f, 0.5f));
+        return _pickaxe;
+    }
+
+    public static Sprite Stone()
+    {
+        if (_stone != null)
+            return _stone;
+
+        const int width = 26;
+        const int height = 18;
+        var pixels = new Color32[width * height];
+        FillEllipse(pixels, width, height, 13, 8, 10, 6, new Color32(92, 90, 86, 255), 1);
+        FillEllipse(pixels, width, height, 13, 9, 8, 4, new Color32(142, 140, 132, 255), 2);
+        FillEllipse(pixels, width, height, 10, 11, 3, 2, new Color32(186, 184, 174, 255), 3);
+        _stone = Finish(pixels, width, height, new Vector2(0.5f, 0.5f));
+        return _stone;
+    }
+
+    public static Sprite CopperOre()
+    {
+        if (_copperOre != null)
+            return _copperOre;
+
+        const int width = 26;
+        const int height = 18;
+        var pixels = new Color32[width * height];
+        FillEllipse(pixels, width, height, 13, 8, 10, 6, new Color32(74, 64, 58, 255), 4);
+        FillEllipse(pixels, width, height, 13, 9, 8, 4, new Color32(112, 96, 86, 255), 5);
+        FillEllipse(pixels, width, height, 9, 10, 3, 2, new Color32(196, 112, 48, 255), 6);
+        FillEllipse(pixels, width, height, 16, 8, 2, 2, new Color32(214, 146, 72, 255), 7);
+        FillRect(pixels, width, 12, 11, 3, 2, new Color32(168, 86, 36, 255));
+        _copperOre = Finish(pixels, width, height, new Vector2(0.5f, 0.5f));
+        return _copperOre;
+    }
+
+    public static Sprite Furnace()
+    {
+        if (_furnace != null)
+            return _furnace;
+
+        const int width = 48;
+        const int height = 44;
+        var pixels = new Color32[width * height];
+        var outline = new Color32(62, 60, 58, 255);
+        var stone = new Color32(132, 128, 120, 255);
+        var stoneLit = new Color32(176, 172, 160, 255);
+        var stoneDark = new Color32(78, 74, 70, 255);
+        var mouth = new Color32(28, 22, 20, 255);
+        var fire = new Color32(214, 96, 32, 255);
+        var ember = new Color32(240, 176, 64, 255);
+
+        FillRect(pixels, width, 8, 2, 6, 12, outline);
+        FillRect(pixels, width, 9, 2, 4, 12, stoneDark);
+        FillRect(pixels, width, 34, 2, 6, 12, outline);
+        FillRect(pixels, width, 35, 2, 4, 12, stoneDark);
+
+        FillRect(pixels, width, 6, 12, 36, 22, outline);
+        FillRect(pixels, width, 8, 14, 32, 18, stone);
+        FillRect(pixels, width, 8, 28, 32, 3, stoneLit);
+        FillEllipse(pixels, width, height, 24, 22, 10, 6, mouth, 2);
+        FillEllipse(pixels, width, height, 24, 21, 7, 4, fire, 3);
+        FillEllipse(pixels, width, height, 24, 22, 3, 2, ember, 4);
+
+        FillRect(pixels, width, 30, 30, 8, 10, outline);
+        FillRect(pixels, width, 31, 31, 6, 8, stoneDark);
+        FillRect(pixels, width, 32, 36, 4, 3, stoneLit);
+
+        _furnace = Finish(pixels, width, height, new Vector2(0.5f, 0.08f));
+        return _furnace;
     }
 
     public static Sprite Wood()
