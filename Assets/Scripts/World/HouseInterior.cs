@@ -69,7 +69,7 @@ public class HouseInterior : MonoBehaviour
         LayFrontWall(root, origin, floorW, floorH, material);
 
         Vector2 rugAt = origin + new Vector2(0f, 0.4f);
-        CreateSprite(root, "Rug", HouseArt.Rug(), rugAt, 3, material, false, 0f, 0);
+        CreateSprite(root, "Rug", HouseArt.Rug(), rugAt, IsoSort.FloorOrder + 1, material, false, 0f, 0);
 
         Vector2 door = floorMin + new Vector2(floorW * 0.5f, 3.15f);
         var doorObject = new GameObject("Interior Door");
@@ -97,7 +97,7 @@ public class HouseInterior : MonoBehaviour
         var renderer = go.AddComponent<SpriteRenderer>();
         renderer.sprite = HouseArt.RoomBounds(width, height);
         renderer.color = new Color(1f, 1f, 1f, 0f);
-        renderer.sortingOrder = 0;
+        renderer.sortingOrder = IsoSort.FloorOrder;
         if (material != null)
             renderer.sharedMaterial = material;
 
@@ -123,7 +123,7 @@ public class HouseInterior : MonoBehaviour
                 Sprite sprite = HouseArt.FloorBoard(width, (row * 5 + col * 3) % 6);
                 float worldX = floorMin.x + (x + width * 0.5f) / HouseArt.PixelsPerUnit;
                 float worldY = floorMin.y + (y + BoardHeight * 0.5f) / HouseArt.PixelsPerUnit;
-                CreateSprite(root, "Plank", sprite, new Vector2(worldX, worldY), 2, material, false, 0f, 0);
+                CreateSprite(root, "Plank", sprite, new Vector2(worldX, worldY), IsoSort.FloorOrder, material, false, 0f, 0);
                 x += width;
                 col++;
             }

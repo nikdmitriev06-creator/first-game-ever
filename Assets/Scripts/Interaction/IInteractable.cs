@@ -7,12 +7,15 @@ public sealed class InteractionContext
 }
 
 /// <summary>
-/// A door, a chest, a lever. Separate from impacts: opening is not damage.
+/// A chest, a lever, a campfire. Opening is not a weapon impact.
 /// </summary>
 public interface IInteractable
 {
     bool CanInteract { get; }
     Vector2 Origin { get; }
     float Radius { get; }
+    string Label { get; }
+    string Verb { get; }
+    string Refusal { get; }
     void Interact(InteractionContext context);
 }

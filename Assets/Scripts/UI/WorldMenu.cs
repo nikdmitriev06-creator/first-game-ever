@@ -9,7 +9,7 @@ public class WorldMenu : MonoBehaviour
 {
     const float ButtonWidth = 168f;
     const float ButtonHeight = 46f;
-    const float Top = 22f;
+    const float Top = 52f;
     const float PanelWidth = 248f;
     const float EntryHeight = 50f;
     const float EntryGap = 8f;
@@ -160,17 +160,8 @@ public class WorldMenu : MonoBehaviour
     void Build()
     {
         _canvasObject = new GameObject("World Menu");
+        UiScreen.Mount(_canvasObject, 170);
 
-        var canvas = _canvasObject.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = 170;
-
-        var scaler = _canvasObject.AddComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920f, 1080f);
-        scaler.matchWidthOrHeight = 0.5f;
-
-        Font font = UiGlyphs.Font;
         bool cyrillic = UiGlyphs.Supports("ДомУровеньМиры");
 
         _button = CreateRect("Worlds", _canvasObject.transform);
@@ -186,7 +177,7 @@ public class WorldMenu : MonoBehaviour
         Stretch(_buttonFill.rectTransform);
         _buttonFill.rectTransform.offsetMin = new Vector2(3f, 3f);
         _buttonFill.rectTransform.offsetMax = new Vector2(-3f, -3f);
-        CreateLabel(_button, cyrillic ? "Миры" : "Worlds", font, 22f);
+        CreateLabel(_button, cyrillic ? "Миры" : "Worlds", 22f);
 
         float panelHeight = Pad * 2f + EntryHeight * 2f + EntryGap;
         _panel = CreateRect("Panel", _canvasObject.transform);
@@ -204,13 +195,13 @@ public class WorldMenu : MonoBehaviour
         plate.rectTransform.offsetMax = new Vector2(-2f, -2f);
 
         float entryWidth = PanelWidth - Pad * 2f;
-        _homeHit = CreateEntry(_panel, "Home", cyrillic ? "Дом" : "Home", font, 0f, entryWidth, out _homeFrame, out _homeFill, HomeFill);
-        _levelHit = CreateEntry(_panel, "Level", cyrillic ? "Уровень 1" : "Level 1", font, EntryHeight + EntryGap, entryWidth, out _levelFrame, out _levelFill, LevelFill);
+        _homeHit = CreateEntry(_panel, "Home", cyrillic ? "Дом" : "Home", 0f, entryWidth, out _homeFrame, out _homeFill, HomeFill);
+        _levelHit = CreateEntry(_panel, "Level", cyrillic ? "Уровень 1" : "Level 1", EntryHeight + EntryGap, entryWidth, out _levelFrame, out _levelFill, LevelFill);
 
         SetOpen(false);
     }
 
-    RectTransform CreateEntry(RectTransform parent, string name, string caption, Font font, float drop, float width, out Image frame, out Image fill, Color fillColor)
+    RectTransform CreateEntry(RectTransform parent, string name, string caption, float drop, float width, out Image frame, out Image fill, Color fillColor)
     {
         var rect = CreateRect(name, parent);
         rect.anchorMin = new Vector2(0.5f, 1f);
@@ -225,29 +216,18 @@ public class WorldMenu : MonoBehaviour
         Stretch(fill.rectTransform);
         fill.rectTransform.offsetMin = new Vector2(3f, 3f);
         fill.rectTransform.offsetMax = new Vector2(-3f, -3f);
-        CreateLabel(rect, caption, font, 22f);
+        CreateLabel(rect, caption, 22f);
         return rect;
     }
 
-    static void CreateLabel(RectTransform parent, string caption, Font font, float size)
+    static void CreateLabel(RectTransform parent, string caption, float size)
     {
         var rect = CreateRect("Label", parent);
-        rect.anchorMin = new Vector2(0.5f, 0.5f);
-        rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.sizeDelta = parent.sizeDelta;
-
-        var text = rect.gameObject.AddComponent<Text>();
-        text.font = font != null ? font : UiGlyphs.Font;
-        text.fontSize = Mathf.Max(1, Mathf.RoundToInt(size));
-        text.alignment = TextAnchor.MiddleCenter;
-        text.color = LabelColor;
-        text.horizontalOverflow = HorizontalWrapMode.Overflow;
-        text.verticalOverflow = VerticalWrapMode.Overflow;
-        text.raycastTarget = false;
-        text.supportRichText = false;
-        text.text = caption;
-        UiGlyphs.Prepare(text, caption);
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = new Vector2(8f, 4f);
+        rect.offsetMax = new Vector2(-8f, -4f);
+        UiGlyphs.Place(rect.gameObject, caption, size, TextAnchor.MiddleCenter, LabelColor, UiGlyphs.Wrap.Ellipsis);
     }
 
     static bool Contains(RectTransform rect, Vector2 screen)

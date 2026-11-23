@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 /// <summary>
@@ -9,7 +11,9 @@ using UnityEngine.UI;
 public class LevelMinimap : MonoBehaviour
 {
     const float MarginX = 28f;
-    const float MarginY = 24f;
+    const float MarginY = 28f;
+    const float MaxWidth = 360f;
+    const float MaxHeight = 460f;
     const float Pad = 12f;
     const float Marker = 8f;
     const float Caption = 28f;
@@ -32,9 +36,16 @@ public class LevelMinimap : MonoBehaviour
     readonly List<MapCell> _cells = new List<MapCell>();
     readonly List<MapPath> _paths = new List<MapPath>();
     RectTransform _marker;
+    RectTransform _caption;
+    TMP_Text _captionLabel;
     LevelWorld.Room _markedRoom;
+    readonly MapSketch _sketch = new MapSketch();
+    readonly List<GameObject> _pins = new List<GameObject>();
     float _cell = 36f;
     float _gap = 12f;
+    int _mode;
+    int _drawnMode = -1;
+    int _interestVersion = -1;
 
     struct MapCell
     {
@@ -58,8 +69,28 @@ public class LevelMinimap : MonoBehaviour
 
         _world = world;
         _player = player;
+        _mode = ProgressionService.MapMode;
         _world.LayoutChanged += Rebuild;
         Rebuild();
+    }
+
+    void Update()
+    {
+        Keyboard keyboard = Keyboard.current;
+        bool key = keyboard != null && keyboard.mKey.wasPressedThisFrame;
+        bool click = false;
+        Mouse mouse = Mouse.current;
+        if (mouse != null && mouse.leftButton.wasPressedThisFrame && _caption != null)
+            click = RectTransformUtility.RectangleContainsScreenPoint(_caption, mouse.position.ReadValue(), null);
+
+        if (!key && !click)
+            return;
+
+        _mode = (_mode + 1) % 3;
+        if (ProgressionService.PersistInterface)
+            ProgressionService.RememberMap(_mode);
+        ApplyMode();
+        Refresh(true);
     }
 
     void OnDestroy()
@@ -86,8 +117,10 @@ public class LevelMinimap : MonoBehaviour
 
         _cells.Clear();
         _paths.Clear();
+        _pins.Clear();
         _marker = null;
         _markedRoom = null;
+        _interestVersion = -1;
         if (_world == null || _player == null || _world.Columns <= 0 || _world.Rows <= 0)
             return;
 
@@ -101,12 +134,13 @@ public class LevelMinimap : MonoBehaviour
             return;
 
         LevelWorld.Room current = _world.Current;
-        if (force || current != _markedRoom)
+        FillSketch();
+        if (force || current != _markedRoom || _drawnMode != _mode)
         {
             for (int i = 0; i < _cells.Count; i++)
             {
                 MapCell cell = _cells[i];
-                bool show = Shown(cell.Room);
+                bool show = i < _sketch.Cells.Count && _sketch.Cells[i].Shown;
                 cell.Rect.gameObject.SetActive(show);
                 if (!show)
                     continue;
@@ -122,10 +156,19 @@ public class LevelMinimap : MonoBehaviour
             for (int i = 0; i < _paths.Count; i++)
             {
                 MapPath path = _paths[i];
-                path.Root.SetActive(Shown(path.A) && Shown(path.B));
+                bool showPath = PathShown(path.A) && PathShown(path.B);
+                path.Root.SetActive(showPath);
             }
 
             _markedRoom = current;
+            _drawnMode = _mode;
+            ApplyMode();
+        }
+
+        if (_interestVersion != _world.InterestVersion || force)
+        {
+            _interestVersion = _world.InterestVersion;
+            RebuildPins();
         }
 
         if (current == null || _marker == null)
@@ -135,7 +178,7 @@ public class LevelMinimap : MonoBehaviour
         bool found = false;
         for (int i = 0; i < _cells.Count; i++)
         {
-            if (_cells[i].Room != current || !Shown(_cells[i].Room))
+            if (_cells[i].Room != current || !PathShown(_cells[i].Room))
                 continue;
 
             hereCell = _cells[i];
@@ -164,9 +207,109 @@ public class LevelMinimap : MonoBehaviour
             Mathf.Lerp(inset, _cell - inset, Mathf.Clamp01(ny)));
     }
 
-    bool Shown(LevelWorld.Room room)
+    bool PathShown(LevelWorld.Room room)
     {
-        return room != null && (!_world.FogOfWar || room.Visited);
+        return _mode == 0 && room != null && (!_world.FogOfWar || room.Visited);
+    }
+
+    void FillSketch()
+    {
+        _sketch.Clear();
+        _sketch.Mode = _mode;
+        if (_world == null)
+            return;
+
+        for (int i = 0; i < _cells.Count; i++)
+        {
+            LevelWorld.Room room = _cells[i].Room;
+            bool current = room == _world.Current;
+            _sketch.AddCell(Col(room.Grid), Row(room.Grid), room.Visited, current, room.IsExit, _world.FogOfWar);
+            if (room.Interests == null)
+                continue;
+
+            bool shown = !_world.FogOfWar || room.Visited;
+            Bounds bounds = room.Bounds;
+            for (int p = 0; p < room.Interests.Count; p++)
+            {
+                MapInterest interest = room.Interests[p];
+                float nx = bounds.size.x <= 0.01f ? 0.5f : Mathf.InverseLerp(bounds.min.x, bounds.max.x, interest.Point.x);
+                float ny = bounds.size.y <= 0.01f ? 0.5f : Mathf.InverseLerp(bounds.min.y, bounds.max.y, interest.Point.y);
+                _sketch.AddPin(Col(room.Grid), Row(room.Grid), nx, ny, interest.Kind, shown);
+            }
+        }
+    }
+
+    void ApplyMode()
+    {
+        if (_panel != null)
+            _panel.gameObject.SetActive(_mode == 0);
+        if (_caption != null)
+            _caption.gameObject.SetActive(true);
+        if (_captionLabel == null)
+            return;
+
+        string caption = _mode == 0
+            ? CaptionText()
+            : _mode == 1
+                ? UiGlyphs.Pick("Карта", "Map")
+                : UiGlyphs.Pick("Карта ▸", "Map");
+        _captionLabel.text = caption;
+        UiGlyphs.Prepare(_captionLabel, caption);
+    }
+
+    void RebuildPins()
+    {
+        for (int i = 0; i < _pins.Count; i++)
+        {
+            if (_pins[i] != null)
+                Destroy(_pins[i]);
+        }
+
+        _pins.Clear();
+        if (_mode != 0)
+            return;
+
+        for (int i = 0; i < _sketch.Pins.Count; i++)
+        {
+            MapSketch.Pin pin = _sketch.Pins[i];
+            if (!pin.Shown)
+                continue;
+
+            RectTransform cell = CellRect(pin.Column, pin.Row);
+            if (cell == null)
+                continue;
+
+            var dot = CreateImage(pin.Kind.ToString(), cell, PinColor(pin.Kind));
+            dot.rectTransform.anchorMin = new Vector2(pin.X, pin.Y);
+            dot.rectTransform.anchorMax = new Vector2(pin.X, pin.Y);
+            dot.rectTransform.pivot = new Vector2(0.5f, 0.5f);
+            dot.rectTransform.sizeDelta = new Vector2(6f, 6f);
+            dot.rectTransform.anchoredPosition = Vector2.zero;
+            _pins.Add(dot.gameObject);
+        }
+    }
+
+    RectTransform CellRect(int column, int row)
+    {
+        for (int i = 0; i < _cells.Count; i++)
+        {
+            LevelWorld.Room room = _cells[i].Room;
+            if (room != null && Col(room.Grid) == column && Row(room.Grid) == row)
+                return _cells[i].Rect;
+        }
+
+        return null;
+    }
+
+    static Color PinColor(MapPinKind kind)
+    {
+        switch (kind)
+        {
+            case MapPinKind.Chest: return new Color(0.93f, 0.78f, 0.32f, 1f);
+            case MapPinKind.Mechanism: return new Color(0.45f, 0.72f, 0.95f, 1f);
+            case MapPinKind.Exit: return new Color(0.95f, 0.78f, 0.28f, 1f);
+            default: return new Color(0.96f, 0.94f, 0.88f, 1f);
+        }
     }
 
     void Build()
@@ -176,38 +319,44 @@ public class LevelMinimap : MonoBehaviour
         _gap = wide ? 8f : 12f;
 
         _canvasObject = new GameObject("Level Minimap");
-
-        var canvas = _canvasObject.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = 110;
-
-        var scaler = _canvasObject.AddComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920f, 1080f);
-        scaler.matchWidthOrHeight = 0.5f;
+        UiScreen.Mount(_canvasObject, 110);
 
         float mapW = _world.Columns * _cell + (_world.Columns - 1) * _gap;
         float mapH = _world.Rows * _cell + (_world.Rows - 1) * _gap;
         float panelW = mapW + Pad * 2f;
         float panelH = mapH + Pad * 2f;
 
-        var caption = CreateRect("Caption", _canvasObject.transform);
-        caption.anchorMin = new Vector2(1f, 1f);
+        var dock = CreateRect("Dock", _canvasObject.transform);
+        dock.anchorMin = new Vector2(1f, 1f);
+        dock.anchorMax = new Vector2(1f, 1f);
+        dock.pivot = new Vector2(1f, 1f);
+        dock.sizeDelta = new Vector2(panelW, Caption + CaptionGap + panelH);
+        dock.anchoredPosition = new Vector2(-MarginX, -MarginY);
+        var fit = dock.gameObject.AddComponent<UiScaleToFit>();
+        fit.Margin = 0f;
+        fit.MaxWidth = MaxWidth;
+        fit.MaxHeight = MaxHeight;
+        fit.MinScale = 0.45f;
+        fit.Apply();
+
+        _caption = CreateRect("Caption", dock);
+        var caption = _caption;
+        caption.anchorMin = new Vector2(0f, 1f);
         caption.anchorMax = new Vector2(1f, 1f);
-        caption.pivot = new Vector2(1f, 1f);
-        caption.sizeDelta = new Vector2(panelW, Caption);
-        caption.anchoredPosition = new Vector2(-MarginX, -MarginY);
+        caption.pivot = new Vector2(0.5f, 1f);
+        caption.sizeDelta = new Vector2(0f, Caption);
+        caption.anchoredPosition = Vector2.zero;
 
         var captionBg = CreateImage("Background", caption, PanelColor);
         Stretch(captionBg.rectTransform);
-        CreateCaption(caption, CaptionText());
+        _captionLabel = CreateCaption(caption, CaptionText());
 
-        _panel = CreateRect("Panel", _canvasObject.transform);
-        _panel.anchorMin = new Vector2(1f, 1f);
-        _panel.anchorMax = new Vector2(1f, 1f);
-        _panel.pivot = new Vector2(1f, 1f);
+        _panel = CreateRect("Panel", dock);
+        _panel.anchorMin = new Vector2(0f, 1f);
+        _panel.anchorMax = new Vector2(0f, 1f);
+        _panel.pivot = new Vector2(0f, 1f);
         _panel.sizeDelta = new Vector2(panelW, panelH);
-        _panel.anchoredPosition = new Vector2(-MarginX, -(MarginY + Caption + CaptionGap));
+        _panel.anchoredPosition = new Vector2(0f, -(Caption + CaptionGap));
 
         var background = CreateImage("Background", _panel, PanelColor);
         Stretch(background.rectTransform);
@@ -301,7 +450,7 @@ public class LevelMinimap : MonoBehaviour
             pip.rectTransform.anchoredPosition = new Vector2(-3f, 3f);
         }
 
-        rect.gameObject.SetActive(Shown(room));
+        rect.gameObject.SetActive(PathShown(room));
         _cells.Add(new MapCell
         {
             Room = room,
@@ -337,7 +486,7 @@ public class LevelMinimap : MonoBehaviour
         image.sprite = Pixel();
         image.color = PathColor;
         image.raycastTarget = false;
-        rect.gameObject.SetActive(Shown(a) && Shown(b));
+        rect.gameObject.SetActive(PathShown(a) && PathShown(b));
 
         _paths.Add(new MapPath
         {
@@ -347,46 +496,16 @@ public class LevelMinimap : MonoBehaviour
         });
     }
 
-    void CreateCaption(RectTransform parent, string caption)
+    TMP_Text CreateCaption(RectTransform parent, string caption)
     {
         var rect = CreateRect("Label", parent);
-        rect.anchorMin = new Vector2(0.5f, 0.5f);
-        rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.pivot = new Vector2(0.5f, 0.5f);
-        rect.sizeDelta = parent.sizeDelta;
-
-        var text = rect.gameObject.AddComponent<Text>();
-        text.font = UiGlyphs.Font;
-        text.fontSize = 16;
-        text.alignment = TextAnchor.MiddleCenter;
-        text.color = CaptionColor;
-        text.horizontalOverflow = HorizontalWrapMode.Overflow;
-        text.verticalOverflow = VerticalWrapMode.Overflow;
-        text.raycastTarget = false;
-        text.supportRichText = false;
-        text.text = caption;
-        UiGlyphs.Prepare(text, caption);
+        Stretch(rect);
+        return UiGlyphs.Place(rect.gameObject, caption, 18f, TextAnchor.MiddleCenter, CaptionColor, UiGlyphs.Wrap.Ellipsis);
     }
 
     string CaptionText()
     {
-        string russian = _world.PlaceName;
-        Font font = UiGlyphs.Font;
-        if (font == null || string.IsNullOrEmpty(russian))
-            return _world.PlaceNameEnglish;
-
-        // Space and digits have no bitmap in some dynamic fonts, so they are not a reason to drop Cyrillic.
-        font.RequestCharactersInTexture(russian, 64, FontStyle.Normal);
-        for (int i = 0; i < russian.Length; i++)
-        {
-            char c = russian[i];
-            if (c == ' ' || (c >= '0' && c <= '9'))
-                continue;
-            if (!font.HasCharacter(c))
-                return _world.PlaceNameEnglish;
-        }
-
-        return russian;
+        return UiGlyphs.Supports(_world.PlaceName) ? _world.PlaceName : _world.PlaceNameEnglish;
     }
 
     static void Stretch(RectTransform rect)

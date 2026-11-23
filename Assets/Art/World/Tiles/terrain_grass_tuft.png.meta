@@ -1,0 +1,1012 @@
+fileFormatVersion: 2
+guid: 158e7c1da3da1414192c882029a59ec5
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2919103083513269767
+    second: terrain_grass_tuft_0
+  - first:
+      213: 3617774338485146693
+    second: terrain_grass_tuft_1
+  - first:
+      213: -3037769531173378672
+    second: terrain_grass_tuft_2
+  - first:
+      213: 6532118806058580259
+    second: terrain_grass_tuft_3
+  - first:
+      213: 3292471930046088348
+    second: terrain_grass_tuft_4
+  - first:
+      213: -6026383502964914526
+    second: terrain_grass_tuft_5
+  - first:
+      213: 1221059860216081748
+    second: terrain_grass_tuft_6
+  - first:
+      213: 5855989290844516586
+    second: terrain_grass_tuft_7
+  - first:
+      213: -7920684503905921610
+    second: terrain_grass_tuft_8
+  - first:
+      213: 817551678328475189
+    second: terrain_grass_tuft_9
+  - first:
+      213: 147733818938715664
+    second: terrain_grass_tuft_10
+  - first:
+      213: 5693611742286563730
+    second: terrain_grass_tuft_11
+  - first:
+      213: -4813574159383824420
+    second: terrain_grass_tuft_12
+  - first:
+      213: 7634104204031099689
+    second: terrain_grass_tuft_13
+  - first:
+      213: -7004135913698667323
+    second: terrain_grass_tuft_14
+  - first:
+      213: -11560079514164397
+    second: terrain_grass_tuft_15
+  - first:
+      213: 7672462004744290193
+    second: terrain_grass_tuft_16
+  - first:
+      213: -4892233294553451242
+    second: terrain_grass_tuft_17
+  - first:
+      213: 2780969353117252795
+    second: terrain_grass_tuft_18
+  - first:
+      213: -8393928709610791951
+    second: terrain_grass_tuft_19
+  - first:
+      213: -8097241085277740970
+    second: terrain_grass_tuft_20
+  - first:
+      213: -5841158589853707780
+    second: terrain_grass_tuft_21
+  - first:
+      213: -1139852802578481360
+    second: terrain_grass_tuft_22
+  - first:
+      213: -2727641769386399420
+    second: terrain_grass_tuft_23
+  - first:
+      213: -5907058687011095314
+    second: terrain_grass_tuft_24
+  - first:
+      213: 8860855943912431831
+    second: terrain_grass_tuft_25
+  - first:
+      213: -5979901200116701228
+    second: terrain_grass_tuft_26
+  - first:
+      213: 417678587681885488
+    second: terrain_grass_tuft_27
+  - first:
+      213: -6397958547582003823
+    second: terrain_grass_tuft_28
+  - first:
+      213: -419693997070145231
+    second: terrain_grass_tuft_29
+  - first:
+      213: -904792933869450288
+    second: terrain_grass_tuft_30
+  - first:
+      213: -7550008455990046576
+    second: terrain_grass_tuft_31
+  - first:
+      213: -8691429137276261296
+    second: terrain_grass_tuft_32
+  - first:
+      213: -4476939729907089650
+    second: terrain_grass_tuft_33
+  - first:
+      213: -3004505147856761583
+    second: terrain_grass_tuft_34
+  - first:
+      213: 930112943730993295
+    second: terrain_grass_tuft_35
+  - first:
+      213: -5488048233482894708
+    second: terrain_grass_tuft_36
+  - first:
+      213: -1121497874470799870
+    second: terrain_grass_tuft_37
+  - first:
+      213: -9186153698354585970
+    second: terrain_grass_tuft_38
+  - first:
+      213: -1830625588461885035
+    second: terrain_grass_tuft_39
+  - first:
+      213: -795233300995267115
+    second: terrain_grass_tuft_40
+  - first:
+      213: 8433261440202657074
+    second: terrain_grass_tuft_41
+  - first:
+      213: 1653055088990919991
+    second: terrain_grass_tuft_42
+  - first:
+      213: 8465578439780486172
+    second: terrain_grass_tuft_43
+  - first:
+      213: 3862753230229880634
+    second: terrain_grass_tuft_44
+  - first:
+      213: 3334140034832769606
+    second: terrain_grass_tuft_45
+  - first:
+      213: 5049918425389869047
+    second: terrain_grass_tuft_46
+  - first:
+      213: 6735027894982412291
+    second: terrain_grass_tuft_47
+  - first:
+      213: 6031885425361075119
+    second: terrain_grass_tuft_48
+  - first:
+      213: -215239548927239195
+    second: terrain_grass_tuft_49
+  - first:
+      213: -5258601196301307112
+    second: terrain_grass_tuft_50
+  - first:
+      213: -303301148996891389
+    second: terrain_grass_tuft_51
+  - first:
+      213: 8838070573492599331
+    second: terrain_grass_tuft_52
+  - first:
+      213: 4106781101947841903
+    second: terrain_grass_tuft_53
+  - first:
+      213: -4044705386744745722
+    second: terrain_grass_tuft_54
+  - first:
+      213: 1301547374709215802
+    second: terrain_grass_tuft_55
+  - first:
+      213: -5425783372500497963
+    second: terrain_grass_tuft_56
+  - first:
+      213: 7976016983377481827
+    second: terrain_grass_tuft_57
+  - first:
+      213: 6025770366039814802
+    second: terrain_grass_tuft_58
+  - first:
+      213: -2974975096262529288
+    second: terrain_grass_tuft_59
+  - first:
+      213: 5201531504126097949
+    second: terrain_grass_tuft_60
+  - first:
+      213: -2317893484133291738
+    second: terrain_grass_tuft_61
+  - first:
+      213: -3135448810331265184
+    second: terrain_grass_tuft_62
+  - first:
+      213: -7497696249602865712
+    second: terrain_grass_tuft_63
+  - first:
+      213: 7541632974860748920
+    second: terrain_grass_tuft_64
+  - first:
+      213: -6714600099487039477
+    second: terrain_grass_tuft_65
+  - first:
+      213: 19293180546679145
+    second: terrain_grass_tuft_66
+  - first:
+      213: -1545372412105783432
+    second: terrain_grass_tuft_67
+  - first:
+      213: -276264655612697433
+    second: terrain_grass_tuft_68
+  - first:
+      213: 281850448934838499
+    second: terrain_grass_tuft_69
+  - first:
+      213: 2451328485243930487
+    second: terrain_grass_tuft_70
+  - first:
+      213: -3490031194371762983
+    second: terrain_grass_tuft_71
+  - first:
+      213: 1595069403758761349
+    second: terrain_grass_tuft_72
+  - first:
+      213: 3209035813239222194
+    second: terrain_grass_tuft_73
+  - first:
+      213: -2788718088866949192
+    second: terrain_grass_tuft_74
+  - first:
+      213: 3001617102690085761
+    second: terrain_grass_tuft_75
+  - first:
+      213: 6530848941871055805
+    second: terrain_grass_tuft_76
+  - first:
+      213: -5291233832045571922
+    second: terrain_grass_tuft_77
+  - first:
+      213: 965195023610674688
+    second: terrain_grass_tuft_78
+  - first:
+      213: 6698246199760341007
+    second: terrain_grass_tuft_79
+  - first:
+      213: -8128092131181378948
+    second: terrain_grass_tuft_80
+  - first:
+      213: -8872023882038947529
+    second: terrain_grass_tuft_81
+  - first:
+      213: 1105814209967916903
+    second: terrain_grass_tuft_82
+  - first:
+      213: 5629592672267770905
+    second: terrain_grass_tuft_83
+  - first:
+      213: 6570561550862092635
+    second: terrain_grass_tuft_84
+  - first:
+      213: -7459884430476119611
+    second: terrain_grass_tuft_85
+  - first:
+      213: 1815007599326027657
+    second: terrain_grass_tuft_86
+  - first:
+      213: -1313052488438542403
+    second: terrain_grass_tuft_87
+  - first:
+      213: -4078037969270648353
+    second: terrain_grass_tuft_88
+  - first:
+      213: -5251677296378661637
+    second: terrain_grass_tuft_89
+  - first:
+      213: 6770582880431799287
+    second: terrain_grass_tuft_90
+  - first:
+      213: -3840350570342427370
+    second: terrain_grass_tuft_91
+  - first:
+      213: 8682371406210564750
+    second: terrain_grass_tuft_92
+  - first:
+      213: 1806554361831682694
+    second: terrain_grass_tuft_93
+  - first:
+      213: 9116651406816372284
+    second: terrain_grass_tuft_94
+  - first:
+      213: 2753715345706207324
+    second: terrain_grass_tuft_95
+  - first:
+      213: -5895129904879260389
+    second: terrain_grass_tuft_96
+  - first:
+      213: -8504728582316087906
+    second: terrain_grass_tuft_97
+  - first:
+      213: -2092819531988968528
+    second: terrain_grass_tuft_98
+  - first:
+      213: 7495658802403359224
+    second: terrain_grass_tuft_99
+  - first:
+      213: 8612862631708305013
+    second: terrain_grass_tuft_100
+  - first:
+      213: 4789178156560751141
+    second: terrain_grass_tuft_101
+  - first:
+      213: 4134715201406634267
+    second: terrain_grass_tuft_102
+  - first:
+      213: 8991766891813855533
+    second: terrain_grass_tuft_103
+  - first:
+      213: 938926221847535703
+    second: terrain_grass_tuft_104
+  - first:
+      213: -7743664421858760834
+    second: terrain_grass_tuft_105
+  - first:
+      213: -7075229159817152642
+    second: terrain_grass_tuft_106
+  - first:
+      213: 2952362046558057221
+    second: terrain_grass_tuft_107
+  - first:
+      213: -7554792688399416152
+    second: terrain_grass_tuft_108
+  - first:
+      213: 293727975024989190
+    second: terrain_grass_tuft_109
+  - first:
+      213: 2208788474598094483
+    second: terrain_grass_tuft_110
+  - first:
+      213: 247337935234211487
+    second: terrain_grass_tuft_111
+  - first:
+      213: 6007852088411788270
+    second: terrain_grass_tuft_112
+  - first:
+      213: 5554423001346560200
+    second: terrain_grass_tuft_113
+  - first:
+      213: 7420413915768016008
+    second: terrain_grass_tuft_114
+  - first:
+      213: -2005528098675340992
+    second: terrain_grass_tuft_115
+  - first:
+      213: 167422374932556307
+    second: terrain_grass_tuft_116
+  - first:
+      213: -1296148804218019174
+    second: terrain_grass_tuft_117
+  - first:
+      213: -7901584724772729743
+    second: terrain_grass_tuft_118
+  - first:
+      213: -3204040032028230508
+    second: terrain_grass_tuft_119
+  - first:
+      213: 981178607095683628
+    second: terrain_grass_tuft_120
+  - first:
+      213: -262599038275794760
+    second: terrain_grass_tuft_121
+  - first:
+      213: -512349035827613867
+    second: terrain_grass_tuft_122
+  - first:
+      213: 422124204678046381
+    second: terrain_grass_tuft_123
+  - first:
+      213: -8987960800216722487
+    second: terrain_grass_tuft_124
+  - first:
+      213: -4963101555574129270
+    second: terrain_grass_tuft_125
+  - first:
+      213: -3040026443862367243
+    second: terrain_grass_tuft_126
+  - first:
+      213: 4259384032200819900
+    second: terrain_grass_tuft_127
+  - first:
+      213: 4990330685153105525
+    second: terrain_grass_tuft_128
+  - first:
+      213: 7735050052790215850
+    second: terrain_grass_tuft_129
+  - first:
+      213: -5290147995162812119
+    second: terrain_grass_tuft_130
+  - first:
+      213: -3516991815711381981
+    second: terrain_grass_tuft_131
+  - first:
+      213: 5984190664145590345
+    second: terrain_grass_tuft_132
+  - first:
+      213: -8935121490245589686
+    second: terrain_grass_tuft_133
+  - first:
+      213: 3312503739573211677
+    second: terrain_grass_tuft_134
+  - first:
+      213: -6537679898333045048
+    second: terrain_grass_tuft_135
+  - first:
+      213: -196835369371251019
+    second: terrain_grass_tuft_136
+  - first:
+      213: -2679190747903538811
+    second: terrain_grass_tuft_137
+  - first:
+      213: -3442344948413877174
+    second: terrain_grass_tuft_138
+  - first:
+      213: 705145007759671892
+    second: terrain_grass_tuft_139
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: terrain_grass_tuft_10
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 64
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01e6727202bdc0200800000000000000
+      internalID: 147733818938715664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: terrain_grass_tuft_11
+      rect:
+        serializedVersion: 2
+        x: 704
+        y: 0
+        width: 64
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 299cbfba6b5c30f40800000000000000
+      internalID: 5693611742286563730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: terrain_grass_tuft_12
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 64
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd77de13ecfb23db0800000000000000
+      internalID: -4813574159383824420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: terrain_grass_tuft_13
+      rect:
+        serializedVersion: 2
+        x: 832
+        y: 0
+        width: 64
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 923079b8359c1f960800000000000000
+      internalID: 7634104204031099689
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: terrain_grass_tuft_14
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 0
+        width: 64
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c45f69fe7f4cce90800000000000000
+      internalID: -7004135913698667323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: terrain_grass_tuft_15
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 0
+        width: 64
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 353abfe3b2ee6dff0800000000000000
+      internalID: -11560079514164397
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: terrain_grass_tuft_16
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 0
+        width: 64
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19ff679fa8f0a7a60800000000000000
+      internalID: 7672462004744290193
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: terrain_grass_tuft_17
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 0
+        width: 64
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6157dcf1dbb4b1cb0800000000000000
+      internalID: -4892233294553451242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: terrain_grass_tuft_18
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 0
+        width: 64
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bbc3dc774ecf79620800000000000000
+      internalID: 2780969353117252795
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: terrain_grass_tuft_19
+      rect:
+        serializedVersion: 2
+        x: 1216
+        y: 0
+        width: 64
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1fb12b1cf46c28b80800000000000000
+      internalID: -8393928709610791951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: terrain_grass_tuft_00
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 58a15b3531e696c4aac949359d735218
+      internalID: -449106855
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: terrain_grass_tuft_01
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d70413a9c6995b143a5220d1b9ef1787
+      internalID: 1526198897
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: terrain_grass_tuft_02
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d8c2d9e6497bcfd49a7e556126e2cb34
+      internalID: 675768338
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: terrain_grass_tuft_03
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 74a3c0d93cd0707488d19ba23e3b4428
+      internalID: 1929239635
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: terrain_grass_tuft_04
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3c45f56b9ca759d4896b27b3164acc24
+      internalID: 1513126807
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: terrain_grass_tuft_05
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 64
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9f3f3461b7c02f4eb82d048d8e6fe00
+      internalID: 1589034492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: terrain_grass_tuft_06
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 64
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 90409d6c04a6c774a86ea32b590c70ff
+      internalID: -854570774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: terrain_grass_tuft_07
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 0
+        width: 64
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc1ec5d2ff0e04841971afa615c9e71f
+      internalID: 2003450556
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: terrain_grass_tuft_08
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 64
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 22d36ca311fb27346acb6b07dec79077
+      internalID: -424637544
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: terrain_grass_tuft_09
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 0
+        width: 64
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f70985d5efd9bd4e9fae19d1057ce3c
+      internalID: 1278019330
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: a83737423b526a644b5347df1d365589
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      terrain_grass_tuft_00: -449106855
+      terrain_grass_tuft_01: 1526198897
+      terrain_grass_tuft_02: 675768338
+      terrain_grass_tuft_03: 1929239635
+      terrain_grass_tuft_04: 1513126807
+      terrain_grass_tuft_05: 1589034492
+      terrain_grass_tuft_06: -854570774
+      terrain_grass_tuft_07: 2003450556
+      terrain_grass_tuft_08: -424637544
+      terrain_grass_tuft_09: 1278019330
+      terrain_grass_tuft_10: 147733818938715664
+      terrain_grass_tuft_11: 5693611742286563730
+      terrain_grass_tuft_12: -4813574159383824420
+      terrain_grass_tuft_13: 7634104204031099689
+      terrain_grass_tuft_14: -7004135913698667323
+      terrain_grass_tuft_15: -11560079514164397
+      terrain_grass_tuft_16: 7672462004744290193
+      terrain_grass_tuft_17: -4892233294553451242
+      terrain_grass_tuft_18: 2780969353117252795
+      terrain_grass_tuft_19: -8393928709610791951
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

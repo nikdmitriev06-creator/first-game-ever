@@ -16,10 +16,11 @@ public class Destructible : MonoBehaviour, IImpactReceiver
     float _integrity;
     bool _broken;
     bool _configured;
+    bool _sealed;
 
     public event Action IntegrityChanged;
 
-    public bool CanReceive => _configured && !_broken && _integrity > 0f && isActiveAndEnabled;
+    public bool CanReceive => _configured && !_sealed && !_broken && _integrity > 0f && isActiveAndEnabled;
     public Vector2 Origin => transform.position;
     public float Height => height;
     public float Slop => slop;
@@ -75,6 +76,23 @@ public class Destructible : MonoBehaviour, IImpactReceiver
             worldId = id;
     }
 
+    public void Allow(ImpactType type, float multiplier)
+    {
+        if (type == null)
+            return;
+
+        var list = new System.Collections.Generic.List<ImpactReaction>();
+        if (extra != null)
+            list.AddRange(extra);
+        list.Add(new ImpactReaction { Type = type, Multiplier = Mathf.Max(0f, multiplier) });
+        extra = list.ToArray();
+    }
+
+    public void Seal()
+    {
+        _sealed = true;
+    }
+
     public ImpactResult Receive(in Impact impact)
     {
         if (!CanReceive || impact.Power <= 0f)
@@ -86,6 +104,12 @@ public class Destructible : MonoBehaviour, IImpactReceiver
         float loss = Mathf.Max(1f, Mathf.Ceil(impact.Power * multiplier));
         _integrity -= loss;
         ImpactFeedback feedback = GetComponent<ImpactFeedback>();
+        HarvestNode node = GetComponent<HarvestNode>();
+        FxEvent cue = WorldPresentation.ForStrike(impact.Type, material, node != null ? node.Loot : null);
+        Vector3 at = impact.Point;
+        Fx.Play(cue, at);
+        if (_integrity <= 0f && cue != FxEvent.Break)
+            Fx.Play(FxEvent.Break, at);
         if (_integrity > 0f)
         {
             if (feedback != null)

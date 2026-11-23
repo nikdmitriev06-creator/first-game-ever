@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Trees and rocks for one forest room. Each tree is a Tree, so an axe can fell it.
+/// Trees and rocks for one forest room. Each tree is a ForestTree, so an axe can fell it.
 /// Trees prefer to arrive in pairs. Rocks are harvest nodes and keep their distance.
 /// Counts stay in a band that reads on this large field: a few of each in view, not a thicket.
 /// </summary>
@@ -81,6 +81,9 @@ public static class ForestScenery
 
         for (int i = 0; i < rocks.Count; i++)
             Spawn(room, renderer, "Rock", _rocks[UnityEngine.Random.Range(0, _rocks.Length)], rocks[i], UnityEngine.Random.Range(0.95f, 1.45f), false);
+
+        if (clearSpawn)
+            WorldCamp.Place(room.Root.transform, spawn + new Vector2(7f, 1.5f));
     }
 
     static void Spawn(LevelWorld.Room room, SpriteRenderer ground, string name, Sprite sprite, Vector2 point, float scale, bool livingTree)
@@ -101,8 +104,15 @@ public static class ForestScenery
                 renderer.sharedMaterial = ground.sharedMaterial;
         }
 
+        BillboardSort sort = go.AddComponent<BillboardSort>();
+        sort.Follow = true;
+
         if (livingTree)
-            go.AddComponent<Tree>();
+        {
+            go.AddComponent<ForestTree>();
+            MotionSprite motion = go.AddComponent<MotionSprite>();
+            motion.kind = MotionSprite.Kind.Leaves;
+        }
         else
         {
             HarvestNode node = go.AddComponent<HarvestNode>();
@@ -112,8 +122,7 @@ public static class ForestScenery
 
     static int Depth(LevelWorld.Room room, float y)
     {
-        float t = Mathf.InverseLerp(room.Bounds.min.y, room.Bounds.max.y, y);
-        return Mathf.RoundToInt(Mathf.Lerp(8f, 2f, t));
+        return IsoSort.Order(y);
     }
 
     static Vector2 RandomPoint(LevelWorld.Room room)

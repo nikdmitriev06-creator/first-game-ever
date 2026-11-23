@@ -20,6 +20,7 @@ public class LocationContext : MonoBehaviour
 {
     [SerializeField] RegionKind region = RegionKind.Home;
     [SerializeField] LocationKind kind = LocationKind.Outdoor;
+    [SerializeField] string biomeId;
     [SerializeField] PlayArea area;
     Transform _drops;
 
@@ -27,6 +28,7 @@ public class LocationContext : MonoBehaviour
 
     public RegionKind Region => region;
     public LocationKind Kind => kind;
+    public string BiomeId => biomeId;
     public PlayArea Area => area;
     public Transform DropParent => _drops != null ? _drops : transform;
 
@@ -51,6 +53,11 @@ public class LocationContext : MonoBehaviour
         region = nextRegion;
         kind = nextKind;
         area = nextArea;
+    }
+
+    public void SetBiome(string id)
+    {
+        biomeId = id;
     }
 
     public bool Contains(Vector2 world, float inset)

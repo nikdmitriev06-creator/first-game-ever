@@ -25,6 +25,7 @@ public class Enemy : MonoBehaviour, IImpactReceiver
     float _halfW = 0.4f;
     float _halfH = 0.3f;
     float _attackWait;
+    Vector2 _shove;
     Transform _barRoot;
     Transform _barFill;
 
@@ -56,7 +57,7 @@ public class Enemy : MonoBehaviour, IImpactReceiver
 
     protected virtual void Awake()
     {
-        Health = stats.MaxHealth;
+        FillHealth();
         MaterialLibrary.Ensure();
         if (GameRoot.Active != null)
             Player = GameRoot.Active.Player;
@@ -79,6 +80,7 @@ public class Enemy : MonoBehaviour, IImpactReceiver
     {
         Alive.Remove(this);
         ReceiverRegistry.Unregister(this);
+        ClearStatuses();
     }
 
     protected void BindArea(PlayArea area)
@@ -103,6 +105,7 @@ public class Enemy : MonoBehaviour, IImpactReceiver
         }
 
         TickMotion();
+        ApplyShove();
         TickAttack();
         if (Dead)
             HideHealthBar();
@@ -137,8 +140,85 @@ public class Enemy : MonoBehaviour, IImpactReceiver
             || multiplier <= 0f)
             return ImpactResult.Ignore();
 
-        TakeDamage(impact.Power * multiplier);
-        return Dead ? ImpactResult.Break(impact.Power * multiplier) : ImpactResult.Damage(impact.Power * multiplier);
+        if (impact.Strike != null)
+        {
+            float dealt = 0f;
+            if (impact.Strike.Parts.Count > 0)
+                dealt = DamageMath.AfterResist(impact.Strike.Parts, stats.resistances) * multiplier;
+            else if (impact.Power > 0f)
+                dealt = impact.Power * multiplier;
+
+            if (dealt < 0f || float.IsNaN(dealt))
+                dealt = 0f;
+
+            if (dealt > 0f)
+            {
+                TakeDamage(dealt);
+                DamageNumbers.Show(StrikePoint(impact, transform.position) + Vector3.up * 0.35f, dealt);
+                if (!Dead)
+                    Fx.Play(impact.Strike.Crit ? FxEvent.Critical : FxEvent.Hurt, StrikePoint(impact, transform.position), StrikeType(impact.Strike));
+            }
+
+            if (!Dead)
+                ApplyStatuses(impact.Strike);
+            else
+                ClearStatuses();
+
+            if (dealt > 0f)
+                ApplyLifeOnHit(impact.Strike);
+            if (impact.Strike.Knockback > 0f)
+                Shove(impact.Direction, impact.Strike.Knockback);
+
+            return Dead ? ImpactResult.Break(dealt) : ImpactResult.Damage(dealt);
+        }
+
+        float plain = impact.Power * multiplier;
+        TakeDamage(plain);
+        DamageNumbers.Show(StrikePoint(impact, transform.position) + Vector3.up * 0.35f, plain);
+        if (!Dead)
+            Fx.Play(FxEvent.Hurt, StrikePoint(impact, transform.position));
+        return Dead ? ImpactResult.Break(plain) : ImpactResult.Damage(plain);
+    }
+
+    public float PendingKnockback => _shove.magnitude;
+
+    public void Shove(Vector2 direction, float speed)
+    {
+        if (Dead || speed <= 0f || direction.sqrMagnitude < 0.0001f)
+            return;
+
+        _shove = direction.normalized * speed;
+    }
+
+    void ApplyShove()
+    {
+        if (_shove.sqrMagnitude < 0.04f)
+        {
+            _shove = Vector2.zero;
+            return;
+        }
+
+        Vector2 next = ClampPoint((Vector2)transform.position + _shove * Time.deltaTime);
+        transform.position = new Vector3(next.x, next.y, transform.position.z);
+        _shove = Vector2.MoveTowards(_shove, Vector2.zero, 16f * Time.deltaTime);
+    }
+
+    public void FillHealth()
+    {
+        if (Dead)
+            return;
+
+        Health = stats.MaxHealth;
+    }
+
+    public float ContactDamage()
+    {
+        float amount = stats.Damage;
+        StatusHost host = GetComponent<StatusHost>();
+        if (host != null)
+            amount *= host.OutgoingPhysicalMultiplier;
+
+        return Mathf.Max(0f, amount);
     }
 
     public void TakeDamage(float amount)
@@ -169,10 +249,14 @@ public class Enemy : MonoBehaviour, IImpactReceiver
 
     protected Vector2 ClampPoint(Vector2 world)
     {
-        if (Area == null)
-            return world;
+        Vector2 from = transform.position;
+        if (Area != null)
+            world = Area.Clamp(world, _halfW);
 
-        return Area.Clamp(world, _halfW);
+        if (MovementGate.Blocked(from, world))
+            return from;
+
+        return world;
     }
 
     void TickAttack()
@@ -188,7 +272,49 @@ public class Enemy : MonoBehaviour, IImpactReceiver
             return;
 
         _attackWait = stats.AttackInterval;
-        Vitals.TakeDamage(stats.Damage);
+        Vitals.TakeDamage(ContactDamage());
+    }
+
+    void ApplyStatuses(CombatStrike strike)
+    {
+        if (strike == null || strike.Statuses.Count == 0)
+            return;
+
+        StatusHost host = GetComponent<StatusHost>();
+        for (int i = 0; i < strike.Statuses.Count; i++)
+        {
+            StatusSpec spec = strike.Statuses[i];
+            if (spec.Kind == StatusKind.None || spec.Chance <= 0f)
+                continue;
+
+            if (host == null)
+                host = gameObject.AddComponent<StatusHost>();
+
+            host.TryApply(spec, Random.value);
+        }
+    }
+
+    void ApplyLifeOnHit(CombatStrike strike)
+    {
+        if (strike == null || strike.LifeOnHit <= 0f)
+            return;
+
+        Component owner = strike.Owner as Component;
+        if (owner == null)
+            return;
+
+        PlayerVitals vitals = owner.GetComponentInParent<PlayerVitals>();
+        if (vitals == null)
+            return;
+
+        vitals.SetHealth(vitals.Health + strike.LifeOnHit);
+    }
+
+    void ClearStatuses()
+    {
+        StatusHost host = GetComponent<StatusHost>();
+        if (host != null)
+            host.Clear();
     }
 
     void Die()
@@ -199,6 +325,8 @@ public class Enemy : MonoBehaviour, IImpactReceiver
         Dead = true;
         Alive.Remove(this);
         HideHealthBar();
+        ClearStatuses();
+        Fx.Play(FxEvent.Death, transform.position);
         OnDied();
     }
 
@@ -360,8 +488,20 @@ public class Enemy : MonoBehaviour, IImpactReceiver
             return;
 
         renderer.sortingLayerID = playerRenderer.sortingLayerID;
-        bool inFront = transform.position.y <= Player.transform.position.y;
-        renderer.sortingOrder = playerRenderer.sortingOrder + (inFront ? 2 : -3);
+        renderer.sortingOrder = IsoSort.Stable(IsoSort.SortY(transform, renderer), gameObject.GetEntityId().GetHashCode());
+    }
+
+    static Vector3 StrikePoint(in Impact impact, Vector3 fallback)
+    {
+        return impact.Point.sqrMagnitude > 0.0001f ? (Vector3)impact.Point : fallback;
+    }
+
+    static DamageType StrikeType(CombatStrike strike)
+    {
+        if (strike == null || strike.Parts.Count == 0)
+            return DamageType.None;
+
+        return strike.Parts[0].Type;
     }
 
     static float Gap(Rect a, Rect b)

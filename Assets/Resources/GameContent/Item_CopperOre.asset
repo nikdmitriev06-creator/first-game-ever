@@ -25,3 +25,43 @@ MonoBehaviour:
   stationRadius: 0
   durability: 1
   footprint: 0.4
+  tool:
+    Impact: {fileID: 0}
+    Power: 1
+    Range: 3.6
+    Stamina: 6
+    Shape: 0
+    Gesture: 1
+    Use: 0
+    ActionId: 
+  placementPolicy: {fileID: 0}
+  breakMaterial: {fileID: 0}
+  indestructible: 0
+  description: 
+  wearCapacity: 0
+  weapon:
+    Kind: 0
+    Damage: 10
+    AttackSpeed: 1.5
+    Range: 3
+    Stamina: 8
+    CritChance: 0
+    CritMultiplier: 1.4
+    ProjectileSpeed: 0
+    DamageTypeId: physical
+    StrategyId: 
+    TypedDamage: 0
+    BonusDamage: []
+    OnHit: []
+    ArcDegrees: 80
+    Knockback: 0
+    ManaCost: 0
+    Reload: 0
+    Windup: 0
+  equipment:
+    SlotId: body
+    HealthBonus: 0
+  consumable:
+    EffectId: 
+    Magnitude: 0
+  rarity: 1

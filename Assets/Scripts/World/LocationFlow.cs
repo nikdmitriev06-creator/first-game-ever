@@ -40,6 +40,7 @@ public static class LocationFlow
         _busy = true;
         _returnPoint = returnPoint;
         _lockUntil = Time.unscaledTime + 0.3f;
+        WorldPresentation.ClearTransient();
         if (LevelWorld.Instance != null)
             LevelWorld.Instance.SuspendForInterior(returnPoint);
 
@@ -87,6 +88,7 @@ public static class LocationFlow
         _inside = false;
         _lockUntil = Time.unscaledTime + 0.3f;
         _afterExit = then;
+        WorldPresentation.ClearTransient();
 
         if (HouseInterior.Active != null && LevelWorld.Instance != null)
             HouseInterior.Active.EvacuateDrops(LevelWorld.Instance.HomeAnchor, _returnPoint);

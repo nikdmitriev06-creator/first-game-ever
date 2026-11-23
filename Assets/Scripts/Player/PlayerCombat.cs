@@ -69,12 +69,22 @@ public class PlayerCombat : MonoBehaviour
 
     IWeapon HeldWeapon()
     {
-        if (_weapons == null)
+        IWeapon held = FindHeld(_weapons);
+        if (held != null)
+            return held;
+
+        _weapons = GetComponentsInChildren<IWeapon>(true);
+        return FindHeld(_weapons);
+    }
+
+    static IWeapon FindHeld(IWeapon[] weapons)
+    {
+        if (weapons == null)
             return null;
 
-        for (int i = 0; i < _weapons.Length; i++)
+        for (int i = 0; i < weapons.Length; i++)
         {
-            IWeapon weapon = _weapons[i];
+            IWeapon weapon = weapons[i];
             if (weapon != null && weapon.IsHeld)
                 return weapon;
         }

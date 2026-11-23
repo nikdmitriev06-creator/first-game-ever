@@ -1,0 +1,669 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6e6742481e1e0b4495be526a2636306, type: 3}
+  m_Name: Room
+  m_EditorClassIdentifier: Assembly-CSharp::RoomDefinition
+  id: Forest_Battle_1
+  displayName: "\u041B\u0435\u0441\u043D\u0430\u044F \u0442\u0440\u043E\u043F\u0430"
+  width: 12
+  height: 10
+  category: 1
+  biomeId: forest
+  defaultGround: {fileID: 0}
+  cells:
+  - x: 3
+    y: 5
+    layer: 0
+    terrain: {fileID: 11400000, guid: be7076514cac3184684fffe1eb49ee47, type: 2}
+  - x: 3
+    y: 4
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 3
+    y: 3
+    layer: 0
+    terrain: {fileID: 11400000, guid: e8d5537c98aa85044aa47460606fb22e, type: 2}
+  - x: 0
+    y: 9
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 4
+    y: 4
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 4
+    y: 3
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 2
+    y: 2
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a052ff7f13992342acc0a6823f17271, type: 2}
+  - x: 1
+    y: 2
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a052ff7f13992342acc0a6823f17271, type: 2}
+  - x: 1
+    y: 1
+    layer: 0
+    terrain: {fileID: 11400000, guid: 86a37135ab28ffa45ab1891176e66a2b, type: 2}
+  - x: 2
+    y: 4
+    layer: 0
+    terrain: {fileID: 11400000, guid: c4ff2d525b28219459e09aff907eb837, type: 2}
+  - x: 2
+    y: 3
+    layer: 0
+    terrain: {fileID: 11400000, guid: e8d5537c98aa85044aa47460606fb22e, type: 2}
+  - x: 6
+    y: 7
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 1
+    y: 3
+    layer: 0
+    terrain: {fileID: 11400000, guid: e8d5537c98aa85044aa47460606fb22e, type: 2}
+  - x: 0
+    y: 3
+    layer: 0
+    terrain: {fileID: 11400000, guid: e8d5537c98aa85044aa47460606fb22e, type: 2}
+  - x: 1
+    y: 4
+    layer: 0
+    terrain: {fileID: 11400000, guid: c4ff2d525b28219459e09aff907eb837, type: 2}
+  - x: 0
+    y: 4
+    layer: 0
+    terrain: {fileID: 11400000, guid: c4ff2d525b28219459e09aff907eb837, type: 2}
+  - x: 0
+    y: 2
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a052ff7f13992342acc0a6823f17271, type: 2}
+  - x: 3
+    y: 2
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a052ff7f13992342acc0a6823f17271, type: 2}
+  - x: 4
+    y: 2
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a052ff7f13992342acc0a6823f17271, type: 2}
+  - x: 5
+    y: 2
+    layer: 0
+    terrain: {fileID: 11400000, guid: ccfed8b5e2392a3419efe005da0a6cfd, type: 2}
+  - x: 0
+    y: 5
+    layer: 0
+    terrain: {fileID: 11400000, guid: be7076514cac3184684fffe1eb49ee47, type: 2}
+  - x: 1
+    y: 5
+    layer: 0
+    terrain: {fileID: 11400000, guid: be7076514cac3184684fffe1eb49ee47, type: 2}
+  - x: 2
+    y: 5
+    layer: 0
+    terrain: {fileID: 11400000, guid: be7076514cac3184684fffe1eb49ee47, type: 2}
+  - x: 4
+    y: 5
+    layer: 0
+    terrain: {fileID: 11400000, guid: be7076514cac3184684fffe1eb49ee47, type: 2}
+  - x: 5
+    y: 5
+    layer: 0
+    terrain: {fileID: 11400000, guid: be7076514cac3184684fffe1eb49ee47, type: 2}
+  - x: 6
+    y: 5
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 6
+    y: 4
+    layer: 0
+    terrain: {fileID: 11400000, guid: be7076514cac3184684fffe1eb49ee47, type: 2}
+  - x: 7
+    y: 4
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 8
+    y: 4
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 5
+    y: 4
+    layer: 0
+    terrain: {fileID: 11400000, guid: dc2ee494699d4694189745a534e1f781, type: 2}
+  - x: 5
+    y: 3
+    layer: 0
+    terrain: {fileID: 11400000, guid: dc2ee494699d4694189745a534e1f781, type: 2}
+  - x: 6
+    y: 3
+    layer: 0
+    terrain: {fileID: 11400000, guid: dc2ee494699d4694189745a534e1f781, type: 2}
+  - x: 7
+    y: 3
+    layer: 0
+    terrain: {fileID: 11400000, guid: dc2ee494699d4694189745a534e1f781, type: 2}
+  - x: 8
+    y: 3
+    layer: 0
+    terrain: {fileID: 11400000, guid: dc2ee494699d4694189745a534e1f781, type: 2}
+  - x: 9
+    y: 3
+    layer: 0
+    terrain: {fileID: 11400000, guid: dc2ee494699d4694189745a534e1f781, type: 2}
+  - x: 10
+    y: 3
+    layer: 0
+    terrain: {fileID: 11400000, guid: dc2ee494699d4694189745a534e1f781, type: 2}
+  - x: 3
+    y: 1
+    layer: 0
+    terrain: {fileID: 11400000, guid: ccfed8b5e2392a3419efe005da0a6cfd, type: 2}
+  - x: 4
+    y: 1
+    layer: 0
+    terrain: {fileID: 11400000, guid: ccfed8b5e2392a3419efe005da0a6cfd, type: 2}
+  - x: 6
+    y: 2
+    layer: 0
+    terrain: {fileID: 11400000, guid: ccfed8b5e2392a3419efe005da0a6cfd, type: 2}
+  - x: 7
+    y: 2
+    layer: 0
+    terrain: {fileID: 11400000, guid: ccfed8b5e2392a3419efe005da0a6cfd, type: 2}
+  - x: 8
+    y: 2
+    layer: 0
+    terrain: {fileID: 11400000, guid: ccfed8b5e2392a3419efe005da0a6cfd, type: 2}
+  - x: 9
+    y: 2
+    layer: 0
+    terrain: {fileID: 11400000, guid: ccfed8b5e2392a3419efe005da0a6cfd, type: 2}
+  - x: 10
+    y: 2
+    layer: 0
+    terrain: {fileID: 11400000, guid: ccfed8b5e2392a3419efe005da0a6cfd, type: 2}
+  - x: 11
+    y: 2
+    layer: 0
+    terrain: {fileID: 11400000, guid: ccfed8b5e2392a3419efe005da0a6cfd, type: 2}
+  - x: 0
+    y: 1
+    layer: 0
+    terrain: {fileID: 11400000, guid: 86a37135ab28ffa45ab1891176e66a2b, type: 2}
+  - x: 1
+    y: 0
+    layer: 0
+    terrain: {fileID: 11400000, guid: 86a37135ab28ffa45ab1891176e66a2b, type: 2}
+  - x: 2
+    y: 0
+    layer: 0
+    terrain: {fileID: 11400000, guid: 86a37135ab28ffa45ab1891176e66a2b, type: 2}
+  - x: 3
+    y: 0
+    layer: 0
+    terrain: {fileID: 11400000, guid: 86a37135ab28ffa45ab1891176e66a2b, type: 2}
+  - x: 4
+    y: 0
+    layer: 0
+    terrain: {fileID: 11400000, guid: 86a37135ab28ffa45ab1891176e66a2b, type: 2}
+  - x: 5
+    y: 0
+    layer: 0
+    terrain: {fileID: 11400000, guid: 86a37135ab28ffa45ab1891176e66a2b, type: 2}
+  - x: 6
+    y: 0
+    layer: 0
+    terrain: {fileID: 11400000, guid: 86a37135ab28ffa45ab1891176e66a2b, type: 2}
+  - x: 6
+    y: 1
+    layer: 0
+    terrain: {fileID: 11400000, guid: 86a37135ab28ffa45ab1891176e66a2b, type: 2}
+  - x: 7
+    y: 1
+    layer: 0
+    terrain: {fileID: 11400000, guid: 86a37135ab28ffa45ab1891176e66a2b, type: 2}
+  - x: 8
+    y: 1
+    layer: 0
+    terrain: {fileID: 11400000, guid: 86a37135ab28ffa45ab1891176e66a2b, type: 2}
+  - x: 9
+    y: 1
+    layer: 0
+    terrain: {fileID: 11400000, guid: 86a37135ab28ffa45ab1891176e66a2b, type: 2}
+  - x: 10
+    y: 1
+    layer: 0
+    terrain: {fileID: 11400000, guid: 86a37135ab28ffa45ab1891176e66a2b, type: 2}
+  - x: 11
+    y: 1
+    layer: 0
+    terrain: {fileID: 11400000, guid: 86a37135ab28ffa45ab1891176e66a2b, type: 2}
+  - x: 11
+    y: 0
+    layer: 0
+    terrain: {fileID: 11400000, guid: 86a37135ab28ffa45ab1891176e66a2b, type: 2}
+  - x: 10
+    y: 0
+    layer: 0
+    terrain: {fileID: 11400000, guid: bd96a73192e1f2c4985cbe8a561120d2, type: 2}
+  - x: 9
+    y: 0
+    layer: 0
+    terrain: {fileID: 11400000, guid: bd96a73192e1f2c4985cbe8a561120d2, type: 2}
+  - x: 8
+    y: 0
+    layer: 0
+    terrain: {fileID: 11400000, guid: bd96a73192e1f2c4985cbe8a561120d2, type: 2}
+  - x: 7
+    y: 0
+    layer: 0
+    terrain: {fileID: 11400000, guid: bd96a73192e1f2c4985cbe8a561120d2, type: 2}
+  - x: 5
+    y: 1
+    layer: 0
+    terrain: {fileID: 11400000, guid: bd96a73192e1f2c4985cbe8a561120d2, type: 2}
+  - x: 2
+    y: 1
+    layer: 0
+    terrain: {fileID: 11400000, guid: bd96a73192e1f2c4985cbe8a561120d2, type: 2}
+  - x: 0
+    y: 0
+    layer: 0
+    terrain: {fileID: 11400000, guid: bd96a73192e1f2c4985cbe8a561120d2, type: 2}
+  - x: 0
+    y: 8
+    layer: 2
+    terrain: {fileID: 11400000, guid: bd96a73192e1f2c4985cbe8a561120d2, type: 2}
+  - x: 1
+    y: 8
+    layer: 2
+    terrain: {fileID: 11400000, guid: bd96a73192e1f2c4985cbe8a561120d2, type: 2}
+  - x: 2
+    y: 8
+    layer: 2
+    terrain: {fileID: 11400000, guid: bd96a73192e1f2c4985cbe8a561120d2, type: 2}
+  - x: 3
+    y: 8
+    layer: 2
+    terrain: {fileID: 11400000, guid: bd96a73192e1f2c4985cbe8a561120d2, type: 2}
+  - x: 5
+    y: 9
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 6
+    y: 9
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 7
+    y: 9
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 4
+    y: 9
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 1
+    y: 9
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 2
+    y: 9
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 3
+    y: 9
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 4
+    y: 8
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 3
+    y: 8
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 3
+    y: 7
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 2
+    y: 7
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 1
+    y: 7
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 1
+    y: 6
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 0
+    y: 6
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 0
+    y: 7
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 2
+    y: 6
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 3
+    y: 6
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 4
+    y: 6
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 5
+    y: 7
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 7
+    y: 7
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 7
+    y: 8
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 6
+    y: 8
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 5
+    y: 8
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 4
+    y: 7
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 5
+    y: 6
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 6
+    y: 6
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 7
+    y: 6
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 8
+    y: 6
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 9
+    y: 6
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 9
+    y: 7
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 9
+    y: 8
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 8
+    y: 8
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 7
+    y: 5
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 8
+    y: 5
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 9
+    y: 5
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 9
+    y: 4
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 10
+    y: 4
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 11
+    y: 4
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 11
+    y: 3
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 11
+    y: 5
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 11
+    y: 6
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 11
+    y: 7
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 11
+    y: 8
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 10
+    y: 8
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 10
+    y: 9
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 11
+    y: 9
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 9
+    y: 9
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 8
+    y: 9
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 8
+    y: 7
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 10
+    y: 7
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 10
+    y: 6
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  - x: 10
+    y: 5
+    layer: 0
+    terrain: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  markers:
+  - id: Special_6e09a178
+    kind: 4
+    x: 2
+    y: 9
+    prefab: {fileID: 0}
+    pool: {fileID: 0}
+    category: 0
+    minCount: 1
+    maxCount: 1
+    radius: 1.5
+    minDifficulty: 1
+    maxDifficulty: 0
+    repeat: 0
+    enabled: 1
+    allowedSurfaceIds: []
+    direction: 0
+    required: 0
+    socketTag: 
+  - id: Special_fc6edeb0
+    kind: 4
+    x: 3
+    y: 9
+    prefab: {fileID: 0}
+    pool: {fileID: 0}
+    category: 0
+    minCount: 1
+    maxCount: 1
+    radius: 1.5
+    minDifficulty: 1
+    maxDifficulty: 0
+    repeat: 0
+    enabled: 1
+    allowedSurfaceIds: []
+    direction: 0
+    required: 0
+    socketTag: 
+  - id: Special_268b4aaf
+    kind: 4
+    x: 2
+    y: 6
+    prefab: {fileID: 0}
+    pool: {fileID: 0}
+    category: 0
+    minCount: 1
+    maxCount: 1
+    radius: 1.5
+    minDifficulty: 1
+    maxDifficulty: 0
+    repeat: 0
+    enabled: 1
+    allowedSurfaceIds: []
+    direction: 0
+    required: 0
+    socketTag: 
+  - id: Special_2abdf506
+    kind: 4
+    x: 1
+    y: 6
+    prefab: {fileID: 0}
+    pool: {fileID: 0}
+    category: 0
+    minCount: 1
+    maxCount: 1
+    radius: 1.5
+    minDifficulty: 1
+    maxDifficulty: 0
+    repeat: 0
+    enabled: 1
+    allowedSurfaceIds: []
+    direction: 0
+    required: 0
+    socketTag: 
+  - id: Special_1c03c76e
+    kind: 4
+    x: 0
+    y: 6
+    prefab: {fileID: 0}
+    pool: {fileID: 0}
+    category: 0
+    minCount: 1
+    maxCount: 1
+    radius: 1.5
+    minDifficulty: 1
+    maxDifficulty: 0
+    repeat: 0
+    enabled: 1
+    allowedSurfaceIds: []
+    direction: 0
+    required: 0
+    socketTag: 
+  - id: Special_6ab191ce
+    kind: 4
+    x: 0
+    y: 7
+    prefab: {fileID: 0}
+    pool: {fileID: 0}
+    category: 0
+    minCount: 1
+    maxCount: 1
+    radius: 1.5
+    minDifficulty: 1
+    maxDifficulty: 0
+    repeat: 0
+    enabled: 1
+    allowedSurfaceIds: []
+    direction: 0
+    required: 0
+    socketTag: 
+  - id: Special_b8baf3c1
+    kind: 4
+    x: 1
+    y: 7
+    prefab: {fileID: 0}
+    pool: {fileID: 0}
+    category: 0
+    minCount: 1
+    maxCount: 1
+    radius: 1.5
+    minDifficulty: 1
+    maxDifficulty: 0
+    repeat: 0
+    enabled: 1
+    allowedSurfaceIds: []
+    direction: 0
+    required: 0
+    socketTag: 
+  - id: Special_a2746a93
+    kind: 4
+    x: 2
+    y: 7
+    prefab: {fileID: 0}
+    pool: {fileID: 0}
+    category: 0
+    minCount: 1
+    maxCount: 1
+    radius: 1.5
+    minDifficulty: 1
+    maxDifficulty: 0
+    repeat: 0
+    enabled: 1
+    allowedSurfaceIds: []
+    direction: 0
+    required: 0
+    socketTag: 
+  - id: Special_707a19cc
+    kind: 4
+    x: 4
+    y: 3
+    prefab: {fileID: 0}
+    pool: {fileID: 0}
+    category: 0
+    minCount: 1
+    maxCount: 1
+    radius: 1.5
+    minDifficulty: 1
+    maxDifficulty: 0
+    repeat: 0
+    enabled: 1
+    allowedSurfaceIds: []
+    direction: 0
+    required: 0
+    socketTag: 

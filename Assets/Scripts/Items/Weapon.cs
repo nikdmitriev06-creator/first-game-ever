@@ -1,7 +1,8 @@
 using UnityEngine;
 
 /// <summary>
-/// A held weapon. The combat numbers live on Stats. Each weapon plays its own attack and only changes those numbers.
+/// A held weapon. The swing or the shot is still this object's job.
+/// The numbers come from <see cref="AttackResolver"/> when the item has a profile.
 /// </summary>
 public abstract class Weapon : MonoBehaviour, IWeapon
 {
@@ -15,28 +16,33 @@ public abstract class Weapon : MonoBehaviour, IWeapon
     public abstract string ItemId { get; }
     public abstract Sprite IconSprite { get; }
     public abstract bool IsHeld { get; }
+    public virtual bool Wants(string itemId) => itemId == ItemId;
     public abstract void SetHeld(bool held);
     public abstract void Attack();
 
     protected void BindOwner()
     {
-        Transform parent = transform.parent;
-        if (parent == null)
-            return;
+        Transform host = transform;
+        if (host.GetComponent<PlayerVitals>() == null && host.parent != null)
+            host = host.parent;
 
-        _combat = parent.GetComponent<PlayerCombat>();
-        _vitals = parent.GetComponent<PlayerVitals>();
+        _combat = host.GetComponent<PlayerCombat>();
+        _vitals = host.GetComponent<PlayerVitals>();
     }
 
     // Seconds between attacks after the character's attack speed multiplier.
     protected float AttackInterval()
     {
         float perSecond = stats.AttackSpeed;
-        ItemDefinition definition = ItemCatalog.Find(ItemId);
-        if (definition != null && definition.Weapon != null)
-            perSecond = definition.Weapon.AttackSpeed;
+        if (TryResolvePlan(out AttackPlan plan))
+            perSecond = plan.AttackSpeed;
 
-        perSecond *= AttackScale();
+        return ScaledInterval(perSecond);
+    }
+
+    protected float ScaledInterval(float attacksPerSecond)
+    {
+        float perSecond = attacksPerSecond * AttackScale();
         return 1f / Mathf.Max(0.05f, perSecond);
     }
 
@@ -52,14 +58,30 @@ public abstract class Weapon : MonoBehaviour, IWeapon
     protected bool TrySpendStamina()
     {
         float cost = stats.StaminaCost;
-        ItemDefinition definition = ItemCatalog.Find(ItemId);
-        if (definition != null && definition.Weapon != null)
-            cost = Mathf.Max(0f, definition.Weapon.Stamina);
+        WeaponProfile profile = BoundWeapon();
+        if (profile != null)
+            cost = Mathf.Max(0f, profile.Stamina);
 
         if (cost <= 0f || _vitals == null)
             return true;
 
         return _vitals.TrySpendStaminaAmount(cost);
+    }
+
+    protected bool HasMana(float cost)
+    {
+        if (cost <= 0f || _vitals == null)
+            return true;
+
+        return _vitals.Mana + 0.0001f >= cost;
+    }
+
+    protected bool TrySpendMana(float cost)
+    {
+        if (cost <= 0f || _vitals == null)
+            return true;
+
+        return _vitals.TrySpendMana(cost);
     }
 
     float AttackScale()
@@ -72,11 +94,9 @@ public abstract class Weapon : MonoBehaviour, IWeapon
 
     protected ItemInstance HeldStack()
     {
-        Transform parent = transform.parent;
-        if (parent == null)
-            return null;
-
-        PlayerInventory bag = parent.GetComponent<PlayerInventory>();
+        PlayerInventory bag = GetComponent<PlayerInventory>();
+        if (bag == null && transform.parent != null)
+            bag = transform.parent.GetComponent<PlayerInventory>();
         if (bag == null)
             return null;
 
@@ -86,19 +106,55 @@ public abstract class Weapon : MonoBehaviour, IWeapon
     protected WeaponProfile BoundWeapon()
     {
         ItemDefinition definition = ItemCatalog.Find(ItemId);
-        return definition != null ? definition.Weapon : null;
+        return definition != null ? definition.ResolvedWeapon : null;
+    }
+
+    public bool TryPreview(out AttackPlan plan)
+    {
+        return TryResolvePlan(out plan);
+    }
+
+    public float CurrentAttackInterval()
+    {
+        return AttackInterval();
+    }
+
+    protected bool TryResolvePlan(out AttackPlan plan)
+    {
+        plan = default;
+        ItemDefinition definition = ItemCatalog.Find(ItemId);
+        if (definition == null || definition.ResolvedWeapon == null)
+            return false;
+
+        plan = AttackResolver.Resolve(definition, HeldStack(), AttackResolver.ActiveRunModifiers());
+        return true;
+    }
+
+    protected bool TryPrepareAttack(float roll01, out AttackPlan plan, out CombatStrike strike)
+    {
+        strike = null;
+        if (!TryResolvePlan(out plan))
+            return false;
+
+        float scale = 1f;
+        StatusHost host = GetComponentInParent<StatusHost>();
+        if (host != null)
+            scale = host.OutgoingPhysicalMultiplier;
+
+        strike = CombatStrike.Build(plan, roll01, scale);
+        strike.Owner = this;
+        return true;
     }
 
     protected bool TryResolveAttack(float roll01, out AttackPlan plan, out float damage)
     {
-        plan = default;
-        damage = 0f;
-        ItemDefinition definition = ItemCatalog.Find(ItemId);
-        if (definition == null || definition.Weapon == null)
+        if (!TryPrepareAttack(roll01, out plan, out CombatStrike strike))
+        {
+            damage = 0f;
             return false;
+        }
 
-        plan = AttackResolver.Resolve(definition, HeldStack(), null);
-        damage = plan.RollDamage(roll01);
+        damage = strike.Total;
         return true;
     }
 }

@@ -32,6 +32,21 @@ public static class MaterialLibrary
         Creature = Find(loaded, "creature") ?? Make("creature", SlashOnly(), new Color(0.55f, 0.75f, 0.38f, 1f));
     }
 
+    public static MaterialDefinition Named(string id)
+    {
+        Ensure();
+        if (id == "wood")
+            return Wood;
+        if (id == "furniture")
+            return Furniture;
+        if (id == "stone")
+            return Stone;
+        if (id == "creature")
+            return Creature;
+
+        return null;
+    }
+
     public static MaterialDefinition ForPlaceable(ItemDefinition item)
     {
         Ensure();

@@ -5,7 +5,7 @@ using UnityEngine;
 /// The walk strip is a squash cycle, so it plays as the rest pose between hops.
 /// The painted blob is about 15 pixels tall, and the whole cell is scaled by an integer so the pixels stay sharp.
 /// </summary>
-public class Slime : Enemy
+public class Slime : Enemy, IWorldSpawn
 {
     const float BodyWidthPixels = 23f;
     const float BodyHeightPixels = 15f;
@@ -29,6 +29,9 @@ public class Slime : Enemy
     float _hurtTime;
     float _deathTime;
     bool _hopping;
+    Vector3 _home;
+    bool _homeSet;
+    bool _seen;
 
     public static Slime Spawn(Vector2 world, PlayArea area, Transform parent)
     {
@@ -47,6 +50,26 @@ public class Slime : Enemy
 
         transform.position = new Vector3(world.x, world.y, 0f);
         ClampToArea();
+        RememberHome();
+    }
+
+    void Start()
+    {
+        RememberHome();
+    }
+
+    void RememberHome()
+    {
+        if (_homeSet)
+            return;
+
+        _home = transform.position;
+        _homeSet = true;
+    }
+
+    public void PlaceInWorld(Vector2 world, PlayArea area, Transform parent)
+    {
+        Place(world, area, parent);
     }
 
     protected override void Awake()
@@ -135,22 +158,51 @@ public class Slime : Enemy
 
     void TryBeginHop()
     {
+        RememberHome();
         float gap = GapToPlayer();
-        if (gap > PixelUnits.ToWorld(Stats.NoticeRange))
+        float notice = PixelUnits.ToWorld(Stats.NoticeRange);
+        float lose = PixelUnits.ToWorld(Stats.LoseRange);
+        float attack = PixelUnits.ToWorld(Stats.AttackPadding);
+        float leash = PixelUnits.ToWorld(Stats.LeashRange);
+        float homeDistance = Vector2.Distance(transform.position, _home);
+        if (gap <= notice)
+            _seen = true;
+
+        MindOrder order = CreatureMind.Choose(gap, homeDistance, notice, lose, attack, leash, _seen);
+        if (order == MindOrder.Attack)
             return;
 
-        float padding = PixelUnits.ToWorld(Stats.AttackPadding);
-        float travel = Mathf.Min(PixelUnits.ToWorld(jumpDistance), Mathf.Max(0f, gap - padding));
-        if (travel < PixelUnits.ToWorld(1f))
-            return;
+        Vector2 goal = (Vector2)_home;
+        float travel = PixelUnits.ToWorld(jumpDistance);
+        if (order == MindOrder.Chase || order == MindOrder.Detect)
+        {
+            Vector2 to = PlayerCenter - BodyCenter;
+            if (to.sqrMagnitude < 0.0001f)
+                return;
 
-        Vector2 to = PlayerCenter - BodyCenter;
-        if (to.sqrMagnitude < 0.0001f)
+            travel = Mathf.Min(travel, Mathf.Max(0f, gap - attack));
+            goal = (Vector2)transform.position + to.normalized * travel;
+        }
+        else if (order == MindOrder.Idle)
+        {
+            if (_between < secondsBetweenJumps * 2f)
+                return;
+
+            Vector2 ring = new Vector2(Mathf.Cos(_idleTime), Mathf.Sin(_idleTime * 0.7f));
+            goal = (Vector2)_home + ring.normalized * PixelUnits.ToWorld(18f);
+        }
+
+        if (travel < PixelUnits.ToWorld(1f) && order != MindOrder.Return && order != MindOrder.Idle)
             return;
 
         _hopFrom = transform.position;
-        Vector2 landing = (Vector2)_hopFrom + to.normalized * travel;
-        _hopTo = ClampPoint(landing);
+        _hopTo = ClampPoint(goal);
+        if (((Vector2)_hopTo - (Vector2)_hopFrom).sqrMagnitude < 0.0004f)
+        {
+            _between = 0f;
+            return;
+        }
+
         _hopT = 0f;
         _hopping = true;
     }

@@ -4,7 +4,7 @@ using UnityEngine;
 /// A forest tree. Chopping is data: wood material, three integrity, a wood drop, and a stump when it breaks.
 /// The axe does not mention this class.
 /// </summary>
-public class Tree : MonoBehaviour, IBreakReaction
+public class ForestTree : MonoBehaviour, IBreakReaction
 {
     const float AimSlop = 1.7f;
 
@@ -34,14 +34,13 @@ public class Tree : MonoBehaviour, IBreakReaction
     {
         Transform parent = transform.parent;
         Vector3 at = transform.position;
-        int order = _renderer != null ? _renderer.sortingOrder : 4;
         int layer = _renderer != null ? _renderer.sortingLayerID : 0;
         Material material = _renderer != null ? _renderer.sharedMaterial : null;
-        LeaveStump(parent, at, order, layer, material);
+        LeaveStump(parent, at, layer, material);
         Destroy(gameObject);
     }
 
-    static void LeaveStump(Transform parent, Vector3 at, int order, int layer, Material material)
+    static void LeaveStump(Transform parent, Vector3 at, int layer, Material material)
     {
         var go = new GameObject("Stump");
         if (parent != null)
@@ -51,7 +50,9 @@ public class Tree : MonoBehaviour, IBreakReaction
         var renderer = go.AddComponent<SpriteRenderer>();
         renderer.sprite = StumpSprite();
         renderer.sortingLayerID = layer;
-        renderer.sortingOrder = Mathf.Max(2, order - 1);
+        renderer.sortingOrder = IsoSort.Order(at.y);
+        BillboardSort sort = go.AddComponent<BillboardSort>();
+        sort.Follow = true;
         if (material != null)
             renderer.sharedMaterial = material;
     }

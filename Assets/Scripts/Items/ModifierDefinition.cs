@@ -9,7 +9,11 @@ public enum ModifierStat
     ExtraProjectiles,
     DamageTypeOverride,
     OnHitStatus,
-    LifeOnHit
+    LifeOnHit,
+    PhysicalDamageAdd,
+    ElementalDamageAdd,
+    StatusChanceAdd,
+    StatusPowerAdd
 }
 
 public enum ModifierScope

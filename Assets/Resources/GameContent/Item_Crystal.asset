@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e50fe4a851c7ae4f9f1d07e577bd81a, type: 3}
+  m_Name: Item_Crystal
+  m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
+  id: crystal_shard
+  displayName: "\u041E\u0441\u043A\u043E\u043B\u043E\u043A \u043A\u0440\u0438\u0441\u0442\u0430\u043B\u043B\u0430"
+  displayNameEnglish: Crystal Shard
+  icon: {fileID: 0}
+  worldSprite: {fileID: 0}
+  maxStack: 99
+  category: 0
+  placement: 0
+  prefab: {fileID: 0}
+  stationId: 
+  stationRadius: 0
+  durability: 1
+  footprint: 0.4
+  tool:
+    Impact: {fileID: 0}
+    Power: 1
+    Range: 3.6
+    Stamina: 6
+    Shape: 0
+    Gesture: 1
+    Use: 0
+    ActionId: 
+  placementPolicy: {fileID: 0}
+  breakMaterial: {fileID: 0}
+  indestructible: 0
+  description: 
+  wearCapacity: 0
+  weapon:
+    Kind: 0
+    Damage: 10
+    AttackSpeed: 1.5
+    Range: 3
+    Stamina: 8
+    CritChance: 0
+    CritMultiplier: 1.4
+    ProjectileSpeed: 0
+    DamageTypeId: physical
+    StrategyId: 
+    TypedDamage: 0
+    BonusDamage: []
+    OnHit: []
+    ArcDegrees: 80
+    Knockback: 0
+    ManaCost: 0
+    Reload: 0
+    Windup: 0
+  equipment:
+    SlotId: body
+    HealthBonus: 0
+  consumable:
+    EffectId: 
+    Magnitude: 0
+  rarity: 2

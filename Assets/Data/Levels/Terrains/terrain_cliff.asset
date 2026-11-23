@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8b4fee72160b4c4297e2376cfd7a3a2, type: 3}
+  m_Name: terrain_cliff
+  m_EditorClassIdentifier: Assembly-CSharp::TerrainDefinition
+  id: terrain.cliff
+  displayName: "\u041E\u0431\u0440\u044B\u0432"
+  passage: 1
+  height: 1
+  speed: 1
+  connectGroup: cliff
+  hazardId: 
+  swatch: {r: 0.28, g: 0.32, b: 0.24, a: 1}
+  centers:
+  - {fileID: -3404443151320266416, guid: 70035d1e016b8d7439cc58faf18bc866, type: 3}
+  - {fileID: 7105590856620878104, guid: 70035d1e016b8d7439cc58faf18bc866, type: 3}
+  - {fileID: -8767492923408547275, guid: 70035d1e016b8d7439cc58faf18bc866, type: 3}
+  - {fileID: -44088185863468011, guid: 70035d1e016b8d7439cc58faf18bc866, type: 3}
+  edges:
+  - {fileID: 1264402687, guid: 70035d1e016b8d7439cc58faf18bc866, type: 3}
+  - {fileID: 1192372516, guid: 70035d1e016b8d7439cc58faf18bc866, type: 3}
+  - {fileID: 726744125, guid: 70035d1e016b8d7439cc58faf18bc866, type: 3}
+  - {fileID: -1489069592, guid: 70035d1e016b8d7439cc58faf18bc866, type: 3}
+  - {fileID: -1443216680, guid: 70035d1e016b8d7439cc58faf18bc866, type: 3}
+  - {fileID: -1093774542, guid: 70035d1e016b8d7439cc58faf18bc866, type: 3}
+  - {fileID: -892880589, guid: 70035d1e016b8d7439cc58faf18bc866, type: 3}
+  - {fileID: 887513222, guid: 70035d1e016b8d7439cc58faf18bc866, type: 3}
+  - {fileID: -1899236024, guid: 70035d1e016b8d7439cc58faf18bc866, type: 3}
+  - {fileID: 1557429441, guid: 70035d1e016b8d7439cc58faf18bc866, type: 3}
+  - {fileID: -2099716410531085576, guid: 70035d1e016b8d7439cc58faf18bc866, type: 3}
+  - {fileID: 8897557248766244472, guid: 70035d1e016b8d7439cc58faf18bc866, type: 3}
+  - {fileID: 1415593896332204775, guid: 70035d1e016b8d7439cc58faf18bc866, type: 3}
+  - {fileID: 1586483921758132081, guid: 70035d1e016b8d7439cc58faf18bc866, type: 3}
+  - {fileID: 2470835475267458999, guid: 70035d1e016b8d7439cc58faf18bc866, type: 3}
+  - {fileID: -6031955908504944460, guid: 70035d1e016b8d7439cc58faf18bc866, type: 3}
+  tile: {fileID: 11400000, guid: ac52a5891dd34494baa8dd2531517d95, type: 2}

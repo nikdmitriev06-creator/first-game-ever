@@ -36,6 +36,12 @@ public static class GameContentBuilder
         ItemDefinition wood = EnsureItem("Wood", ItemIds.Wood, null);
         ItemDefinition sword = EnsureItem("Sword", ItemIds.Sword, null);
         ItemDefinition bow = EnsureItem("Bow", ItemIds.Bow, null);
+        ItemDefinition spear = EnsureItem("Spear", ItemIds.Spear, null);
+        ItemDefinition glaive = EnsureItem("Glaive", ItemIds.Glaive, null);
+        ItemDefinition shortSword = EnsureItem("ShortSword", ItemIds.ShortSword, null);
+        ItemDefinition greatsword = EnsureItem("Greatsword", ItemIds.Greatsword, null);
+        ItemDefinition staff = EnsureItem("Staff", ItemIds.Staff, null);
+        ItemDefinition crossbow = EnsureItem("Crossbow", ItemIds.Crossbow, null);
         ItemDefinition axe = EnsureItem("Axe", ItemIds.Axe, null);
         ItemDefinition benchItem = EnsureItem("Workbench", ItemIds.Workbench, workbench);
         ItemDefinition chairItem = EnsureItem("Chair", ItemIds.Chair, chair);
@@ -43,7 +49,20 @@ public static class GameContentBuilder
         ItemDefinition ore = EnsureItem("CopperOre", ItemIds.CopperOre, null);
         ItemDefinition pick = EnsureItem("Pickaxe", ItemIds.Pickaxe, null);
         ItemDefinition furnace = EnsureItem("Furnace", ItemIds.Furnace, furnaceObject);
+        ItemDefinition crystal = EnsureItem("Crystal", ItemIds.Crystal, null);
+        ItemDefinition relic = EnsureItem("Relic", ItemIds.Relic, null);
         LinkPickaxe(pick, mine);
+        EnsureWeaponProfile(sword, WeaponDefaults.Sword());
+        EnsureWeaponProfile(bow, WeaponDefaults.Bow());
+        EnsureWeaponProfile(spear, WeaponDefaults.Spear());
+        EnsureWeaponProfile(glaive, WeaponDefaults.Glaive());
+        EnsureWeaponProfile(shortSword, WeaponDefaults.ShortSword());
+        EnsureWeaponProfile(greatsword, WeaponDefaults.Greatsword());
+        EnsureWeaponProfile(staff, WeaponDefaults.Staff());
+        EnsureWeaponProfile(crossbow, WeaponDefaults.Crossbow());
+        NoteRarity(ore, ItemRarity.Uncommon);
+        NoteRarity(crystal, ItemRarity.Rare);
+        NoteRarity(relic, ItemRarity.VeryRare);
         EnsureRockLoot(stone, ore);
 
         RecipeDefinition benchRecipe = EnsureRecipe("Workbench", "recipe.workbench");
@@ -51,7 +70,7 @@ public static class GameContentBuilder
         RecipeDefinition furnaceRecipe = EnsureRecipe("Furnace", "recipe.furnace");
 
         EnsureCatalog(
-            new[] { wood, sword, bow, axe, benchItem, chairItem, stone, ore, pick, furnace },
+            new[] { wood, sword, bow, spear, glaive, shortSword, greatsword, staff, crossbow, axe, benchItem, chairItem, stone, ore, pick, furnace, crystal, relic },
             new[] { benchRecipe, chairRecipe, furnaceRecipe });
 
         AssetDatabase.SaveAssets();
@@ -199,6 +218,24 @@ public static class GameContentBuilder
         }
 
         return impact;
+    }
+
+    static void NoteRarity(ItemDefinition item, ItemRarity rarity)
+    {
+        if (item == null || item.Rarity == rarity)
+            return;
+
+        item.AssignRarity(rarity);
+        EditorUtility.SetDirty(item);
+    }
+
+    static void EnsureWeaponProfile(ItemDefinition item, WeaponProfile profile)
+    {
+        if (item == null || profile == null || !WeaponProfile.IsBlank(item.Weapon))
+            return;
+
+        item.AssignWeapon(profile);
+        EditorUtility.SetDirty(item);
     }
 
     static void LinkPickaxe(ItemDefinition item, ImpactType mine)

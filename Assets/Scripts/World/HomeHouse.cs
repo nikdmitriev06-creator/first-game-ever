@@ -32,7 +32,7 @@ public static class HomeHouse
         if (ground != null)
             material = ground.sharedMaterial;
 
-        SpriteRenderer shadow = Create(root.transform, "Shadow", HouseArt.CabinShadow(), new Vector2(0f, 0.2f), 1, material);
+        SpriteRenderer shadow = Create(root.transform, "Shadow", HouseArt.CabinShadow(), new Vector2(0f, 0.2f), IsoSort.FloorOrder + 1, material);
         shadow.color = new Color(1f, 1f, 1f, 0.85f);
 
         SpriteRenderer walls = Create(root.transform, "Walls", body, Vector2.zero, 4, material);

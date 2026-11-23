@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8b4fee72160b4c4297e2376cfd7a3a2, type: 3}
+  m_Name: terrain_water
+  m_EditorClassIdentifier: Assembly-CSharp::TerrainDefinition
+  id: terrain.water
+  displayName: "\u0420\u0435\u043A\u0430"
+  passage: 1
+  height: 0
+  speed: 1
+  connectGroup: water
+  hazardId: 
+  swatch: {r: 0.22, g: 0.42, b: 0.72, a: 1}
+  centers:
+  - {fileID: -4379747373993051355, guid: 04625ebc02a1e924bbb25b49b147154c, type: 3}
+  - {fileID: 9067454379423987980, guid: 04625ebc02a1e924bbb25b49b147154c, type: 3}
+  - {fileID: 539967727773503211, guid: 04625ebc02a1e924bbb25b49b147154c, type: 3}
+  - {fileID: -6860168149628533349, guid: 04625ebc02a1e924bbb25b49b147154c, type: 3}
+  edges:
+  - {fileID: -518845691, guid: 04625ebc02a1e924bbb25b49b147154c, type: 3}
+  - {fileID: -1111742575, guid: 04625ebc02a1e924bbb25b49b147154c, type: 3}
+  - {fileID: 1884115913, guid: 04625ebc02a1e924bbb25b49b147154c, type: 3}
+  - {fileID: 1221294867, guid: 04625ebc02a1e924bbb25b49b147154c, type: 3}
+  - {fileID: -2114517304, guid: 04625ebc02a1e924bbb25b49b147154c, type: 3}
+  - {fileID: 538448814, guid: 04625ebc02a1e924bbb25b49b147154c, type: 3}
+  - {fileID: 2000934498, guid: 04625ebc02a1e924bbb25b49b147154c, type: 3}
+  - {fileID: 953741176, guid: 04625ebc02a1e924bbb25b49b147154c, type: 3}
+  - {fileID: 537086180, guid: 04625ebc02a1e924bbb25b49b147154c, type: 3}
+  - {fileID: 799524491, guid: 04625ebc02a1e924bbb25b49b147154c, type: 3}
+  - {fileID: 4052997030333585617, guid: 04625ebc02a1e924bbb25b49b147154c, type: 3}
+  - {fileID: 3042873893361746023, guid: 04625ebc02a1e924bbb25b49b147154c, type: 3}
+  - {fileID: 530898917736833373, guid: 04625ebc02a1e924bbb25b49b147154c, type: 3}
+  - {fileID: 2272756984278498220, guid: 04625ebc02a1e924bbb25b49b147154c, type: 3}
+  - {fileID: -4548626084056680142, guid: 04625ebc02a1e924bbb25b49b147154c, type: 3}
+  - {fileID: 8888862322045767021, guid: 04625ebc02a1e924bbb25b49b147154c, type: 3}
+  tile: {fileID: 11400000, guid: b931924c4f31c0d4d8d961df27314c81, type: 2}

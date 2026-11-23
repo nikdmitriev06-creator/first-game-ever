@@ -23,14 +23,16 @@ public readonly struct Impact
     public readonly Vector2 Point;
     public readonly Vector2 Direction;
     public readonly Object Source;
+    public readonly CombatStrike Strike;
 
-    public Impact(ImpactType type, float power, Vector2 point, Vector2 direction, Object source)
+    public Impact(ImpactType type, float power, Vector2 point, Vector2 direction, Object source, CombatStrike strike = null)
     {
         Type = type;
         Power = Mathf.Max(0f, power);
         Point = point;
         Direction = direction;
         Source = source;
+        Strike = strike;
     }
 }
 

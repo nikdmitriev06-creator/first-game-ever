@@ -10,6 +10,8 @@ public class PlayerVitals : MonoBehaviour
     [SerializeField] float maxMana = 100f;
     [SerializeField] float maxStamina = 100f;
     [SerializeField] float healthRegenPerSecond = 2f;
+    [SerializeField] float manaRegenPerSecond = 8f;
+    [SerializeField] float manaRegenDelay = 0.45f;
     [SerializeField] float staminaDrainPerSecond = 20f;
     [SerializeField] float staminaRegenPerSecond = 25f;
     [SerializeField] float emptyRegenDelay = 1f;
@@ -21,6 +23,7 @@ public class PlayerVitals : MonoBehaviour
     bool _emptyRecovery;
     float _emptyDelay;
     float _emptyRampTime;
+    float _manaDelay;
 
     public float Health { get; private set; }
     public float Mana { get; private set; }
@@ -41,10 +44,48 @@ public class PlayerVitals : MonoBehaviour
 
     void Update()
     {
-        if (healthRegenPerSecond <= 0f || Health <= 0f || Health >= maxHealth)
+        RecoverHealth(Time.deltaTime);
+        RecoverMana(Time.deltaTime);
+    }
+
+    public void RecoverHealth(float deltaTime)
+    {
+        if (deltaTime <= 0f || healthRegenPerSecond <= 0f || Health <= 0f || Health >= maxHealth)
             return;
 
-        SetHealth(Health + healthRegenPerSecond * Time.deltaTime);
+        SetHealth(Health + healthRegenPerSecond * deltaTime);
+    }
+
+    /// <summary>
+    /// Restores mana only after the delay from the last spend. A spend and a restore do not land in the same call.
+    /// </summary>
+    public void RecoverMana(float deltaTime)
+    {
+        if (deltaTime <= 0f)
+            return;
+
+        if (_manaDelay > 0f)
+        {
+            _manaDelay = Mathf.Max(0f, _manaDelay - deltaTime);
+            return;
+        }
+
+        if (manaRegenPerSecond <= 0f || Health <= 0f || Mana >= maxMana)
+            return;
+
+        SetMana(Mana + manaRegenPerSecond * deltaTime);
+    }
+
+    public bool TrySpendMana(float amount)
+    {
+        if (amount <= 0f)
+            return true;
+        if (Mana + 0.0001f < amount)
+            return false;
+
+        SetMana(Mana - amount);
+        _manaDelay = Mathf.Max(0f, manaRegenDelay);
+        return true;
     }
 
     public void TakeDamage(float amount)
@@ -53,6 +94,7 @@ public class PlayerVitals : MonoBehaviour
             return;
 
         SetHealth(Health - amount);
+        Fx.Play(FxEvent.Hurt, transform.position);
     }
 
     public void SetHealth(float value)

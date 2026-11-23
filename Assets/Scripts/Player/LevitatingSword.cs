@@ -34,9 +34,11 @@ public class LevitatingSword : Weapon
     const float ArcWidth = 0.36f;
     // How much the sprite grows at the moment it crosses the cursor.
     const float HitScale = 0.24f;
-    // Opaque blade of Sword.png, measured along the painted tip. The guard is wider; the hit follows the blade.
-    const float BladeHalfLengthPixels = 102f;
-    const float BladeHalfWidthPixels = 22f;
+    // Opaque blade of Sword.png. The guard is included. A profile hitbox replaces these for this one sword.
+    [SerializeField] float hitHalfLengthPixels = 102f;
+    [SerializeField] float hitHalfWidthPixels = 33f;
+    [SerializeField] float hitAlongPixels;
+    [SerializeField] float hitSidePixels = -2.8f;
 
     // Blade length compared with the character. Above 1 is a larger, heavier sword.
     [SerializeField] float sizeMatch = 1.55f;
@@ -75,8 +77,12 @@ public class LevitatingSword : Weapon
     bool _hasSpin;
     bool _held = true;
     float _strikeDamage;
-    float _strikeRange;
-    bool _plannedStrike;
+    float _swingDuration;
+    float _boxLength = 102f;
+    float _boxWidth = 33f;
+    float _boxAlong;
+    float _boxSide = -2.8f;
+    CombatStrike _strike;
     readonly List<IImpactReceiver> _swingHits = new List<IImpactReceiver>();
 
     public bool IsSwinging => _swinging;
@@ -105,18 +111,53 @@ public class LevitatingSword : Weapon
             return false;
         axis.Normalize();
 
-        float ppu = Mathf.Max(1f, _renderer.sprite.pixelsPerUnit);
-        float scale = Mathf.Max(Mathf.Abs(transform.lossyScale.x), Mathf.Abs(transform.lossyScale.y));
-        float halfLength = BladeHalfLengthPixels / ppu * scale;
-        float halfWidth = BladeHalfWidthPixels / ppu * scale;
+        BladeBox(axis, out Vector2 center, out float halfLength, out float halfWidth);
+        return WeaponHit.Box(center, axis, worldPoint, halfLength, halfWidth, targetRadius);
+    }
 
-        Vector2 rel = worldPoint - (Vector2)transform.position;
-        float along = Vector2.Dot(rel, axis);
-        float side = Mathf.Abs(Vector2.Dot(rel, new Vector2(-axis.y, axis.x)));
-        float pastTip = Mathf.Max(Mathf.Abs(along) - halfLength, 0f);
-        float pastEdge = Mathf.Max(side - halfWidth, 0f);
-        float reach = Mathf.Max(0f, targetRadius);
-        return pastTip * pastTip + pastEdge * pastEdge <= reach * reach;
+    void ReadHitbox()
+    {
+        _boxLength = hitHalfLengthPixels;
+        _boxWidth = hitHalfWidthPixels;
+        _boxAlong = hitAlongPixels;
+        _boxSide = hitSidePixels;
+
+        WeaponProfile profile = BoundWeapon();
+        WeaponHitbox box = profile != null ? profile.Hitbox : null;
+        if (box == null || !box.HasSpriteBox)
+            return;
+
+        _boxLength = box.SpriteHalfLength;
+        _boxWidth = box.SpriteHalfWidth;
+        _boxAlong = box.SpriteAlong;
+        _boxSide = box.SpriteSide;
+    }
+
+    void BladeBox(Vector2 axis, out Vector2 center, out float halfLength, out float halfWidth)
+    {
+        float ppu = _renderer != null && _renderer.sprite != null ? Mathf.Max(1f, _renderer.sprite.pixelsPerUnit) : 32f;
+        float scale = Mathf.Max(Mathf.Abs(transform.lossyScale.x), Mathf.Abs(transform.lossyScale.y));
+        float unit = scale / ppu;
+        halfLength = Mathf.Max(0.05f, _boxLength) * unit;
+        halfWidth = Mathf.Max(0.02f, _boxWidth) * unit;
+        float sidePixels = _edgeFlip ? -_boxSide : _boxSide;
+        Vector2 side = new Vector2(-axis.y, axis.x);
+        center = (Vector2)transform.position + axis * (_boxAlong * unit) + side * (sidePixels * unit);
+    }
+
+    float BladeReach(Vector2 feet)
+    {
+        float tip = _edgeFlip ? 180f - spriteTipAngle : spriteTipAngle;
+        float tipRad = tip * Mathf.Deg2Rad;
+        Vector2 axis = new Vector2(Mathf.Cos(tipRad), Mathf.Sin(tipRad));
+        Vector2 worldAxis = transform.TransformDirection(axis);
+        if (worldAxis.sqrMagnitude < 0.0001f)
+            worldAxis = Vector2.right;
+        worldAxis.Normalize();
+        BladeBox(worldAxis, out Vector2 center, out float halfLength, out float halfWidth);
+        float far = Vector2.Distance(feet, center + worldAxis * halfLength);
+        float near = Vector2.Distance(feet, center - worldAxis * halfLength);
+        return Mathf.Max(far, near) + halfWidth + 0.75f;
     }
 
     public override string ItemId => ItemIds.Sword;
@@ -264,21 +305,24 @@ public class LevitatingSword : Weapon
         if (!TrySpendStamina())
             return;
 
-        if (TryResolveAttack(Random.value, out AttackPlan plan, out float planned))
+        _swingDuration = ScaledInterval(Stats.AttackSpeed);
+        if (TryPrepareAttack(Random.value, out AttackPlan plan, out CombatStrike strike))
         {
-            _strikeDamage = planned;
-            _strikeRange = plan.Range;
-            _plannedStrike = true;
+            _strike = strike;
+            _strikeDamage = strike.Total;
+            _swingDuration = ScaledInterval(plan.AttackSpeed);
         }
         else
         {
             _strikeDamage = RollDamage();
-            _strikeRange = Stats.Range;
-            _plannedStrike = false;
+            _strike = CombatStrike.Flat(DamageType.Slashing, _strikeDamage, this);
         }
+
+        ReadHitbox();
         SwingSerial++;
         _swingHits.Clear();
         Vector3 feet = _player != null ? _player.transform.position : transform.position;
+        SoundBus.Play(FxEvent.Hit, feet);
         _swingAim = CursorAngle(feet);
         _restAngle = _swingAim;
         _swingSide = _side;
@@ -294,9 +338,8 @@ public class LevitatingSword : Weapon
         ImpactLibrary.Ensure();
         Vector2 feet = _player != null ? (Vector2)_player.transform.position : (Vector2)transform.position;
         var hits = new List<IImpactReceiver>();
-        float reach = _plannedStrike ? Mathf.Max(0.2f, _strikeRange) : Mathf.Max(Stats.Range, 3f);
-        ReceiverRegistry.CollectNear(feet, reach, hits);
-        var impact = new Impact(ImpactLibrary.Slash, _strikeDamage, transform.position, Vector2.right, this);
+        ReceiverRegistry.CollectNear(feet, BladeReach(feet), hits);
+        var impact = new Impact(ImpactLibrary.Slash, _strikeDamage, transform.position, Vector2.right, this, _strike);
         for (int i = 0; i < hits.Count; i++)
         {
             IImpactReceiver target = hits[i];
@@ -314,7 +357,7 @@ public class LevitatingSword : Weapon
 
     void AdvanceSwing()
     {
-        float duration = AttackInterval();
+        float duration = _swingDuration > 0.01f ? _swingDuration : ScaledInterval(Stats.AttackSpeed);
         _swingTime += Time.deltaTime / duration;
         if (_swingTime < 1f)
             return;

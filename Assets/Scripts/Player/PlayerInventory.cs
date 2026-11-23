@@ -2,9 +2,22 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+public enum SlotMove
+{
+    None,
+    Taken,
+    Placed,
+    Merged,
+    Swapped,
+    Split,
+    RefusedSpace,
+    RefusedUnique
+}
+
 /// <summary>
-/// One row of ten slots, the hand included. Keys 1-9 and 0 select a slot.
-/// I opens the row so a click can lift an item onto the cursor.
+/// Four rows. The first stays on screen as the hotbar. The other three show only while the bag is open.
+/// Keys 1-9 and 0 select a hotbar slot.
+/// I opens the bag so a click can lift an item onto the cursor.
 /// Q throws one of the held stack onto the ground, toward the cursor.
 /// The weapon or tool in the selected slot is the one in the hand.
 /// The slots themselves live in ItemContainer. This component owns input and the hand.
@@ -12,7 +25,10 @@ using UnityEngine.InputSystem;
 [DefaultExecutionOrder(-20)]
 public class PlayerInventory : MonoBehaviour, IItemStorage
 {
-    public const int SlotCount = 10;
+    public const int Columns = 10;
+    public const int Rows = 4;
+    public const int HotbarCount = Columns;
+    public const int SlotCount = Columns * Rows;
 
     static readonly Key[] NumberKeys =
     {
@@ -50,6 +66,9 @@ public class PlayerInventory : MonoBehaviour, IItemStorage
     int _selected;
     bool _open;
     ItemInstance _cursorStack;
+
+    public SlotMove LastMove { get; private set; }
+    public int MoveSerial { get; private set; }
 
     public ItemContainer Container => _bag;
 
@@ -133,6 +152,8 @@ public class PlayerInventory : MonoBehaviour, IItemStorage
 
     void Awake()
     {
+        if (GetComponent<ProfileWeapon>() == null)
+            gameObject.AddComponent<ProfileWeapon>();
         _weapons = GetComponentsInChildren<IWeapon>(true);
         _tools = GetComponentsInChildren<Tool>(true);
         GiveStartingItems();
@@ -145,8 +166,14 @@ public class PlayerInventory : MonoBehaviour, IItemStorage
     {
         _bag.Set(0, ItemIds.Sword, 1);
         _bag.Set(1, ItemIds.Bow, 1);
-        _bag.Set(2, ItemIds.Axe, 1);
-        _bag.Set(3, ItemIds.Pickaxe, 1);
+        _bag.Set(2, ItemIds.Spear, 1);
+        _bag.Set(3, ItemIds.Glaive, 1);
+        _bag.Set(4, ItemIds.ShortSword, 1);
+        _bag.Set(5, ItemIds.Greatsword, 1);
+        _bag.Set(6, ItemIds.Staff, 1);
+        _bag.Set(7, ItemIds.Crossbow, 1);
+        _bag.Set(8, ItemIds.Axe, 1);
+        _bag.Set(9, ItemIds.Pickaxe, 1);
         Notify();
     }
 
@@ -171,7 +198,17 @@ public class PlayerInventory : MonoBehaviour, IItemStorage
         if (!GameplayGate.EnsureState().Allows(PlayerAction.SelectSlot))
             return;
 
-        for (int i = 0; i < SlotCount; i++)
+        Mouse mouse = Mouse.current;
+        if (!_open && mouse != null)
+        {
+            float wheel = mouse.scroll.ReadValue().y;
+            if (wheel > 0.01f)
+                Cycle(1);
+            else if (wheel < -0.01f)
+                Cycle(-1);
+        }
+
+        for (int i = 0; i < HotbarCount; i++)
         {
             if (!Pressed(keyboard, NumberKeys[i]) && !Pressed(keyboard, NumpadKeys[i]))
                 continue;
@@ -181,25 +218,28 @@ public class PlayerInventory : MonoBehaviour, IItemStorage
         }
     }
 
-    public void ClickSlot(int index)
+    public SlotMove ClickSlot(int index)
     {
-        if (!_open || (uint)index >= SlotCount)
-            return;
+        if ((uint)index >= SlotCount || (!_open && index >= HotbarCount))
+            return Finish(SlotMove.None);
 
         ItemInstance sitting = _bag.InstanceAt(index);
         bool cursor = _cursorStack != null && _cursorStack.Quantity > 0;
+        SlotMove move;
 
         if (!cursor)
         {
             if (sitting == null || sitting.Quantity <= 0)
-                return;
+                return Finish(SlotMove.None);
 
             _cursorStack = _bag.Take(index);
+            move = SlotMove.Taken;
         }
         else if (sitting == null || sitting.Quantity <= 0)
         {
             _bag.SetInstance(index, _cursorStack);
             ClearCursor();
+            move = SlotMove.Placed;
         }
         else if (ItemInstance.CanMerge(sitting, _cursorStack))
         {
@@ -208,35 +248,123 @@ public class PlayerInventory : MonoBehaviour, IItemStorage
             {
                 _bag.SetInstance(index, _cursorStack);
                 _cursorStack = sitting;
+                move = SlotMove.Swapped;
             }
             else
             {
-                int move = Mathf.Min(room, _cursorStack.Quantity);
-                sitting.SetQuantity(sitting.Quantity + move);
+                int shift = Mathf.Min(room, _cursorStack.Quantity);
+                sitting.SetQuantity(sitting.Quantity + shift);
                 _bag.SetInstance(index, sitting);
-                _cursorStack.SetQuantity(_cursorStack.Quantity - move);
+                _cursorStack.SetQuantity(_cursorStack.Quantity - shift);
                 if (_cursorStack.Quantity <= 0)
                     ClearCursor();
+                move = SlotMove.Merged;
             }
         }
         else
         {
             _bag.SetInstance(index, _cursorStack);
             _cursorStack = sitting;
+            move = SlotMove.Swapped;
         }
 
         Notify();
+        return Finish(move);
     }
 
-    public void ClickOutside()
+    /// <summary>
+    /// Right click. A free cursor lifts half a plain stack. A held stack drops one into a matching slot.
+    /// Weapons, worn tools and runed stacks stay whole.
+    /// </summary>
+    public SlotMove SplitSlot(int index)
     {
-        if (!_open || CursorCount <= 0)
-            return;
+        if ((uint)index >= SlotCount || (!_open && index >= HotbarCount))
+            return Finish(SlotMove.None);
+
+        ItemInstance sitting = _bag.InstanceAt(index);
+        bool cursor = _cursorStack != null && _cursorStack.Quantity > 0;
+        if (!cursor)
+        {
+            if (sitting == null || sitting.Quantity <= 0)
+                return Finish(SlotMove.None);
+
+            if (!ItemInstance.CanSplit(sitting))
+                return Finish(SlotMove.RefusedUnique);
+
+            int take = sitting.Quantity / 2;
+            if (take < 1)
+                take = 1;
+
+            sitting.SetQuantity(sitting.Quantity - take);
+            _bag.SetInstance(index, sitting);
+            _cursorStack = ItemInstance.Create(sitting.DefinitionId, take, -1, null);
+            Notify();
+            return Finish(SlotMove.Split);
+        }
+
+        if (sitting == null || sitting.Quantity <= 0)
+        {
+            if (!ItemInstance.CanSplit(_cursorStack))
+            {
+                _bag.SetInstance(index, _cursorStack);
+                ClearCursor();
+                Notify();
+                return Finish(SlotMove.Placed);
+            }
+
+            _bag.SetInstance(index, TakeOne());
+            Notify();
+            return Finish(SlotMove.Split);
+        }
+
+        if (!ItemInstance.CanMerge(sitting, _cursorStack))
+            return Finish(SlotMove.RefusedUnique);
+
+        int space = ItemIds.MaxCount(sitting.DefinitionId) - sitting.Quantity;
+        if (space <= 0)
+            return Finish(SlotMove.RefusedSpace);
+
+        sitting.SetQuantity(sitting.Quantity + 1);
+        _bag.SetInstance(index, sitting);
+        _cursorStack.SetQuantity(_cursorStack.Quantity - 1);
+        if (_cursorStack.Quantity <= 0)
+            ClearCursor();
+        Notify();
+        return Finish(SlotMove.Merged);
+    }
+
+    public SlotMove ClickOutside()
+    {
+        if (CursorCount <= 0)
+            return Finish(SlotMove.None);
 
         if (!PlaceCursorInFirstEmpty())
-            return;
+            return Finish(SlotMove.RefusedSpace);
 
         Notify();
+        return Finish(SlotMove.Placed);
+    }
+
+    public void SelectSlot(int index)
+    {
+        if ((uint)index >= HotbarCount)
+            return;
+
+        Select(index);
+    }
+
+    public void Cycle(int direction)
+    {
+        if (direction == 0)
+            return;
+
+        int next = _selected + (direction > 0 ? 1 : -1);
+        if (next < 0)
+            next = HotbarCount - 1;
+        if (next >= HotbarCount)
+            next = 0;
+
+        Select(next);
     }
 
     public void SetOpen(bool open)
@@ -245,7 +373,10 @@ public class PlayerInventory : MonoBehaviour, IItemStorage
             return;
 
         if (!open && !PlaceCursorInFirstEmpty())
+        {
+            Finish(SlotMove.RefusedSpace);
             return;
+        }
 
         _open = open;
         if (_open)
@@ -401,7 +532,7 @@ public class PlayerInventory : MonoBehaviour, IItemStorage
             if (weapon == null)
                 continue;
 
-            weapon.SetHeld(!swing && weapon.ItemId == held);
+            weapon.SetHeld(!swing && weapon.Wants(held));
         }
 
         if (_tools == null)
@@ -427,6 +558,31 @@ public class PlayerInventory : MonoBehaviour, IItemStorage
     void ClearCursor()
     {
         _cursorStack = null;
+    }
+
+    ItemInstance TakeOne()
+    {
+        if (_cursorStack == null || _cursorStack.Quantity <= 0)
+            return null;
+
+        if (_cursorStack.Quantity == 1)
+        {
+            ItemInstance whole = _cursorStack;
+            ClearCursor();
+            return whole;
+        }
+
+        ItemInstance one = ItemInstance.Create(_cursorStack.DefinitionId, 1, -1, null);
+        _cursorStack.SetQuantity(_cursorStack.Quantity - 1);
+        return one;
+    }
+
+    SlotMove Finish(SlotMove move)
+    {
+        LastMove = move;
+        if (move != SlotMove.None)
+            MoveSerial++;
+        return move;
     }
 
     static bool Pressed(Keyboard keyboard, Key key)

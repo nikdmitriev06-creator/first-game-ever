@@ -14,13 +14,21 @@ public static class DefaultContent
             Create(ItemIds.Wood, null),
             Create(ItemIds.Sword, null),
             Create(ItemIds.Bow, null),
+            Create(ItemIds.Spear, null),
+            Create(ItemIds.Glaive, null),
+            Create(ItemIds.ShortSword, null),
+            Create(ItemIds.Greatsword, null),
+            Create(ItemIds.Staff, null),
+            Create(ItemIds.Crossbow, null),
             Create(ItemIds.Axe, null),
             Create(ItemIds.Workbench, Resources.Load<GameObject>("Placeables/Workbench")),
             Create(ItemIds.Chair, Resources.Load<GameObject>("Placeables/Chair")),
             Create(ItemIds.Stone, null),
             Create(ItemIds.CopperOre, null),
             Create(ItemIds.Pickaxe, null),
-            Create(ItemIds.Furnace, Resources.Load<GameObject>("Placeables/Furnace"))
+            Create(ItemIds.Furnace, Resources.Load<GameObject>("Placeables/Furnace")),
+            Create(ItemIds.Crystal, null),
+            Create(ItemIds.Relic, null)
         };
 
         RecipeDefinition[] recipes =
@@ -54,15 +62,36 @@ public static class DefaultContent
         if (source == null)
             return Build();
 
-        if (source.HasMiningContent())
+        bool needsMining = !source.HasMiningContent();
+        bool needsWeapons = source.Get(ItemIds.Spear) == null
+            || source.Get(ItemIds.Crystal) == null
+            || source.Get(ItemIds.Relic) == null
+            || source.Get(ItemIds.Glaive) == null
+            || source.Get(ItemIds.ShortSword) == null
+            || source.Get(ItemIds.Greatsword) == null
+            || source.Get(ItemIds.Staff) == null
+            || source.Get(ItemIds.Crossbow) == null;
+        if (!needsMining && !needsWeapons)
             return source;
 
         var items = new List<ItemDefinition>();
         AppendItems(items, source.Items);
-        AddIfMissing(items, ItemIds.Stone, null);
-        AddIfMissing(items, ItemIds.CopperOre, null);
-        AddIfMissing(items, ItemIds.Pickaxe, null);
-        AddIfMissing(items, ItemIds.Furnace, Resources.Load<GameObject>("Placeables/Furnace"));
+        if (needsMining)
+        {
+            AddIfMissing(items, ItemIds.Stone, null);
+            AddIfMissing(items, ItemIds.CopperOre, null);
+            AddIfMissing(items, ItemIds.Pickaxe, null);
+            AddIfMissing(items, ItemIds.Furnace, Resources.Load<GameObject>("Placeables/Furnace"));
+        }
+
+        AddIfMissing(items, ItemIds.Spear, null);
+        AddIfMissing(items, ItemIds.Glaive, null);
+        AddIfMissing(items, ItemIds.ShortSword, null);
+        AddIfMissing(items, ItemIds.Greatsword, null);
+        AddIfMissing(items, ItemIds.Staff, null);
+        AddIfMissing(items, ItemIds.Crossbow, null);
+        AddIfMissing(items, ItemIds.Crystal, null);
+        AddIfMissing(items, ItemIds.Relic, null);
 
         var recipes = new List<RecipeDefinition>();
         AppendRecipes(recipes, source.Recipes);
@@ -87,9 +116,35 @@ public static class DefaultContent
                 break;
             case ItemIds.Sword:
                 item.Configure(id, "Меч", "Sword", 1, ItemCategory.Weapon, PlacementZone.None, null, 0f, 1, 0.4f, null);
+                item.AssignWeapon(WeaponDefaults.Sword());
                 break;
             case ItemIds.Bow:
                 item.Configure(id, "Лук", "Bow", 1, ItemCategory.Weapon, PlacementZone.None, null, 0f, 1, 0.4f, null);
+                item.AssignWeapon(WeaponDefaults.Bow());
+                break;
+            case ItemIds.Spear:
+                item.Configure(id, "Копьё", "Spear", 1, ItemCategory.Weapon, PlacementZone.None, null, 0f, 1, 0.4f, null);
+                item.AssignWeapon(WeaponDefaults.Spear());
+                break;
+            case ItemIds.Glaive:
+                item.Configure(id, "Глефа", "Glaive", 1, ItemCategory.Weapon, PlacementZone.None, null, 0f, 1, 0.4f, null);
+                item.AssignWeapon(WeaponDefaults.Glaive());
+                break;
+            case ItemIds.ShortSword:
+                item.Configure(id, "Короткий меч", "Short Sword", 1, ItemCategory.Weapon, PlacementZone.None, null, 0f, 1, 0.4f, null);
+                item.AssignWeapon(WeaponDefaults.ShortSword());
+                break;
+            case ItemIds.Greatsword:
+                item.Configure(id, "Двуручный меч", "Greatsword", 1, ItemCategory.Weapon, PlacementZone.None, null, 0f, 1, 0.4f, null);
+                item.AssignWeapon(WeaponDefaults.Greatsword());
+                break;
+            case ItemIds.Staff:
+                item.Configure(id, "Посох", "Staff", 1, ItemCategory.Weapon, PlacementZone.None, null, 0f, 1, 0.4f, null);
+                item.AssignWeapon(WeaponDefaults.Staff());
+                break;
+            case ItemIds.Crossbow:
+                item.Configure(id, "Арбалет", "Crossbow", 1, ItemCategory.Weapon, PlacementZone.None, null, 0f, 1, 0.4f, null);
+                item.AssignWeapon(WeaponDefaults.Crossbow());
                 break;
             case ItemIds.Axe:
                 item.Configure(id, "Топор", "Axe", 1, ItemCategory.Tool, PlacementZone.None, null, 0f, 1, 0.4f, null);
@@ -105,6 +160,15 @@ public static class DefaultContent
                 break;
             case ItemIds.CopperOre:
                 item.Configure(id, "Медная руда", "Copper Ore", ItemIds.ResourceStack, ItemCategory.Resource, PlacementZone.None, null, 0f, 1, 0.4f, null);
+                item.AssignRarity(ItemRarity.Uncommon);
+                break;
+            case ItemIds.Crystal:
+                item.Configure(id, "Осколок кристалла", "Crystal Shard", ItemIds.ResourceStack, ItemCategory.Resource, PlacementZone.None, null, 0f, 1, 0.4f, null);
+                item.AssignRarity(ItemRarity.Rare);
+                break;
+            case ItemIds.Relic:
+                item.Configure(id, "Реликвия", "Relic", 1, ItemCategory.Resource, PlacementZone.None, null, 0f, 1, 0.4f, null);
+                item.AssignRarity(ItemRarity.VeryRare);
                 break;
             case ItemIds.Pickaxe:
                 item.Configure(id, "Кирка", "Pickaxe", 1, ItemCategory.Tool, PlacementZone.None, null, 0f, 1, 0.4f, null);

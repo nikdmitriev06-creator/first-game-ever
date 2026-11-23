@@ -71,24 +71,38 @@ public class WorldItem : MonoBehaviour
 
         if (_payload != null)
         {
+            int before = _payload.Quantity;
             int left = inventory.TryAccept(_payload);
+            int gained = before - left;
+            if (gained <= 0)
+            {
+                Notices.Post(NoticeKind.Impossible, "space", 1, 0);
+                return;
+            }
+
             if (left <= 0)
             {
                 _payload = null;
                 _count = 0;
+                NotePickup(gained);
                 Despawn();
                 return;
             }
 
             _count = _payload.Quantity;
+            NotePickup(gained);
             return;
         }
 
         int took = inventory.TryAdd(_id, _count);
         if (took <= 0)
+        {
+            Notices.Post(NoticeKind.Impossible, "space", 1, 0);
             return;
+        }
 
         _count -= took;
+        NotePickup(took);
         if (_count <= 0)
             Despawn();
     }
@@ -106,7 +120,7 @@ public class WorldItem : MonoBehaviour
         Sprite sprite = defined != null ? defined.IconSprite : ItemArt.Icon(id);
         _renderer = gameObject.AddComponent<SpriteRenderer>();
         _renderer.sprite = sprite;
-        _renderer.sortingOrder = 9;
+        _renderer.sortingOrder = IsoSort.Order(land.y);
         Fit(sprite);
 
         SpriteRenderer ground = parent != null ? parent.GetComponent<SpriteRenderer>() : null;
@@ -123,7 +137,7 @@ public class WorldItem : MonoBehaviour
         var shadow = shadowObject.AddComponent<SpriteRenderer>();
         shadow.sprite = ItemArt.Shadow();
         shadow.sortingLayerID = _renderer.sortingLayerID;
-        shadow.sortingOrder = 6;
+        shadow.sortingOrder = IsoSort.Order(land.y, -1);
         if (ground != null && ground.sharedMaterial != null)
             shadow.sharedMaterial = ground.sharedMaterial;
         _shadow = shadowObject.transform;
@@ -181,6 +195,14 @@ public class WorldItem : MonoBehaviour
             Destroy(gameObject);
         else
             DestroyImmediate(gameObject);
+    }
+
+    void NotePickup(int gained)
+    {
+        ItemDefinition defined = ItemCatalog.Find(_id);
+        bool rare = defined != null && defined.Rarity >= ItemRarity.Rare;
+        Fx.Play(rare ? FxEvent.Rare : FxEvent.Pickup, transform.position);
+        Notices.Post(rare ? NoticeKind.Rare : NoticeKind.Item, _id, gained, rare ? 1 : 0);
     }
 
     void Fit(Sprite sprite)

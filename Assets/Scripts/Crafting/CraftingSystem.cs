@@ -10,6 +10,14 @@ public enum CraftDeny
     Locked
 }
 
+public struct CraftGap
+{
+    public string ItemId;
+    public int Have;
+    public int Need;
+    public bool Short;
+}
+
 /// <summary>
 /// Checks a recipe and, only when every check passes, spends the ingredients and gives the result.
 /// The menu calls this. It does not edit slots itself.
@@ -19,9 +27,27 @@ public class CraftingSystem : MonoBehaviour
     PlayerInventory _inventory;
     CraftAccess _access;
 
+    public event System.Action<string> RecipeOpened;
+
     public void UseAccess(CraftAccess access)
     {
+        if (_access != null)
+            _access.Opened -= OnAccessOpened;
+
         _access = access;
+        if (_access != null)
+            _access.Opened += OnAccessOpened;
+    }
+
+    void OnAccessOpened(string id)
+    {
+        RecipeOpened?.Invoke(id);
+    }
+
+    void OnDestroy()
+    {
+        if (_access != null)
+            _access.Opened -= OnAccessOpened;
     }
 
     void Awake()
@@ -59,6 +85,56 @@ public class CraftingSystem : MonoBehaviour
                 continue;
 
             into.Add(recipe);
+        }
+    }
+
+    /// <summary>
+    /// Recipes the player may see, including those waiting on a station.
+    /// Locked recipes stay hidden. The station check itself remains in DenyReason.
+    /// </summary>
+    public void CollectKnown(List<RecipeDefinition> into)
+    {
+        into.Clear();
+        ItemCatalog.Ensure();
+        ItemCatalog catalog = ItemCatalog.Active;
+        if (catalog == null || catalog.Recipes == null || Bind() == null)
+            return;
+
+        RecipeDefinition[] recipes = catalog.Recipes;
+        for (int i = 0; i < recipes.Length; i++)
+        {
+            RecipeDefinition recipe = recipes[i];
+            if (recipe == null || !Unlocked(recipe))
+                continue;
+
+            into.Add(recipe);
+        }
+    }
+
+    public void CopyCosts(RecipeDefinition recipe, List<CraftGap> into)
+    {
+        into.Clear();
+        if (recipe == null || Bind() == null)
+            return;
+
+        Ingredient[] cost = recipe.Ingredients;
+        if (cost == null)
+            return;
+
+        for (int i = 0; i < cost.Length; i++)
+        {
+            int need = cost[i].Count;
+            if (need <= 0 || string.IsNullOrEmpty(cost[i].ItemId))
+                continue;
+
+            int have = Bind().CountOf(cost[i].ItemId);
+            into.Add(new CraftGap
+            {
+                ItemId = cost[i].ItemId,
+                Have = have,
+                Need = need,
+                Short = have < need
+            });
         }
     }
 
@@ -107,7 +183,10 @@ public class CraftingSystem : MonoBehaviour
 
         int got = inventory.TryAdd(recipe.ResultId, recipe.ResultCount);
         if (got >= recipe.ResultCount)
+        {
+            Fx.Play(FxEvent.Craft, transform.position);
             return true;
+        }
 
         if (got > 0)
             inventory.TryConsume(recipe.ResultId, got);

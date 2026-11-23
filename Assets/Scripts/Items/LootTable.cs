@@ -13,6 +13,7 @@ public struct LootDrop
     public int Min;
     public int Max;
     public float Chance;
+    public int MinDifficulty;
 
     public string ResolvedId => Item != null ? Item.Id : null;
 
@@ -108,6 +109,11 @@ public class LootTable : ScriptableObject
 
     public void Roll(List<LootGrant> into, ILootRandom random)
     {
+        Roll(into, random, 0, ItemRarity.VeryRare);
+    }
+
+    public void Roll(List<LootGrant> into, ILootRandom random, int difficulty, ItemRarity maxRarity)
+    {
         if (into == null)
             return;
 
@@ -119,6 +125,11 @@ public class LootTable : ScriptableObject
         for (int i = 0; i < drops.Length; i++)
         {
             LootDrop drop = drops[i];
+            if (drop.MinDifficulty > difficulty)
+                continue;
+            if (drop.Item != null && drop.Item.Rarity > maxRarity)
+                continue;
+
             string itemId = drop.ResolvedId;
             if (string.IsNullOrEmpty(itemId))
                 continue;

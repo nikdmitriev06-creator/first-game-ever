@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8b4fee72160b4c4297e2376cfd7a3a2, type: 3}
+  m_Name: terrain_stone
+  m_EditorClassIdentifier: Assembly-CSharp::TerrainDefinition
+  id: terrain.stone
+  displayName: "\u041A\u0430\u043C\u0435\u043D\u044C"
+  passage: 0
+  height: 0
+  speed: 1
+  connectGroup: stone
+  hazardId: 
+  swatch: {r: 0.55, g: 0.56, b: 0.58, a: 1}
+  centers:
+  - {fileID: -1573853781561496469, guid: 64bc398d0b3c1f242b18faf3742300f9, type: 3}
+  - {fileID: 7460849354880758629, guid: 64bc398d0b3c1f242b18faf3742300f9, type: 3}
+  - {fileID: -6048142028916647179, guid: 64bc398d0b3c1f242b18faf3742300f9, type: 3}
+  - {fileID: 5877572276301521591, guid: 64bc398d0b3c1f242b18faf3742300f9, type: 3}
+  edges:
+  - {fileID: 2056955796, guid: 64bc398d0b3c1f242b18faf3742300f9, type: 3}
+  - {fileID: 72569931, guid: 64bc398d0b3c1f242b18faf3742300f9, type: 3}
+  - {fileID: 226407410, guid: 64bc398d0b3c1f242b18faf3742300f9, type: 3}
+  - {fileID: -1805327765, guid: 64bc398d0b3c1f242b18faf3742300f9, type: 3}
+  - {fileID: -87390474, guid: 64bc398d0b3c1f242b18faf3742300f9, type: 3}
+  - {fileID: -1420375479, guid: 64bc398d0b3c1f242b18faf3742300f9, type: 3}
+  - {fileID: -6931423, guid: 64bc398d0b3c1f242b18faf3742300f9, type: 3}
+  - {fileID: -394006528, guid: 64bc398d0b3c1f242b18faf3742300f9, type: 3}
+  - {fileID: 1201582741, guid: 64bc398d0b3c1f242b18faf3742300f9, type: 3}
+  - {fileID: -1927679067, guid: 64bc398d0b3c1f242b18faf3742300f9, type: 3}
+  - {fileID: -7139412575200503296, guid: 64bc398d0b3c1f242b18faf3742300f9, type: 3}
+  - {fileID: -6378259892671180287, guid: 64bc398d0b3c1f242b18faf3742300f9, type: 3}
+  - {fileID: 1183070337762169035, guid: 64bc398d0b3c1f242b18faf3742300f9, type: 3}
+  - {fileID: -4458773999995131233, guid: 64bc398d0b3c1f242b18faf3742300f9, type: 3}
+  - {fileID: 986330997278150664, guid: 64bc398d0b3c1f242b18faf3742300f9, type: 3}
+  - {fileID: -3914954554018447687, guid: 64bc398d0b3c1f242b18faf3742300f9, type: 3}
+  tile: {fileID: 11400000, guid: c5a85ec05945c2542829e9ed7db8aa9a, type: 2}

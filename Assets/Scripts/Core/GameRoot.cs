@@ -43,6 +43,7 @@ public class GameRoot : MonoBehaviour
         Active = this;
         Locations = new LocationState();
         LocationState.Bind(Locations);
+        WorldMemory.Load(Locations);
         GameplayGate.EnsureState();
         BindPlayer();
         WirePlayer();
@@ -74,6 +75,18 @@ public class GameRoot : MonoBehaviour
             host.AddComponent<HeldProp>();
         if (host.GetComponent<InventoryHud>() == null)
             host.AddComponent<InventoryHud>();
+        if (host.GetComponent<NoticeHud>() == null)
+            host.AddComponent<NoticeHud>();
+        if (host.GetComponent<InteractionFocus>() == null)
+            host.AddComponent<InteractionFocus>();
+        if (host.GetComponent<IsoSortBody>() == null)
+            host.AddComponent<IsoSortBody>();
+        // Presentation: effects, ambience and biome light. No gameplay rules live here.
+        WorldPresentation.Warm();
+        DecorField.Ensure();
+        DecorEvents.Ensure();
+        AtmosphereDirector.Ensure();
+
 
         if (host.GetComponentInChildren<Axe>(true) == null)
         {

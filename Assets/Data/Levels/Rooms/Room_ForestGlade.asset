@@ -1,0 +1,388 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6e6742481e1e0b4495be526a2636306, type: 3}
+  m_Name: Room_ForestGlade
+  m_EditorClassIdentifier: Assembly-CSharp::RoomDefinition
+  id: room.forest.glade
+  displayName: "\u041B\u0435\u0441\u043D\u0430\u044F \u043F\u043E\u043B\u044F\u043D\u0430"
+  width: 14
+  height: 10
+  category: 4
+  biomeId: forest
+  defaultGround: {fileID: 11400000, guid: 4a3d9668bbacd6f488afc588d75c7b9d, type: 2}
+  cells:
+  - x: 9
+    y: 0
+    layer: 0
+    terrain: {fileID: 11400000, guid: be7076514cac3184684fffe1eb49ee47, type: 2}
+  - x: 10
+    y: 0
+    layer: 0
+    terrain: {fileID: 11400000, guid: be7076514cac3184684fffe1eb49ee47, type: 2}
+  - x: 9
+    y: 1
+    layer: 0
+    terrain: {fileID: 11400000, guid: be7076514cac3184684fffe1eb49ee47, type: 2}
+  - x: 10
+    y: 1
+    layer: 0
+    terrain: {fileID: 11400000, guid: be7076514cac3184684fffe1eb49ee47, type: 2}
+  - x: 9
+    y: 2
+    layer: 0
+    terrain: {fileID: 11400000, guid: be7076514cac3184684fffe1eb49ee47, type: 2}
+  - x: 10
+    y: 2
+    layer: 0
+    terrain: {fileID: 11400000, guid: be7076514cac3184684fffe1eb49ee47, type: 2}
+  - x: 9
+    y: 3
+    layer: 0
+    terrain: {fileID: 11400000, guid: be7076514cac3184684fffe1eb49ee47, type: 2}
+  - x: 10
+    y: 3
+    layer: 0
+    terrain: {fileID: 11400000, guid: be7076514cac3184684fffe1eb49ee47, type: 2}
+  - x: 9
+    y: 4
+    layer: 0
+    terrain: {fileID: 11400000, guid: 10b8b70ba7a967d47861452e2705fb44, type: 2}
+  - x: 10
+    y: 4
+    layer: 0
+    terrain: {fileID: 11400000, guid: 10b8b70ba7a967d47861452e2705fb44, type: 2}
+  - x: 9
+    y: 5
+    layer: 0
+    terrain: {fileID: 11400000, guid: be7076514cac3184684fffe1eb49ee47, type: 2}
+  - x: 10
+    y: 5
+    layer: 0
+    terrain: {fileID: 11400000, guid: be7076514cac3184684fffe1eb49ee47, type: 2}
+  - x: 9
+    y: 6
+    layer: 0
+    terrain: {fileID: 11400000, guid: be7076514cac3184684fffe1eb49ee47, type: 2}
+  - x: 10
+    y: 6
+    layer: 0
+    terrain: {fileID: 11400000, guid: be7076514cac3184684fffe1eb49ee47, type: 2}
+  - x: 9
+    y: 7
+    layer: 0
+    terrain: {fileID: 11400000, guid: be7076514cac3184684fffe1eb49ee47, type: 2}
+  - x: 10
+    y: 7
+    layer: 0
+    terrain: {fileID: 11400000, guid: be7076514cac3184684fffe1eb49ee47, type: 2}
+  - x: 9
+    y: 8
+    layer: 0
+    terrain: {fileID: 11400000, guid: be7076514cac3184684fffe1eb49ee47, type: 2}
+  - x: 10
+    y: 8
+    layer: 0
+    terrain: {fileID: 11400000, guid: be7076514cac3184684fffe1eb49ee47, type: 2}
+  - x: 9
+    y: 9
+    layer: 0
+    terrain: {fileID: 11400000, guid: be7076514cac3184684fffe1eb49ee47, type: 2}
+  - x: 10
+    y: 9
+    layer: 0
+    terrain: {fileID: 11400000, guid: be7076514cac3184684fffe1eb49ee47, type: 2}
+  - x: 8
+    y: 0
+    layer: 0
+    terrain: {fileID: 11400000, guid: 79e05227954c18046b63efae29b127ba, type: 2}
+  - x: 8
+    y: 1
+    layer: 0
+    terrain: {fileID: 11400000, guid: 79e05227954c18046b63efae29b127ba, type: 2}
+  - x: 8
+    y: 2
+    layer: 0
+    terrain: {fileID: 11400000, guid: 79e05227954c18046b63efae29b127ba, type: 2}
+  - x: 8
+    y: 3
+    layer: 0
+    terrain: {fileID: 11400000, guid: 79e05227954c18046b63efae29b127ba, type: 2}
+  - x: 8
+    y: 4
+    layer: 0
+    terrain: {fileID: 11400000, guid: c4ff2d525b28219459e09aff907eb837, type: 2}
+  - x: 8
+    y: 5
+    layer: 0
+    terrain: {fileID: 11400000, guid: 79e05227954c18046b63efae29b127ba, type: 2}
+  - x: 8
+    y: 6
+    layer: 0
+    terrain: {fileID: 11400000, guid: 79e05227954c18046b63efae29b127ba, type: 2}
+  - x: 8
+    y: 7
+    layer: 0
+    terrain: {fileID: 11400000, guid: 79e05227954c18046b63efae29b127ba, type: 2}
+  - x: 8
+    y: 8
+    layer: 0
+    terrain: {fileID: 11400000, guid: 79e05227954c18046b63efae29b127ba, type: 2}
+  - x: 8
+    y: 9
+    layer: 0
+    terrain: {fileID: 11400000, guid: 79e05227954c18046b63efae29b127ba, type: 2}
+  - x: 11
+    y: 0
+    layer: 0
+    terrain: {fileID: 11400000, guid: 79e05227954c18046b63efae29b127ba, type: 2}
+  - x: 11
+    y: 1
+    layer: 0
+    terrain: {fileID: 11400000, guid: 79e05227954c18046b63efae29b127ba, type: 2}
+  - x: 11
+    y: 2
+    layer: 0
+    terrain: {fileID: 11400000, guid: 79e05227954c18046b63efae29b127ba, type: 2}
+  - x: 11
+    y: 3
+    layer: 0
+    terrain: {fileID: 11400000, guid: 79e05227954c18046b63efae29b127ba, type: 2}
+  - x: 11
+    y: 4
+    layer: 0
+    terrain: {fileID: 11400000, guid: c4ff2d525b28219459e09aff907eb837, type: 2}
+  - x: 11
+    y: 5
+    layer: 0
+    terrain: {fileID: 11400000, guid: 79e05227954c18046b63efae29b127ba, type: 2}
+  - x: 11
+    y: 6
+    layer: 0
+    terrain: {fileID: 11400000, guid: 79e05227954c18046b63efae29b127ba, type: 2}
+  - x: 11
+    y: 7
+    layer: 0
+    terrain: {fileID: 11400000, guid: 79e05227954c18046b63efae29b127ba, type: 2}
+  - x: 11
+    y: 8
+    layer: 0
+    terrain: {fileID: 11400000, guid: 79e05227954c18046b63efae29b127ba, type: 2}
+  - x: 11
+    y: 9
+    layer: 0
+    terrain: {fileID: 11400000, guid: 79e05227954c18046b63efae29b127ba, type: 2}
+  - x: 0
+    y: 4
+    layer: 0
+    terrain: {fileID: 11400000, guid: c4ff2d525b28219459e09aff907eb837, type: 2}
+  - x: 1
+    y: 4
+    layer: 0
+    terrain: {fileID: 11400000, guid: c4ff2d525b28219459e09aff907eb837, type: 2}
+  - x: 2
+    y: 4
+    layer: 0
+    terrain: {fileID: 11400000, guid: c4ff2d525b28219459e09aff907eb837, type: 2}
+  - x: 3
+    y: 4
+    layer: 0
+    terrain: {fileID: 11400000, guid: c4ff2d525b28219459e09aff907eb837, type: 2}
+  - x: 4
+    y: 4
+    layer: 0
+    terrain: {fileID: 11400000, guid: c4ff2d525b28219459e09aff907eb837, type: 2}
+  - x: 5
+    y: 4
+    layer: 0
+    terrain: {fileID: 11400000, guid: c4ff2d525b28219459e09aff907eb837, type: 2}
+  - x: 6
+    y: 4
+    layer: 0
+    terrain: {fileID: 11400000, guid: c4ff2d525b28219459e09aff907eb837, type: 2}
+  - x: 7
+    y: 4
+    layer: 0
+    terrain: {fileID: 11400000, guid: c4ff2d525b28219459e09aff907eb837, type: 2}
+  - x: 12
+    y: 4
+    layer: 0
+    terrain: {fileID: 11400000, guid: c4ff2d525b28219459e09aff907eb837, type: 2}
+  - x: 13
+    y: 4
+    layer: 0
+    terrain: {fileID: 11400000, guid: c4ff2d525b28219459e09aff907eb837, type: 2}
+  - x: 1
+    y: 6
+    layer: 0
+    terrain: {fileID: 11400000, guid: 0c8aa9cf7f46b8d4d83451812f6797a6, type: 2}
+  - x: 2
+    y: 6
+    layer: 0
+    terrain: {fileID: 11400000, guid: 0c8aa9cf7f46b8d4d83451812f6797a6, type: 2}
+  - x: 3
+    y: 6
+    layer: 0
+    terrain: {fileID: 11400000, guid: 0c8aa9cf7f46b8d4d83451812f6797a6, type: 2}
+  - x: 4
+    y: 6
+    layer: 0
+    terrain: {fileID: 11400000, guid: 0c8aa9cf7f46b8d4d83451812f6797a6, type: 2}
+  - x: 1
+    y: 7
+    layer: 0
+    terrain: {fileID: 11400000, guid: 0c8aa9cf7f46b8d4d83451812f6797a6, type: 2}
+  - x: 2
+    y: 7
+    layer: 0
+    terrain: {fileID: 11400000, guid: 0c8aa9cf7f46b8d4d83451812f6797a6, type: 2}
+  - x: 3
+    y: 7
+    layer: 0
+    terrain: {fileID: 11400000, guid: 0c8aa9cf7f46b8d4d83451812f6797a6, type: 2}
+  - x: 4
+    y: 7
+    layer: 0
+    terrain: {fileID: 11400000, guid: 0c8aa9cf7f46b8d4d83451812f6797a6, type: 2}
+  - x: 1
+    y: 8
+    layer: 0
+    terrain: {fileID: 11400000, guid: 0c8aa9cf7f46b8d4d83451812f6797a6, type: 2}
+  - x: 2
+    y: 8
+    layer: 0
+    terrain: {fileID: 11400000, guid: 0c8aa9cf7f46b8d4d83451812f6797a6, type: 2}
+  - x: 3
+    y: 8
+    layer: 0
+    terrain: {fileID: 11400000, guid: 0c8aa9cf7f46b8d4d83451812f6797a6, type: 2}
+  - x: 4
+    y: 8
+    layer: 0
+    terrain: {fileID: 11400000, guid: 0c8aa9cf7f46b8d4d83451812f6797a6, type: 2}
+  - x: 1
+    y: 5
+    layer: 0
+    terrain: {fileID: 11400000, guid: 32416e0f3ac17af40b0b683a533e6001, type: 2}
+  - x: 2
+    y: 5
+    layer: 0
+    terrain: {fileID: 11400000, guid: 32416e0f3ac17af40b0b683a533e6001, type: 2}
+  - x: 3
+    y: 5
+    layer: 0
+    terrain: {fileID: 11400000, guid: 32416e0f3ac17af40b0b683a533e6001, type: 2}
+  - x: 4
+    y: 5
+    layer: 0
+    terrain: {fileID: 11400000, guid: 32416e0f3ac17af40b0b683a533e6001, type: 2}
+  - x: 2
+    y: 2
+    layer: 2
+    terrain: {fileID: 11400000, guid: e7614d21f7a1c084da8261d5fa75cbac, type: 2}
+  - x: 5
+    y: 7
+    layer: 1
+    terrain: {fileID: 11400000, guid: ccfed8b5e2392a3419efe005da0a6cfd, type: 2}
+  markers:
+  - id: glade.sw
+    kind: 2
+    x: 0
+    y: 4
+    prefab: {fileID: 0}
+    pool: {fileID: 0}
+    category: 0
+    minCount: 1
+    maxCount: 1
+    radius: 1.5
+    minDifficulty: 1
+    maxDifficulty: 0
+    repeat: 0
+    enabled: 1
+    allowedSurfaceIds: []
+    direction: 2
+    required: 0
+    socketTag: path
+  - id: glade.ne
+    kind: 2
+    x: 13
+    y: 4
+    prefab: {fileID: 0}
+    pool: {fileID: 0}
+    category: 0
+    minCount: 1
+    maxCount: 1
+    radius: 1.5
+    minDifficulty: 1
+    maxDifficulty: 0
+    repeat: 0
+    enabled: 1
+    allowedSurfaceIds: []
+    direction: 0
+    required: 1
+    socketTag: path
+  - id: monsters
+    kind: 1
+    x: 3
+    y: 4
+    prefab: {fileID: 0}
+    pool: {fileID: 11400000, guid: 5c777734b07a93d41bbc306b2d8a36cc, type: 2}
+    category: 0
+    minCount: 1
+    maxCount: 2
+    radius: 2
+    minDifficulty: 1
+    maxDifficulty: 0
+    repeat: 0
+    enabled: 1
+    allowedSurfaceIds: []
+    direction: 0
+    required: 0
+    socketTag: 
+  - id: resources
+    kind: 1
+    x: 6
+    y: 2
+    prefab: {fileID: 0}
+    pool: {fileID: 11400000, guid: 5f6d70a208ca466488ea648150b732e4, type: 2}
+    category: 4
+    minCount: 1
+    maxCount: 2
+    radius: 2
+    minDifficulty: 1
+    maxDifficulty: 0
+    repeat: 0
+    enabled: 1
+    allowedSurfaceIds:
+    - terrain.grass
+    - terrain.forest
+    - terrain.dirt
+    direction: 0
+    required: 0
+    socketTag: 
+  - id: bush
+    kind: 3
+    x: 1
+    y: 1
+    prefab: {fileID: 6198783857896240607, guid: d9cb336e29f297a4ea8da0bf006cdcba, type: 3}
+    pool: {fileID: 0}
+    category: 0
+    minCount: 1
+    maxCount: 1
+    radius: 1.5
+    minDifficulty: 1
+    maxDifficulty: 0
+    repeat: 0
+    enabled: 1
+    allowedSurfaceIds: []
+    direction: 0
+    required: 0
+    socketTag: 

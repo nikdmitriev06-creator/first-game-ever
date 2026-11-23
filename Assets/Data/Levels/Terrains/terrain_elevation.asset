@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8b4fee72160b4c4297e2376cfd7a3a2, type: 3}
+  m_Name: terrain_elevation
+  m_EditorClassIdentifier: Assembly-CSharp::TerrainDefinition
+  id: terrain.elevation
+  displayName: "\u0412\u043E\u0437\u0432\u044B\u0448\u0435\u043D\u043D\u043E\u0441\u0442\u044C"
+  passage: 0
+  height: 1
+  speed: 1
+  connectGroup: elevation
+  hazardId: 
+  swatch: {r: 0.42, g: 0.56, b: 0.34, a: 1}
+  centers:
+  - {fileID: 6590001330937813615, guid: 869b43eb5c93c34489649cbab12d4c89, type: 3}
+  - {fileID: 2307897564565941911, guid: 869b43eb5c93c34489649cbab12d4c89, type: 3}
+  - {fileID: -1478346353544187849, guid: 869b43eb5c93c34489649cbab12d4c89, type: 3}
+  - {fileID: -1085589781156857688, guid: 869b43eb5c93c34489649cbab12d4c89, type: 3}
+  edges:
+  - {fileID: 817223560, guid: 869b43eb5c93c34489649cbab12d4c89, type: 3}
+  - {fileID: 1713613712, guid: 869b43eb5c93c34489649cbab12d4c89, type: 3}
+  - {fileID: 1724219381, guid: 869b43eb5c93c34489649cbab12d4c89, type: 3}
+  - {fileID: 1437565784, guid: 869b43eb5c93c34489649cbab12d4c89, type: 3}
+  - {fileID: -164759196, guid: 869b43eb5c93c34489649cbab12d4c89, type: 3}
+  - {fileID: -1196182128, guid: 869b43eb5c93c34489649cbab12d4c89, type: 3}
+  - {fileID: -1874657128, guid: 869b43eb5c93c34489649cbab12d4c89, type: 3}
+  - {fileID: -851905623, guid: 869b43eb5c93c34489649cbab12d4c89, type: 3}
+  - {fileID: -279041638, guid: 869b43eb5c93c34489649cbab12d4c89, type: 3}
+  - {fileID: -662838723, guid: 869b43eb5c93c34489649cbab12d4c89, type: 3}
+  - {fileID: -4279786339858672297, guid: 869b43eb5c93c34489649cbab12d4c89, type: 3}
+  - {fileID: -6551550805065071829, guid: 869b43eb5c93c34489649cbab12d4c89, type: 3}
+  - {fileID: -4501031668612932869, guid: 869b43eb5c93c34489649cbab12d4c89, type: 3}
+  - {fileID: 5682994796284563870, guid: 869b43eb5c93c34489649cbab12d4c89, type: 3}
+  - {fileID: 7088487662138771583, guid: 869b43eb5c93c34489649cbab12d4c89, type: 3}
+  - {fileID: 499392242907301547, guid: 869b43eb5c93c34489649cbab12d4c89, type: 3}
+  tile: {fileID: 11400000, guid: 38ec9cdb391f295419be2dda95ed2aab, type: 2}

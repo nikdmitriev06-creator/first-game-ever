@@ -71,33 +71,40 @@ public class HeldBow : Weapon
         if (!_held || Time.time < _nextShot)
             return;
 
-        _aim = CursorAngle();
-        _hasAim = true;
-        WeaponProfile weapon = BoundWeapon();
-        float speed = Stats.ProjectileSpeed;
-        if (weapon != null && weapon.ProjectileSpeed > 0f)
-            speed = weapon.ProjectileSpeed;
-        if (arrowSprite == null || speed <= 0f)
-            return;
-        if (!TrySpendStamina())
+        if (arrowSprite == null)
             return;
 
+        _aim = CursorAngle();
+        _hasAim = true;
+        float speed = Stats.ProjectileSpeed;
         float range = Stats.Range;
-        float damage = RollDamage();
         int shots = 1;
-        if (weapon != null)
+        CombatStrike strike = null;
+        float damage;
+        float interval = ScaledInterval(Stats.AttackSpeed);
+        if (TryPrepareAttack(Random.value, out AttackPlan plan, out strike))
         {
-            AttackPlan plan = AttackResolver.Resolve(ItemCatalog.Find(ItemId), HeldStack(), null);
-            damage = plan.RollDamage(Random.value);
+            damage = strike.Total;
+            if (plan.ProjectileSpeed > 0f)
+                speed = plan.ProjectileSpeed;
             if (plan.Range > 0f)
                 range = plan.Range;
             shots = Mathf.Max(1, plan.ProjectileCount);
+            interval = ScaledInterval(plan.AttackSpeed);
+        }
+        else
+        {
+            damage = RollDamage();
+            strike = CombatStrike.Flat(DamageType.Piercing, damage, this);
         }
 
-        if (!Shoot(speed, range, damage, shots))
+        if (speed <= 0f || !TrySpendStamina())
             return;
 
-        _nextShot = Time.time + AttackInterval();
+        if (!Shoot(speed, range, damage, shots, strike))
+            return;
+
+        _nextShot = Time.time + interval;
     }
 
     void Awake()
@@ -161,10 +168,12 @@ public class HeldBow : Weapon
         ApplySorting(offset.y > _bodyHeight * 0.72f);
     }
 
-    bool Shoot(float speed, float range, float damage, int shots)
+    bool Shoot(float speed, float range, float damage, int shots, CombatStrike strike)
     {
         if (arrowSprite == null)
             return false;
+
+        SoundBus.Play(FxEvent.Bow, transform.position);
 
         if (_bodyHeight < 0.01f)
             MeasureBody();
@@ -193,7 +202,9 @@ public class HeldBow : Weapon
             }
 
             var shot = go.AddComponent<ArrowShot>();
-            shot.Launch(direction, speed, range, damage);
+            if (strike != null)
+                strike.Owner = this;
+            shot.Launch(direction, speed, range, damage, strike);
         }
 
         return true;

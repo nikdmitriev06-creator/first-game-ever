@@ -12,7 +12,14 @@ public class ArrowShot : MonoBehaviour
 
     public float Damage { get; private set; }
 
+    CombatStrike _strike;
+
     public void Launch(Vector2 direction, float speed, float range, float damage)
+    {
+        Launch(direction, speed, range, damage, null);
+    }
+
+    public void Launch(Vector2 direction, float speed, float range, float damage, CombatStrike strike)
     {
         if (direction.sqrMagnitude < 0.0001f)
             direction = Vector2.right;
@@ -21,6 +28,7 @@ public class ArrowShot : MonoBehaviour
         _speed = Mathf.Max(0.01f, speed);
         _remaining = Mathf.Max(0.01f, range);
         Damage = Mathf.Max(0f, damage);
+        _strike = strike;
 
         float angle = Mathf.Atan2(_direction.y, _direction.x) * Mathf.Rad2Deg + 90f;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
@@ -35,7 +43,7 @@ public class ArrowShot : MonoBehaviour
         _remaining -= step;
 
         ImpactLibrary.Ensure();
-        var impact = new Impact(ImpactLibrary.Slash, Damage, to, _direction, this);
+        var impact = new Impact(ImpactLibrary.Slash, Damage, to, _direction, this, _strike);
         var hits = new System.Collections.Generic.List<IImpactReceiver>();
         ReceiverRegistry.CollectOnSegment(from, to, hits);
         while (hits.Count > 0)

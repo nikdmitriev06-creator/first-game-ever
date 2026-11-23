@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8b4fee72160b4c4297e2376cfd7a3a2, type: 3}
+  m_Name: terrain_mud
+  m_EditorClassIdentifier: Assembly-CSharp::TerrainDefinition
+  id: terrain.mud
+  displayName: "\u0413\u0440\u044F\u0437\u044C"
+  passage: 0
+  height: 0
+  speed: 1
+  connectGroup: mud
+  hazardId: 
+  swatch: {r: 0.36, g: 0.28, b: 0.18, a: 1}
+  centers:
+  - {fileID: 3897450873323753340, guid: e78d6ab196ce5e1458fa69aa642cad33, type: 3}
+  - {fileID: 6677961130615096037, guid: e78d6ab196ce5e1458fa69aa642cad33, type: 3}
+  - {fileID: -53863927893382827, guid: e78d6ab196ce5e1458fa69aa642cad33, type: 3}
+  - {fileID: 3970893528450353431, guid: e78d6ab196ce5e1458fa69aa642cad33, type: 3}
+  edges:
+  - {fileID: -1812128328, guid: e78d6ab196ce5e1458fa69aa642cad33, type: 3}
+  - {fileID: 917649341, guid: e78d6ab196ce5e1458fa69aa642cad33, type: 3}
+  - {fileID: 1912383157, guid: e78d6ab196ce5e1458fa69aa642cad33, type: 3}
+  - {fileID: 1064927338, guid: e78d6ab196ce5e1458fa69aa642cad33, type: 3}
+  - {fileID: -2081336537, guid: e78d6ab196ce5e1458fa69aa642cad33, type: 3}
+  - {fileID: 1181794901, guid: e78d6ab196ce5e1458fa69aa642cad33, type: 3}
+  - {fileID: 451285926, guid: e78d6ab196ce5e1458fa69aa642cad33, type: 3}
+  - {fileID: -1498468036, guid: e78d6ab196ce5e1458fa69aa642cad33, type: 3}
+  - {fileID: 366005447, guid: e78d6ab196ce5e1458fa69aa642cad33, type: 3}
+  - {fileID: 1317834009, guid: e78d6ab196ce5e1458fa69aa642cad33, type: 3}
+  - {fileID: -8197832966240367643, guid: e78d6ab196ce5e1458fa69aa642cad33, type: 3}
+  - {fileID: -7169224918299020460, guid: e78d6ab196ce5e1458fa69aa642cad33, type: 3}
+  - {fileID: 3413890612776761901, guid: e78d6ab196ce5e1458fa69aa642cad33, type: 3}
+  - {fileID: -2826016022399231553, guid: e78d6ab196ce5e1458fa69aa642cad33, type: 3}
+  - {fileID: -5581468211318931720, guid: e78d6ab196ce5e1458fa69aa642cad33, type: 3}
+  - {fileID: 9158700988694855762, guid: e78d6ab196ce5e1458fa69aa642cad33, type: 3}
+  tile: {fileID: 11400000, guid: 5b3afee2c2cbe49409f7efbde61f4b7a, type: 2}

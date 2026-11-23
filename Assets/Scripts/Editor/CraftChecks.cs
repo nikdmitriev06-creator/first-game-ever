@@ -173,7 +173,7 @@ public static class CraftChecks
                 Object.DestroyImmediate(chairObject);
             if (place != null)
                 Object.DestroyImmediate(place);
-            WorldItem[] drops = Object.FindObjectsByType<WorldItem>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            WorldItem[] drops = Object.FindObjectsByType<WorldItem>(FindObjectsInactive.Include);
             for (int i = 0; i < drops.Length; i++)
             {
                 if (drops[i] != null)
@@ -295,7 +295,8 @@ public static class CraftChecks
             created.Add(kitHost);
             PlayerInventory kit = kitHost.AddComponent<PlayerInventory>();
             kit.GiveStartingItems();
-            Check(kit.SlotAt(2) == ItemIds.Axe && kit.SlotAt(3) == ItemIds.Pickaxe && kit.CountAt(3) == 1, "pickaxe starts in the hotbar", ref failed);
+            Check(kit.SlotAt(8) == ItemIds.Axe && kit.SlotAt(9) == ItemIds.Pickaxe && kit.CountAt(9) == 1, "pickaxe starts in the hotbar", ref failed);
+            Check(kit.SlotAt(0) == ItemIds.Sword && kit.SlotAt(4) == ItemIds.ShortSword && kit.SlotAt(7) == ItemIds.Crossbow, "one of each weapon starts in the hotbar", ref failed);
 
             CheckLootRolls(stone, ore, ref failed);
             CheckRockTable(ref failed);
@@ -695,7 +696,7 @@ public static class CraftChecks
     static int CountDrops(string id)
     {
         int count = 0;
-        WorldItem[] drops = Object.FindObjectsByType<WorldItem>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        WorldItem[] drops = Object.FindObjectsByType<WorldItem>(FindObjectsInactive.Include);
         for (int i = 0; i < drops.Length; i++)
         {
             if (drops[i] != null && drops[i].name == "Dropped " + id)

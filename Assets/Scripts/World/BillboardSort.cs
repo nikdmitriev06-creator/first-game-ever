@@ -1,13 +1,13 @@
 using UnityEngine;
 
 /// <summary>
-/// Puts this sprite behind or in front of the player using one ground line.
-/// South of the line the player covers the sprite. North of it, the sprite covers the player.
+/// Depth from the foot line, the same rule as the player. A lower Y draws in front.
 /// </summary>
 public class BillboardSort : MonoBehaviour
 {
     public float LineY;
     public int OrderBias;
+    public bool Follow;
 
     SpriteRenderer _renderer;
     SpriteRenderer _playerRenderer;
@@ -30,11 +30,10 @@ public class BillboardSort : MonoBehaviour
                 _playerRenderer = _player.GetComponent<SpriteRenderer>();
         }
 
-        if (_playerRenderer == null)
-            return;
+        if (_playerRenderer != null)
+            _renderer.sortingLayerID = _playerRenderer.sortingLayerID;
 
-        bool playerInFront = _player.transform.position.y < LineY;
-        _renderer.sortingLayerID = _playerRenderer.sortingLayerID;
-        _renderer.sortingOrder = _playerRenderer.sortingOrder + (playerInFront ? -4 : 3) + OrderBias;
+        float foot = Follow ? IsoSort.SortY(transform, _renderer) : LineY;
+        _renderer.sortingOrder = IsoSort.Stable(foot, gameObject.GetEntityId().GetHashCode(), OrderBias);
     }
 }

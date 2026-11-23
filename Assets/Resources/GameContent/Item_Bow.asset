@@ -25,3 +25,37 @@ MonoBehaviour:
   stationRadius: 0
   durability: 1
   footprint: 0.4
+  tool:
+    Impact: {fileID: 0}
+    Power: 1
+    Range: 3.6
+    Stamina: 6
+    Shape: 0
+    Gesture: 1
+    Use: 0
+    ActionId: 
+  placementPolicy: {fileID: 0}
+  breakMaterial: {fileID: 0}
+  indestructible: 0
+  description: 
+  wearCapacity: 0
+  weapon:
+    Kind: 3
+    Damage: 9
+    AttackSpeed: 2.63
+    Range: 52
+    Stamina: 6
+    CritChance: 0.12
+    CritMultiplier: 1.4
+    ProjectileSpeed: 34
+    DamageTypeId: piercing
+    StrategyId: 
+    TypedDamage: 2
+    BonusDamage: []
+    OnHit: []
+  equipment:
+    SlotId: body
+    HealthBonus: 0
+  consumable:
+    EffectId: 
+    Magnitude: 0

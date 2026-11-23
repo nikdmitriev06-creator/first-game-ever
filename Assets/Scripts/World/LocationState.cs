@@ -19,6 +19,8 @@ public sealed class LocationState
     readonly List<Record> _indoor = new List<Record>();
     readonly HashSet<string> _live = new HashSet<string>();
     readonly HashSet<string> _removed = new HashSet<string>();
+    readonly HashSet<string> _opened = new HashSet<string>();
+    readonly HashSet<string> _enabled = new HashSet<string>();
 
     public static LocationState Active { get; private set; }
 
@@ -36,13 +38,93 @@ public sealed class LocationState
 
     public void MarkRemoved(string id)
     {
-        if (!string.IsNullOrEmpty(id))
-            _removed.Add(id);
+        if (string.IsNullOrEmpty(id))
+            return;
+
+        _removed.Add(id);
+        WorldMemory.Store(this);
     }
 
     public bool WasRemoved(string id)
     {
         return !string.IsNullOrEmpty(id) && _removed.Contains(id);
+    }
+
+    public void MarkOpened(string id)
+    {
+        if (string.IsNullOrEmpty(id))
+            return;
+
+        _opened.Add(id);
+        WorldMemory.Store(this);
+    }
+
+    public bool WasOpened(string id)
+    {
+        return !string.IsNullOrEmpty(id) && _opened.Contains(id);
+    }
+
+    public void MarkEnabled(string id, bool enabled)
+    {
+        if (string.IsNullOrEmpty(id))
+            return;
+
+        if (enabled)
+            _enabled.Add(id);
+        else
+            _enabled.Remove(id);
+        WorldMemory.Store(this);
+    }
+
+    public bool WasEnabled(string id)
+    {
+        return !string.IsNullOrEmpty(id) && _enabled.Contains(id);
+    }
+
+    public void CopyFlags(List<string> removed, List<string> opened, List<string> enabled)
+    {
+        if (removed != null)
+        {
+            removed.Clear();
+            foreach (string id in _removed)
+                removed.Add(id);
+        }
+
+        if (opened != null)
+        {
+            opened.Clear();
+            foreach (string id in _opened)
+                opened.Add(id);
+        }
+
+        if (enabled != null)
+        {
+            enabled.Clear();
+            foreach (string id in _enabled)
+                enabled.Add(id);
+        }
+    }
+
+    public void ApplyFlags(IList<string> removed, IList<string> opened, IList<string> enabled)
+    {
+        _removed.Clear();
+        _opened.Clear();
+        _enabled.Clear();
+        AddAll(_removed, removed);
+        AddAll(_opened, opened);
+        AddAll(_enabled, enabled);
+    }
+
+    static void AddAll(HashSet<string> into, IList<string> source)
+    {
+        if (source == null)
+            return;
+
+        for (int i = 0; i < source.Count; i++)
+        {
+            if (!string.IsNullOrEmpty(source[i]))
+                into.Add(source[i]);
+        }
     }
 
     public string Remember(string itemId, Vector2 position, int health)

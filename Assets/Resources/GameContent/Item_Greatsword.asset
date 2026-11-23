@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e50fe4a851c7ae4f9f1d07e577bd81a, type: 3}
+  m_Name: Item_Greatsword
+  m_EditorClassIdentifier: Assembly-CSharp::ItemDefinition
+  id: greatsword
+  displayName: "\u0414\u0432\u0443\u0440\u0443\u0447\u043D\u044B\u0439 \u043C\u0435\u0447"
+  displayNameEnglish: Greatsword
+  icon: {fileID: 0}
+  worldSprite: {fileID: 0}
+  maxStack: 1
+  category: 2
+  placement: 0
+  prefab: {fileID: 0}
+  stationId: 
+  stationRadius: 0
+  durability: 1
+  footprint: 0.4
+  tool:
+    Impact: {fileID: 0}
+    Power: 1
+    Range: 3.6
+    Stamina: 6
+    Shape: 0
+    Gesture: 1
+    Use: 0
+    ActionId: 
+  placementPolicy: {fileID: 0}
+  breakMaterial: {fileID: 0}
+  indestructible: 0
+  description: 
+  wearCapacity: 0
+  weapon:
+    Kind: 0
+    Damage: 26
+    AttackSpeed: 0.7
+    Range: 3.5
+    Stamina: 16
+    CritChance: 0.1
+    CritMultiplier: 1.6
+    ProjectileSpeed: 0
+    DamageTypeId: slashing
+    StrategyId: 
+    TypedDamage: 1
+    BonusDamage: []
+    OnHit: []
+    ArcDegrees: 125
+    Knockback: 11
+    ManaCost: 0
+    Reload: 0
+    Windup: 0.48
+    Hitbox:
+      SpriteHalfLength: 0
+      SpriteHalfWidth: 0
+      SpriteAlong: 0
+      SpriteSide: 0
+      HalfLength: 1.75
+      HalfWidth: 1.05
+      Along: 1.75
+      Side: 0
+  equipment:
+    SlotId: body
+    HealthBonus: 0
+  consumable:
+    EffectId: 
+    Magnitude: 0
+  rarity: 0

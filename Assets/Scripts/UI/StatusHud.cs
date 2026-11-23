@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,10 +10,10 @@ using UnityEngine.UI;
 public class StatusHud : MonoBehaviour
 {
     const float MarginX = 28f;
-    const float MarginY = 24f;
-    const float Gap = 3f;
-    const float Frame = 2f;
-    const float NumberSize = 20f;
+    const float MarginY = 28f;
+    const float Gap = 6f;
+    const float Frame = 3f;
+    const float NumberSize = 18f;
 
     static readonly Color HealthColor = new Color(0.74f, 0.15f, 0.10f, 1f);
     static readonly Color HealthShine = new Color(0.90f, 0.34f, 0.16f, 1f);
@@ -22,8 +23,8 @@ public class StatusHud : MonoBehaviour
     static readonly Color StaminaShine = new Color(0.76f, 0.78f, 0.30f, 1f);
     static readonly Color FrameColor = new Color(0.10f, 0.09f, 0.08f, 1f);
     static readonly Color TrackColor = new Color(0f, 0f, 0f, 1f);
-    static readonly Color RimColor = new Color(0.22f, 0.18f, 0.13f, 0.9f);
-    static readonly Color NumberColor = new Color(0.96f, 0.94f, 0.88f, 1f);
+    static readonly Color RimColor = new Color(0.55f, 0.44f, 0.24f, 0.95f);
+    static readonly Color NumberColor = new Color(0.97f, 0.95f, 0.90f, 1f);
 
     PlayerVitals _vitals;
     GameObject _canvasObject;
@@ -34,8 +35,11 @@ public class StatusHud : MonoBehaviour
     struct BarView
     {
         public RectTransform Fill;
-        public Text Label;
+        public TMP_Text Label;
         public float InnerWidth;
+        public float Shown;
+        public float Target;
+        public int ShownText;
     }
 
     void Awake()
@@ -67,46 +71,68 @@ public class StatusHud : MonoBehaviour
             Destroy(_canvasObject);
     }
 
+    void Update()
+    {
+        Tick(ref _health);
+        Tick(ref _mana);
+        Tick(ref _stamina);
+    }
+
     void Refresh()
     {
         if (_vitals == null)
             return;
 
-        Apply(_health, _vitals.Health, _vitals.MaxHealth);
-        Apply(_mana, _vitals.Mana, _vitals.MaxMana);
-        Apply(_stamina, _vitals.Stamina, _vitals.MaxStamina);
+        Aim(ref _health, _vitals.Health, _vitals.MaxHealth);
+        Aim(ref _mana, _vitals.Mana, _vitals.MaxMana);
+        Aim(ref _stamina, _vitals.Stamina, _vitals.MaxStamina);
     }
 
-    static void Apply(BarView bar, float current, float max)
+    static void Aim(ref BarView bar, float current, float max)
+    {
+        bar.Target = max <= 0f ? 0f : Mathf.Clamp01(current / max);
+        if (bar.Label == null)
+            return;
+
+        int shown = Mathf.RoundToInt(current);
+        if (shown == bar.ShownText)
+            return;
+
+        bar.ShownText = shown;
+        bar.Label.SetText("{0}", shown);
+    }
+
+    static void Tick(ref BarView bar)
     {
         if (bar.Fill == null)
             return;
 
-        float ratio = max <= 0f ? 0f : Mathf.Clamp01(current / max);
-        bar.Fill.sizeDelta = new Vector2(bar.InnerWidth * ratio, 0f);
-        if (bar.Label != null)
-            bar.Label.text = Mathf.RoundToInt(current).ToString();
+        if (Mathf.Abs(bar.Shown - bar.Target) < 0.001f)
+        {
+            if (bar.Shown != bar.Target)
+            {
+                bar.Shown = bar.Target;
+                bar.Fill.sizeDelta = new Vector2(bar.InnerWidth * bar.Target, 0f);
+            }
+
+            return;
+        }
+
+        bar.Shown = Mathf.MoveTowards(bar.Shown, bar.Target, Time.unscaledDeltaTime * 2.8f);
+        bar.Fill.sizeDelta = new Vector2(bar.InnerWidth * bar.Shown, 0f);
     }
 
     void Build()
     {
         _canvasObject = new GameObject("Status Hud");
-
-        var canvas = _canvasObject.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = 100;
-
-        var scaler = _canvasObject.AddComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920f, 1080f);
-        scaler.matchWidthOrHeight = 0.5f;
+        UiScreen.Mount(_canvasObject, 100);
 
         float y = MarginY;
-        _health = BuildBar("Health", y, 312f, 32f, HealthColor, HealthShine, 2f);
-        y += 32f + Gap;
-        _mana = BuildBar("Mana", y, 176f, 28f, ManaColor, ManaShine, 1f);
+        _health = BuildBar("Health", y, 312f, 28f, HealthColor, HealthShine, 2f);
         y += 28f + Gap;
-        _stamina = BuildBar("Stamina", y, 260f, 30f, StaminaColor, StaminaShine, 2f);
+        _mana = BuildBar("Mana", y, 176f, 22f, ManaColor, ManaShine, 1f);
+        y += 22f + Gap;
+        _stamina = BuildBar("Stamina", y, 248f, 24f, StaminaColor, StaminaShine, 2f);
     }
 
     BarView BuildBar(string name, float y, float width, float height, Color fill, Color shine, float shineHeight)
@@ -123,7 +149,7 @@ public class StatusHud : MonoBehaviour
         rimRect.anchorMax = new Vector2(1f, 1f);
         rimRect.pivot = new Vector2(0.5f, 1f);
         rimRect.anchoredPosition = Vector2.zero;
-        rimRect.sizeDelta = new Vector2(0f, 1f);
+        rimRect.sizeDelta = new Vector2(0f, 2f);
 
         var track = CreateImage("Track", root, TrackColor);
         Stretch(track.rectTransform);
@@ -152,30 +178,19 @@ public class StatusHud : MonoBehaviour
         {
             Fill = fillRect,
             Label = label,
-            InnerWidth = width - Frame * 2f
+            InnerWidth = width - Frame * 2f,
+            ShownText = -1
         };
     }
 
-    static Text CreateValue(RectTransform bar, float width, float height)
+    static TMP_Text CreateValue(RectTransform bar, float width, float height)
     {
         var rect = CreateRect("Value", bar);
         rect.anchorMin = new Vector2(0.5f, 0.5f);
         rect.anchorMax = new Vector2(0.5f, 0.5f);
         rect.pivot = new Vector2(0.5f, 0.5f);
         rect.sizeDelta = new Vector2(width, height);
-
-        var text = rect.gameObject.AddComponent<Text>();
-        text.font = UiGlyphs.Font;
-        text.fontSize = Mathf.RoundToInt(NumberSize);
-        text.alignment = TextAnchor.MiddleCenter;
-        text.color = NumberColor;
-        text.horizontalOverflow = HorizontalWrapMode.Overflow;
-        text.verticalOverflow = VerticalWrapMode.Overflow;
-        text.raycastTarget = false;
-        text.supportRichText = false;
-        UiGlyphs.Prepare(text, "0123456789");
-
-        return text;
+        return UiGlyphs.Place(rect.gameObject, string.Empty, NumberSize, TextAnchor.MiddleCenter, NumberColor, UiGlyphs.Wrap.Single, true);
     }
 
     static void AnchorTopLeft(RectTransform rect, float x, float yFromTop, float width, float height)
@@ -221,6 +236,7 @@ public class StatusHud : MonoBehaviour
             return _pixel;
 
         var texture = new Texture2D(1, 1, TextureFormat.RGBA32, false);
+        texture.filterMode = FilterMode.Point;
         texture.SetPixel(0, 0, Color.white);
         texture.Apply();
         texture.hideFlags = HideFlags.HideAndDontSave;

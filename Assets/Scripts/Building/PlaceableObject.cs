@@ -119,7 +119,10 @@ public class PlaceableObject : MonoBehaviour, IBreakReaction
         EnsureCollider();
         EnsureBody(definition, savedHealth);
         if (_sort != null)
+        {
+            _sort.Follow = true;
             _sort.LineY = position.y;
+        }
 
         int shown = Health;
         if (_indoor)
@@ -250,12 +253,16 @@ public class PlaceableObject : MonoBehaviour, IBreakReaction
 
         if (_sort == null)
             _sort = GetComponent<BillboardSort>();
+        if (_sort == null)
+            _sort = gameObject.AddComponent<BillboardSort>();
 
         Sprite sprite = definition != null ? definition.PlacedSprite : ItemArt.WorldSprite(itemId);
         if (sprite != null)
             _renderer.sprite = sprite;
 
-        _renderer.sortingOrder = 4;
+        _renderer.sortingOrder = IsoSort.Order(transform.position.y);
+        if (_sort != null)
+            _sort.Follow = true;
         SpriteRenderer ground = transform.parent != null ? transform.parent.GetComponent<SpriteRenderer>() : null;
         if (ground != null)
         {
@@ -282,7 +289,7 @@ public class PlaceableObject : MonoBehaviour, IBreakReaction
         shadowObject.transform.localPosition = new Vector3(0f, 0.02f, 0f);
         var shadow = shadowObject.AddComponent<SpriteRenderer>();
         shadow.sprite = ItemArt.Shadow();
-        shadow.sortingOrder = 1;
+        shadow.sortingOrder = IsoSort.FloorOrder + 1;
         shadow.color = new Color(1f, 1f, 1f, 0.8f);
         if (_renderer != null)
         {

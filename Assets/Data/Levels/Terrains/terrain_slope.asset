@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8b4fee72160b4c4297e2376cfd7a3a2, type: 3}
+  m_Name: terrain_slope
+  m_EditorClassIdentifier: Assembly-CSharp::TerrainDefinition
+  id: terrain.slope
+  displayName: "\u0421\u043A\u043B\u043E\u043D"
+  passage: 2
+  height: 0
+  speed: 1
+  connectGroup: slope
+  hazardId: 
+  swatch: {r: 0.5, g: 0.62, b: 0.32, a: 1}
+  centers:
+  - {fileID: 6586443554919386632, guid: d7996061eb103b8428e7915e61b5d564, type: 3}
+  - {fileID: 7056118049646102510, guid: d7996061eb103b8428e7915e61b5d564, type: 3}
+  - {fileID: -738416480054900067, guid: d7996061eb103b8428e7915e61b5d564, type: 3}
+  - {fileID: -4852004925520643580, guid: d7996061eb103b8428e7915e61b5d564, type: 3}
+  edges:
+  - {fileID: 50924033, guid: d7996061eb103b8428e7915e61b5d564, type: 3}
+  - {fileID: 20847313, guid: d7996061eb103b8428e7915e61b5d564, type: 3}
+  - {fileID: -1637648905, guid: d7996061eb103b8428e7915e61b5d564, type: 3}
+  - {fileID: -486425350, guid: d7996061eb103b8428e7915e61b5d564, type: 3}
+  - {fileID: 1205662827, guid: d7996061eb103b8428e7915e61b5d564, type: 3}
+  - {fileID: 29325658, guid: d7996061eb103b8428e7915e61b5d564, type: 3}
+  - {fileID: 155536592, guid: d7996061eb103b8428e7915e61b5d564, type: 3}
+  - {fileID: 85566533, guid: d7996061eb103b8428e7915e61b5d564, type: 3}
+  - {fileID: 2058482312, guid: d7996061eb103b8428e7915e61b5d564, type: 3}
+  - {fileID: 159675655, guid: d7996061eb103b8428e7915e61b5d564, type: 3}
+  - {fileID: -7449565966038356849, guid: d7996061eb103b8428e7915e61b5d564, type: 3}
+  - {fileID: -123377148788720626, guid: d7996061eb103b8428e7915e61b5d564, type: 3}
+  - {fileID: -5269239355745925237, guid: d7996061eb103b8428e7915e61b5d564, type: 3}
+  - {fileID: -8421503014976677229, guid: d7996061eb103b8428e7915e61b5d564, type: 3}
+  - {fileID: 3849423457436693668, guid: d7996061eb103b8428e7915e61b5d564, type: 3}
+  - {fileID: 1225856390803846725, guid: d7996061eb103b8428e7915e61b5d564, type: 3}
+  tile: {fileID: 11400000, guid: 2c5eaf8fadac1c04ba2bcc0e73bb9720, type: 2}

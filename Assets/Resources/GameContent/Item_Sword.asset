@@ -25,3 +25,46 @@ MonoBehaviour:
   stationRadius: 0
   durability: 1
   footprint: 0.4
+  tool:
+    Impact: {fileID: 0}
+    Power: 1
+    Range: 3.6
+    Stamina: 6
+    Shape: 0
+    Gesture: 1
+    Use: 0
+    ActionId: 
+  placementPolicy: {fileID: 0}
+  breakMaterial: {fileID: 0}
+  indestructible: 0
+  description: 
+  wearCapacity: 0
+  weapon:
+    Kind: 0
+    Damage: 12
+    AttackSpeed: 1.92
+    Range: 2.8
+    Stamina: 10
+    CritChance: 0.08
+    CritMultiplier: 1.4
+    ProjectileSpeed: 0
+    DamageTypeId: slashing
+    StrategyId: 
+    TypedDamage: 1
+    BonusDamage: []
+    OnHit: []
+    Hitbox:
+      SpriteHalfLength: 102
+      SpriteHalfWidth: 33
+      SpriteAlong: 0
+      SpriteSide: -2.8
+      HalfLength: 0
+      HalfWidth: 0
+      Along: 0
+      Side: 0
+  equipment:
+    SlotId: body
+    HealthBonus: 0
+  consumable:
+    EffectId: 
+    Magnitude: 0

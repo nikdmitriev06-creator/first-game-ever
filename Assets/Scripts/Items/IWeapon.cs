@@ -8,6 +8,7 @@ public interface IWeapon
     string ItemId { get; }
     Sprite IconSprite { get; }
     bool IsHeld { get; }
+    bool Wants(string itemId);
     void SetHeld(bool held);
     void Attack();
 }

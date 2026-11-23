@@ -37,6 +37,7 @@ public class LevelWorld : MonoBehaviour
         public Gate Exit;
         public bool Visited;
         public bool IsExit;
+        public readonly List<MapInterest> Interests = new List<MapInterest>();
     }
 
     public sealed class Gate
@@ -92,6 +93,41 @@ public class LevelWorld : MonoBehaviour
     public IReadOnlyList<Room> Rooms => Active;
 
     public event Action LayoutChanged;
+    public int InterestVersion { get; private set; }
+
+    public Room RoomContaining(Vector2 point)
+    {
+        List<Room> rooms = Active;
+        for (int i = 0; i < rooms.Count; i++)
+        {
+            Bounds bounds = rooms[i].Bounds;
+            if (bounds.size.x <= 0.01f || bounds.size.y <= 0.01f)
+                continue;
+
+            Vector3 probe = new Vector3(point.x, point.y, bounds.center.z);
+            if (bounds.Contains(probe))
+                return rooms[i];
+        }
+
+        return null;
+    }
+
+    public void NoteInterest(Vector2 point, MapPinKind kind)
+    {
+        Room room = RoomContaining(point);
+        if (room == null)
+            return;
+
+        for (int i = 0; i < room.Interests.Count; i++)
+        {
+            MapInterest sitting = room.Interests[i];
+            if (sitting.Kind == kind && (sitting.Point - point).sqrMagnitude < 0.16f)
+                return;
+        }
+
+        room.Interests.Add(new MapInterest { Point = point, Kind = kind });
+        InterestVersion++;
+    }
 
     readonly List<Room> _home = new List<Room>();
     readonly List<Room> _dungeon = new List<Room>();
@@ -121,8 +157,30 @@ public class LevelWorld : MonoBehaviour
         if (FindAnyObjectByType<PlayArea>() == null || FindAnyObjectByType<PlayerController>() == null)
             return;
 
+        if (AuthoredLevelOwnsTheScene())
+            return;
+
         var host = new GameObject("Level World");
         host.AddComponent<LevelWorld>();
+    }
+
+    static bool AuthoredLevelOwnsTheScene()
+    {
+        RoomDocument[] rooms = UnityEngine.Object.FindObjectsByType<RoomDocument>();
+        for (int i = 0; i < rooms.Length; i++)
+        {
+            if (rooms[i] != null && rooms[i].SuppressProceduralWorld)
+                return true;
+        }
+
+        LevelDocument[] levels = UnityEngine.Object.FindObjectsByType<LevelDocument>();
+        for (int i = 0; i < levels.Length; i++)
+        {
+            if (levels[i] != null && levels[i].SuppressProceduralWorld)
+                return true;
+        }
+
+        return false;
     }
 
     void Awake()
@@ -337,6 +395,7 @@ public class LevelWorld : MonoBehaviour
 
             renderer.sprite = meadow;
             renderer.color = Color.white;
+            renderer.sortingOrder = IsoSort.FloorOrder;
             if (room.Area != null)
                 room.Area.CacheBounds();
             room.Bounds = room.Area != null ? room.Area.CachedBounds : renderer.bounds;
@@ -438,6 +497,7 @@ public class LevelWorld : MonoBehaviour
         if (Current != null && _dungeon.Contains(Current))
             Current = null;
 
+        WorldPresentation.ClearTransient();
         if (_dungeonRoot != null)
             DestroyImmediate(_dungeonRoot);
 
@@ -472,7 +532,7 @@ public class LevelWorld : MonoBehaviour
         if (renderer != null)
         {
             renderer.color = Color.white;
-            renderer.sortingOrder = 0;
+            renderer.sortingOrder = IsoSort.FloorOrder;
         }
 
         return Register(copy, grid, "Level 1 " + grid.x + "," + grid.y, tint, _dungeon, _dungeonRoot.transform);
@@ -522,8 +582,8 @@ public class LevelWorld : MonoBehaviour
         var root = new GameObject("Gate " + side);
         root.transform.SetParent(room.Root.transform, false);
 
-        CreateQuad(root.transform, "Border", center, size + new Vector2(0.45f, 0.45f), border, 1);
-        SpriteRenderer fillRenderer = CreateQuad(root.transform, "Fill", center, size, fill, 2);
+        CreateQuad(root.transform, "Border", center, size + new Vector2(0.45f, 0.45f), border, IsoSort.FloorOrder + 1);
+        SpriteRenderer fillRenderer = CreateQuad(root.transform, "Fill", center, size, fill, IsoSort.FloorOrder + 2);
 
         room.Gates[(int)side] = new Gate
         {
@@ -542,8 +602,8 @@ public class LevelWorld : MonoBehaviour
         var root = new GameObject("Exit Home");
         root.transform.SetParent(room.Root.transform, false);
 
-        CreateDisc(root.transform, "Glow", center, 8.6f, ExitGlow, 3);
-        SpriteRenderer core = CreateDisc(root.transform, "Core", center, ExitTrigger, ExitCore, 4);
+        CreateDisc(root.transform, "Glow", center, 8.6f, ExitGlow, IsoSort.FloorOrder + 3);
+        SpriteRenderer core = CreateDisc(root.transform, "Core", center, ExitTrigger, ExitCore, IsoSort.FloorOrder + 4);
 
         room.Exit = new Gate
         {
@@ -572,6 +632,7 @@ public class LevelWorld : MonoBehaviour
         Current = room;
         _cooldown = movePlayer ? TransitionCooldown : 0f;
         _previousFeet = _player.transform.position;
+        WorldPresentation.ClearTransient();
         ApplyAtmosphere();
     }
 

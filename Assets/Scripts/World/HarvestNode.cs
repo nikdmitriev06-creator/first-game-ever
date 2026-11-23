@@ -9,6 +9,7 @@ public class HarvestNode : MonoBehaviour
     public const float DefaultIntegrity = 4f;
 
     [SerializeField] MaterialDefinition material;
+    [SerializeField] string materialId;
     [SerializeField] float integrity = DefaultIntegrity;
     [SerializeField] float bodyHeight = 0.7f;
     [SerializeField] float slop = 0.85f;
@@ -16,6 +17,13 @@ public class HarvestNode : MonoBehaviour
 
     public Destructible Body => GetComponent<Destructible>();
     public LootTable Loot => loot;
+
+    public void UseMaterialId(string id)
+    {
+        materialId = id;
+        if (material == null)
+            Apply();
+    }
 
     public void Configure(MaterialDefinition bodyMaterial, float hits, float height, float aimSlop, LootTable drops)
     {
@@ -34,6 +42,9 @@ public class HarvestNode : MonoBehaviour
 
     void Apply()
     {
+        if (material == null && !string.IsNullOrEmpty(materialId))
+            material = MaterialLibrary.Named(materialId);
+
         if (material == null)
             return;
 
@@ -48,5 +59,7 @@ public class HarvestNode : MonoBehaviour
         // Loot is added first, so the drop runs before the body is removed.
         if (GetComponent<VanishOnBreak>() == null)
             gameObject.AddComponent<VanishOnBreak>();
+        if (GetComponent<BreakWear>() == null)
+            gameObject.AddComponent<BreakWear>();
     }
 }

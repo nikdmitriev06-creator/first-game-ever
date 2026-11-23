@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
@@ -18,7 +19,7 @@ public class HouseDoor : MonoBehaviour
     PlayerController _player;
     GameObject _canvasObject;
     RectTransform _panel;
-    Text _label;
+    TMP_Text _label;
 
     public void Configure(bool exit, Vector2 point, float radius, Vector2 returnPoint)
     {
@@ -96,6 +97,15 @@ public class HouseDoor : MonoBehaviour
         if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screen, null, out Vector2 local))
             return;
 
+        Vector2 size = _panel.sizeDelta;
+        float maxX = canvasRect.rect.width * 0.5f - size.x * 0.5f - 8f;
+        float maxY = canvasRect.rect.height * 0.5f - size.y * 0.5f - 8f;
+        if (maxX < 0f)
+            maxX = 0f;
+        if (maxY < 0f)
+            maxY = 0f;
+        local.x = Mathf.Clamp(local.x, -maxX, maxX);
+        local.y = Mathf.Clamp(local.y, -maxY, maxY);
         _panel.anchoredPosition = local;
     }
 
@@ -125,16 +135,7 @@ public class HouseDoor : MonoBehaviour
     void BuildPrompt()
     {
         _canvasObject = new GameObject(_exit ? "Exit Prompt" : "Enter Prompt");
-        _canvasObject.transform.SetParent(transform, false);
-
-        var canvas = _canvasObject.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = 125;
-
-        var scaler = _canvasObject.AddComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920f, 1080f);
-        scaler.matchWidthOrHeight = 0.5f;
+        UiScreen.Mount(_canvasObject, 125);
 
         _panel = NewRect("Panel", _canvasObject.transform);
         _panel.sizeDelta = new Vector2(210f, 46f);
@@ -152,14 +153,7 @@ public class HouseDoor : MonoBehaviour
         textObject.transform.SetParent(_panel, false);
         var textRect = textObject.AddComponent<RectTransform>();
         Stretch(textRect);
-        _label = textObject.AddComponent<Text>();
-        _label.font = UiGlyphs.Font;
-        _label.fontSize = 22;
-        _label.alignment = TextAnchor.MiddleCenter;
-        _label.color = new Color(0.96f, 0.93f, 0.84f, 1f);
-        _label.raycastTarget = false;
-        _label.text = Caption();
-        UiGlyphs.Prepare(_label, _label.text);
+        _label = UiGlyphs.Place(textObject, Caption(), 22f, TextAnchor.MiddleCenter, new Color(0.96f, 0.93f, 0.84f, 1f), UiGlyphs.Wrap.Ellipsis, true);
 
         Show(false);
     }

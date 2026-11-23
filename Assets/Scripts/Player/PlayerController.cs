@@ -34,6 +34,7 @@ public class PlayerController : MonoBehaviour
     PlayerVitals _vitals;
     Facing _facing = Facing.Down;
     float _walkTime;
+    float _stepDebt;
     bool _sprintBlocked;
 
     public Vector2 IsometricPosition => _isometricPosition;
@@ -109,6 +110,7 @@ public class PlayerController : MonoBehaviour
         bool moving = screenInput.sqrMagnitude > 0.0001f;
         bool sprinting = TickSprint(moving, deltaTime);
         float speedScale = sprinting ? 1f + SprintSpeedBonus : 1f;
+        speedScale *= MovementGate.Scale(transform.position);
 
         ApplyScreenMovement(screenInput, deltaTime, moveSpeed * speedScale);
         UpdateSprite(screenInput, deltaTime, speedScale);
@@ -150,6 +152,7 @@ public class PlayerController : MonoBehaviour
         if (screenInput.sqrMagnitude > 1f)
             screenInput.Normalize();
 
+        Vector2 from = transform.position;
         if (screenInput.sqrMagnitude > 0f && deltaTime > 0f)
         {
             Vector2 screenDelta = screenInput * (speed * deltaTime);
@@ -159,11 +162,21 @@ public class PlayerController : MonoBehaviour
         Vector2 world = IsometricCoordinates.IsometricToWorld(_isometricPosition);
         if (playArea != null)
             world = playArea.Clamp(world, GetBodyInset());
-        if (PlaceableObject.BlocksFeet(world))
-            world = transform.position;
+        if (PlaceableObject.BlocksFeet(world) || MovementGate.Blocked(from, world))
+            world = from;
 
         _isometricPosition = IsometricCoordinates.WorldToIsometric(world);
         transform.position = new Vector3(world.x, world.y, transform.position.z);
+        float moved = Vector2.Distance(from, world);
+        if (moved <= 0f)
+            return;
+
+        _stepDebt += moved;
+        if (_stepDebt < 0.62f)
+            return;
+
+        _stepDebt = 0f;
+        SoundBus.Play(FxEvent.Step, transform.position);
     }
 
     float GetBodyInset()

@@ -9,6 +9,14 @@ public static class ItemArt
     const float PixelsPerUnit = 32f;
 
     static Sprite _axe;
+    static Sprite _spear;
+    static Sprite _glaive;
+    static Sprite _shortSword;
+    static Sprite _greatsword;
+    static Sprite _staff;
+    static Sprite _crossbow;
+    static Sprite _crystal;
+    static Sprite _relic;
     static Sprite _pickaxe;
     static Sprite _wood;
     static Sprite _stone;
@@ -36,6 +44,22 @@ public static class ItemArt
             return Chair();
         if (id == ItemIds.Furnace)
             return Furnace();
+        if (id == ItemIds.Spear)
+            return Spear();
+        if (id == ItemIds.Glaive)
+            return Glaive();
+        if (id == ItemIds.ShortSword)
+            return ShortSword();
+        if (id == ItemIds.Greatsword)
+            return Greatsword();
+        if (id == ItemIds.Staff)
+            return Staff();
+        if (id == ItemIds.Crossbow)
+            return Crossbow();
+        if (id == ItemIds.Crystal)
+            return Crystal();
+        if (id == ItemIds.Relic)
+            return Relic();
 
         return null;
     }
@@ -50,6 +74,109 @@ public static class ItemArt
             return Furnace();
 
         return null;
+    }
+
+    public static Sprite Spear()
+    {
+        if (_spear != null)
+            return _spear;
+
+        const int size = 32;
+        var pixels = new Color32[size * size];
+        FillRect(pixels, size, 15, 2, 2, 20, new Color32(122, 78, 42, 255));
+        FillRect(pixels, size, 13, 20, 6, 8, new Color32(214, 220, 224, 255));
+        _spear = Finish(pixels, size, size, new Vector2(0.5f, 0.12f));
+        return _spear;
+    }
+
+    public static Sprite Glaive()
+    {
+        if (_glaive != null)
+            return _glaive;
+
+        const int size = 32;
+        var pixels = new Color32[size * size];
+        FillRect(pixels, size, 15, 1, 2, 16, new Color32(96, 64, 36, 255));
+        FillRect(pixels, size, 8, 16, 16, 12, new Color32(186, 196, 204, 255));
+        _glaive = Finish(pixels, size, size, new Vector2(0.5f, 0.1f));
+        return _glaive;
+    }
+
+    public static Sprite ShortSword()
+    {
+        if (_shortSword != null)
+            return _shortSword;
+
+        const int size = 32;
+        var pixels = new Color32[size * size];
+        FillRect(pixels, size, 14, 8, 4, 14, new Color32(210, 214, 218, 255));
+        FillRect(pixels, size, 10, 6, 12, 3, new Color32(92, 78, 48, 255));
+        _shortSword = Finish(pixels, size, size, new Vector2(0.5f, 0.2f));
+        return _shortSword;
+    }
+
+    public static Sprite Greatsword()
+    {
+        if (_greatsword != null)
+            return _greatsword;
+
+        const int size = 32;
+        var pixels = new Color32[size * size];
+        FillRect(pixels, size, 12, 2, 8, 24, new Color32(168, 176, 184, 255));
+        FillRect(pixels, size, 8, 6, 16, 4, new Color32(72, 64, 48, 255));
+        _greatsword = Finish(pixels, size, size, new Vector2(0.5f, 0.08f));
+        return _greatsword;
+    }
+
+    public static Sprite Staff()
+    {
+        if (_staff != null)
+            return _staff;
+
+        const int size = 32;
+        var pixels = new Color32[size * size];
+        FillRect(pixels, size, 15, 2, 2, 22, new Color32(92, 58, 36, 255));
+        FillEllipse(pixels, size, size, 16, 26, 5, 5, new Color32(255, 120, 42, 255), 3);
+        _staff = Finish(pixels, size, size, new Vector2(0.5f, 0.1f));
+        return _staff;
+    }
+
+    public static Sprite Crossbow()
+    {
+        if (_crossbow != null)
+            return _crossbow;
+
+        const int size = 32;
+        var pixels = new Color32[size * size];
+        FillRect(pixels, size, 6, 14, 20, 4, new Color32(110, 72, 40, 255));
+        FillRect(pixels, size, 14, 8, 4, 16, new Color32(70, 74, 82, 255));
+        FillRect(pixels, size, 22, 15, 8, 2, new Color32(220, 224, 228, 255));
+        _crossbow = Finish(pixels, size, size, new Vector2(0.2f, 0.5f));
+        return _crossbow;
+    }
+
+    public static Sprite Crystal()
+    {
+        if (_crystal != null)
+            return _crystal;
+
+        const int size = 32;
+        var pixels = new Color32[size * size];
+        FillEllipse(pixels, size, size, 16, 16, 8, 10, new Color32(120, 210, 230, 255), 2);
+        _crystal = Finish(pixels, size, size, new Vector2(0.5f, 0.2f));
+        return _crystal;
+    }
+
+    public static Sprite Relic()
+    {
+        if (_relic != null)
+            return _relic;
+
+        const int size = 32;
+        var pixels = new Color32[size * size];
+        FillEllipse(pixels, size, size, 16, 16, 7, 7, new Color32(186, 120, 230, 255), 5);
+        _relic = Finish(pixels, size, size, new Vector2(0.5f, 0.5f));
+        return _relic;
     }
 
     public static Sprite Axe()

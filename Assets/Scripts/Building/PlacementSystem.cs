@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -16,7 +17,7 @@ public class PlacementSystem : MonoBehaviour
     SpriteRenderer _ghost;
     BillboardSort _ghostSort;
     GameObject _hintRoot;
-    Text _hint;
+    TMP_Text _hint;
     ItemDefinition _shown;
 
     public bool HoldsPlaceable
@@ -168,7 +169,13 @@ public class PlacementSystem : MonoBehaviour
         _hintRoot.SetActive(true);
         Mouse mouse = Mouse.current;
         if (mouse != null)
-            _hint.rectTransform.position = mouse.position.ReadValue() + new Vector2(18f, -28f);
+        {
+            Canvas canvas = _hint.canvas;
+            float scale = canvas != null && canvas.scaleFactor > 0.01f ? canvas.scaleFactor : 1f;
+            Vector2 size = _hint.rectTransform.rect.size * scale;
+            Vector2 topLeft = UiScreen.TooltipTopLeft(mouse.position.ReadValue(), size.x, size.y, Screen.width, Screen.height, 8f, 16f);
+            _hint.rectTransform.position = topLeft;
+        }
     }
 
     static string Message(PlaceReject reject, ItemDefinition item)
@@ -232,21 +239,14 @@ public class PlacementSystem : MonoBehaviour
     void BuildHint()
     {
         _hintRoot = new GameObject("Placement Hint");
-        var canvas = _hintRoot.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = 210;
-
-        var scaler = _hintRoot.AddComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920f, 1080f);
-        scaler.matchWidthOrHeight = 0.5f;
+        UiScreen.Mount(_hintRoot, 210);
 
         var rect = new GameObject("Label", typeof(RectTransform)).GetComponent<RectTransform>();
         rect.SetParent(_hintRoot.transform, false);
-        rect.anchorMin = new Vector2(0f, 0f);
-        rect.anchorMax = new Vector2(0f, 0f);
+        rect.anchorMin = new Vector2(0.5f, 0.5f);
+        rect.anchorMax = new Vector2(0.5f, 0.5f);
         rect.pivot = new Vector2(0f, 1f);
-        rect.sizeDelta = new Vector2(420f, 36f);
+        rect.sizeDelta = new Vector2(460f, 40f);
 
         var back = new GameObject("Back", typeof(RectTransform));
         back.transform.SetParent(rect, false);
@@ -259,15 +259,7 @@ public class PlacementSystem : MonoBehaviour
         backImage.color = new Color(0.08f, 0.05f, 0.03f, 0.88f);
         backImage.raycastTarget = false;
 
-        _hint = rect.gameObject.AddComponent<Text>();
-        _hint.font = UiGlyphs.Font;
-        _hint.fontSize = 22;
-        _hint.alignment = TextAnchor.MiddleLeft;
-        _hint.color = new Color(0.98f, 0.9f, 0.78f, 1f);
-        _hint.raycastTarget = false;
-        _hint.horizontalOverflow = HorizontalWrapMode.Overflow;
-        _hint.verticalOverflow = VerticalWrapMode.Overflow;
-        UiGlyphs.Prepare(_hint, _hint.text);
+        _hint = UiGlyphs.Place(rect.gameObject, string.Empty, 22f, TextAnchor.MiddleLeft, new Color(0.98f, 0.9f, 0.78f, 1f), UiGlyphs.Wrap.Ellipsis, true);
         _hintRoot.SetActive(false);
     }
 }

@@ -156,6 +156,7 @@ public class Axe : Tool
         _phase = Phase.Anticipation;
         _phaseTime = 0f;
         _next = Time.time + (connects ? ChopCooldown : MissCooldown);
+        SoundBus.Play(FxEvent.Hit, transform.position);
     }
 
     void Awake()

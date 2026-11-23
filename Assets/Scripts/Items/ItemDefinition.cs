@@ -49,6 +49,7 @@ public class ItemDefinition : ScriptableObject
     [SerializeField] WeaponProfile weapon;
     [SerializeField] EquipmentProfile equipment;
     [SerializeField] ConsumableProfile consumable;
+    [SerializeField] ItemRarity rarity;
 
     public string Id => id;
     public string DisplayName => displayName;
@@ -67,8 +68,23 @@ public class ItemDefinition : ScriptableObject
     public string Description => description ?? string.Empty;
     public int WearCapacity => Mathf.Max(0, wearCapacity);
     public WeaponProfile Weapon => weapon;
+
+    /// <summary>
+    /// Assigned profile, or the built-in sword and bow profiles when the asset has none yet.
+    /// </summary>
+    public WeaponProfile ResolvedWeapon
+    {
+        get
+        {
+            if (!WeaponProfile.IsBlank(weapon))
+                return weapon;
+
+            return WeaponDefaults.For(id);
+        }
+    }
     public EquipmentProfile Equipment => equipment;
     public ConsumableProfile Consumable => consumable;
+    public ItemRarity Rarity => rarity;
     public bool HasWeapon => weapon != null;
     public bool HasEquipment => equipment != null && !string.IsNullOrEmpty(equipment.SlotId);
     public bool HasConsumable => consumable != null && !string.IsNullOrEmpty(consumable.EffectId);
@@ -205,5 +221,10 @@ public class ItemDefinition : ScriptableObject
     public void AssignConsumable(ConsumableProfile profile)
     {
         consumable = profile;
+    }
+
+    public void AssignRarity(ItemRarity value)
+    {
+        rarity = value;
     }
 }

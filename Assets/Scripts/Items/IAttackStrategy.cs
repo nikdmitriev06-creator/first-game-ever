@@ -5,5 +5,9 @@
 public interface IAttackStrategy
 {
     string Id { get; }
+
+    /// <summary>
+    /// May change numbers on the plan, including <see cref="AttackPlan.Payload"/>. Called before modifiers.
+    /// </summary>
     void Adjust(ref AttackPlan plan, ItemInstance instance);
 }

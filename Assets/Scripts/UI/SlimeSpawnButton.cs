@@ -10,7 +10,7 @@ public class SlimeSpawnButton : MonoBehaviour
 {
     const float Width = 168f;
     const float Height = 52f;
-    const float Margin = 28f;
+    const float Margin = 56f;
 
     static readonly Color FrameColor = new Color(0.10f, 0.09f, 0.08f, 1f);
     static readonly Color FillColor = new Color(0.20f, 0.48f, 0.26f, 1f);
@@ -147,15 +147,7 @@ public class SlimeSpawnButton : MonoBehaviour
     void Build()
     {
         _canvasObject = new GameObject("Slime Spawn Hud");
-
-        var canvas = _canvasObject.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = 160;
-
-        var scaler = _canvasObject.AddComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920f, 1080f);
-        scaler.matchWidthOrHeight = 0.5f;
+        UiScreen.Mount(_canvasObject, 160);
 
         _root = CreateRect("Button", _canvasObject.transform);
         _root.anchorMin = new Vector2(1f, 0f);
@@ -185,17 +177,7 @@ public class SlimeSpawnButton : MonoBehaviour
         rect.pivot = new Vector2(0.5f, 0.5f);
         rect.sizeDelta = new Vector2(Width, Height);
 
-        var text = rect.gameObject.AddComponent<Text>();
-        text.font = UiGlyphs.Font;
-        text.fontSize = 22;
-        text.alignment = TextAnchor.MiddleCenter;
-        text.color = LabelColor;
-        text.horizontalOverflow = HorizontalWrapMode.Overflow;
-        text.verticalOverflow = VerticalWrapMode.Overflow;
-        text.raycastTarget = false;
-        text.supportRichText = false;
-        text.text = caption;
-        UiGlyphs.Prepare(text, caption);
+        UiGlyphs.Place(rect.gameObject, caption, 22f, TextAnchor.MiddleCenter, LabelColor, UiGlyphs.Wrap.Ellipsis);
     }
 
     static void Stretch(RectTransform rect)

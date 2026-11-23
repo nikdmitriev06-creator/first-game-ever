@@ -23,6 +23,9 @@ public sealed class ItemInstance
     public bool TracksDurability => durability >= 0;
     public bool HasModifiers => modifierIds != null && modifierIds.Count > 0;
 
+    /// <summary>Raised when carried wear reaches zero. The id is the definition, not a widget.</summary>
+    public static event Action<string> Broke;
+
     public static ItemInstance Create(string definitionId, int quantity)
     {
         int wear = -1;
@@ -54,7 +57,10 @@ public sealed class ItemInstance
         if (durability < 0)
             return;
 
+        int previous = durability;
         durability = Mathf.Max(0, value);
+        if (previous > 0 && durability == 0)
+            Broke?.Invoke(definitionId);
     }
 
     public bool AddModifier(string id)
@@ -95,6 +101,15 @@ public sealed class ItemInstance
             return false;
 
         return ItemIds.Stacks(left.definitionId);
+    }
+
+    public static bool CanSplit(ItemInstance stack)
+    {
+        return stack != null
+            && stack.quantity >= 2
+            && !stack.TracksDurability
+            && !stack.HasModifiers
+            && ItemIds.Stacks(stack.definitionId);
     }
 
     static List<string> CopyIds(IList<string> source)

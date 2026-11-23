@@ -7,10 +7,14 @@ public sealed class CraftAccess
 {
     readonly HashSet<string> _open = new HashSet<string>();
 
+    public event System.Action<string> Opened;
+
     public void Unlock(string id)
     {
-        if (!string.IsNullOrEmpty(id))
-            _open.Add(id);
+        if (string.IsNullOrEmpty(id) || !_open.Add(id))
+            return;
+
+        Opened?.Invoke(id);
     }
 
     public bool Allows(RecipeDefinition recipe)
